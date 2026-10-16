@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlindPath</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f6fc;
+      color: #172b4d;
+      padding: 30px 16px;
+    }
+
+    main {
+      max-width: 500px;
+      margin: auto;
+      padding: 24px;
+      background: white;
+      border-radius: 16px;
+    }
+
+    h1 {
+      color: #174ea6;
+      font-size: 36px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      background: #174ea6;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 4px solid orange;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>BlindPath</h1>
+    <p>Accessible navigation for a more inclusive township.</p>
+
+    <button onclick="speak('Welcome to BlindPath. Your accessible journey starts here.')">
+      Introduce BlindPath
+    </button>
+
+    <button onclick="speak('BlindPath aims to help visually impaired users navigate more independently.')">
+      Hear how it works
+    </button>
+
+    <p id="message" aria-live="polite">
+      Welcome! Choose a button to begin.
+    </p>
+  </main>
+
+  <script>
+    function speak(message) {
+      const output = document.getElementById("message");
+      output.textContent = message;
+
+      if (!("speechSynthesis" in window)) {
+        output.textContent = "Audio is not supported by this browser.";
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const voice = new SpeechSynthesisUtterance(message);
+      voice.lang = "en-MY";
+      window.speechSynthesis.speak(voice);
+    }
+  </script>
+</body>
+</html>
