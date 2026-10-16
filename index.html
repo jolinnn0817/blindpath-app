@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#174c3c">
-  <title>BlindPath | Route Planner Demo</title>
+  <title>BlindPath | Accessible Route Planner</title>
 
   <link
     rel="stylesheet"
@@ -22,25 +22,26 @@
       font-family: Arial, Helvetica, sans-serif;
       background: #f3f6fa;
       color: #172033;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     header {
       background: #174c3c;
       color: white;
-      padding: 22px 16px;
       text-align: center;
+      padding: 24px 16px;
     }
 
     header h1 {
       margin: 0 0 6px;
+      font-size: 32px;
     }
 
     header p {
       margin: 0;
     }
 
-    .container {
+    main {
       max-width: 1000px;
       margin: 24px auto;
       padding: 0 16px;
@@ -50,38 +51,42 @@
       background: white;
       padding: 20px;
       border-radius: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       box-shadow: 0 2px 10px #0000000d;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     label {
       display: block;
-      font-weight: bold;
       margin: 14px 0 6px;
+      font-weight: bold;
     }
 
     input, select {
-      display: block;
       width: 100%;
       min-height: 46px;
       padding: 11px;
-      border: 2px solid #ccd3dd;
+      border: 2px solid #cbd5df;
       border-radius: 7px;
+      font: inherit;
       background: white;
       color: #172033;
-      font: inherit;
     }
 
     button {
+      min-height: 44px;
+      padding: 10px 15px;
+      margin: 12px 6px 0 0;
       border: 2px solid #17694e;
       border-radius: 7px;
-      padding: 11px 15px;
-      margin: 12px 6px 0 0;
-      cursor: pointer;
-      font: inherit;
-      font-weight: bold;
       background: #17694e;
       color: white;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     button.secondary {
@@ -90,26 +95,27 @@
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: not-allowed;
     }
 
     button:focus-visible,
     input:focus-visible,
-    select:focus-visible {
+    select:focus-visible,
+    a:focus-visible {
       outline: 4px solid #e4a11b;
-      outline-offset: 2px;
+      outline-offset: 3px;
     }
 
     #map {
       width: 100%;
-      height: 440px;
-      border-radius: 12px;
+      height: 420px;
+      border-radius: 10px;
       z-index: 1;
     }
 
     #status {
-      margin-top: 14px;
+      margin-top: 16px;
       padding: 12px;
       background: #edf5f0;
       border-radius: 8px;
@@ -124,28 +130,51 @@
     }
 
     .stat {
+      padding: 14px;
       background: #edf5f0;
-      padding: 16px;
       border-radius: 8px;
     }
 
     .stat strong {
       display: block;
-      font-size: 22px;
-      margin-top: 6px;
+      font-size: 23px;
+      margin-top: 4px;
+    }
+
+    .notice {
+      padding: 12px;
+      background: #fff4d6;
+      border-left: 5px solid #9b6700;
+      border-radius: 7px;
+    }
+
+    .ride-alert {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      background: #fff4d6;
+      border: 2px solid #9b6700;
+      border-radius: 10px;
+    }
+
+    .ride-alert h3 {
+      margin-top: 0;
+    }
+
+    .ride-alert a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 11px 16px;
+      border-radius: 7px;
+      background: #174c3c;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
     }
 
     .hint {
       color: #586575;
       font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .notice {
-      background: #fff4d6;
-      border-left: 5px solid #9b6700;
-      padding: 12px;
-      border-radius: 7px;
     }
 
     #directions {
@@ -157,19 +186,23 @@
     }
 
     footer {
-      text-align: center;
       padding: 20px;
+      text-align: center;
       color: #586575;
       font-size: 12px;
     }
 
     @media (max-width: 600px) {
-      #map {
-        height: 350px;
+      main {
+        padding: 0 10px;
       }
 
       .panel {
-        padding: 14px;
+        padding: 15px;
+      }
+
+      #map {
+        height: 340px;
       }
 
       .stats {
@@ -180,6 +213,11 @@
         width: 100%;
         margin-right: 0;
       }
+
+      .ride-alert a {
+        display: block;
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -187,82 +225,67 @@
 <body>
   <header>
     <h1>BlindPath</h1>
-    <p>Route planner demo for a more accessible township</p>
+    <p>Accessible journeys, one step at a time.</p>
   </header>
 
-  <main class="container">
+  <main>
     <section class="panel">
       <h2>Plan your journey</h2>
 
       <p class="notice">
-        <strong>Prototype safety notice:</strong>
-        This demo currently calculates driving routes only. It does not
-        provide verified pedestrian routes, live turn-by-turn guidance,
-        obstacle detection, or safe-crossing alerts. Do not rely on it
-        as your only navigation aid.
+        <strong>Safety notice:</strong>
+        This is a prototype. Walking routes may not include every
+        accessible pavement, tactile path, crossing, lift or obstacle.
+        Voice announcements are not live turn-by-turn guidance.
+        Always use your usual mobility aids and verify your surroundings.
       </p>
 
-      <label for="mode">Travel mode</label>
+      <label for="mode">Choose your travel mode</label>
       <select id="mode" onchange="onModeChanged()">
-        <option value="driving" selected>
-          Driving (supported by this demo)
-        </option>
-        <option value="walking" disabled>
-          Walking (not available yet)
-        </option>
+        <option value="foot">Walking</option>
+        <option value="car">Driving</option>
       </select>
 
       <label for="start">Starting point</label>
       <input
         id="start"
         type="text"
-        autocomplete="street-address"
         placeholder="e.g. Universiti Malaya, Kuala Lumpur"
+        autocomplete="street-address"
       >
 
       <label for="destination">Destination</label>
       <input
         id="destination"
         type="text"
-        autocomplete="street-address"
         placeholder="e.g. KL Sentral, Kuala Lumpur"
+        autocomplete="street-address"
       >
 
-      <button id="routeBtn" type="button" onclick="findRoute()">
+      <button id="routeBtn" onclick="findRoute()">
         Find route
       </button>
 
-      <button
-        class="secondary"
-        type="button"
-        onclick="useMyLocation()"
-      >
+      <button class="secondary" onclick="useMyLocation()">
         Use my location
       </button>
 
-      <button
-        class="secondary"
-        type="button"
-        onclick="toggleVoiceAnnouncements()"
-      >
+      <button class="secondary" onclick="toggleVoiceAnnouncements()">
         Voice announcements: <span id="voiceStatus">ON</span>
       </button>
 
-      <button
-        class="secondary"
-        type="button"
-        onclick="clearRoute()"
-      >
-        Clear
+      <button class="secondary" onclick="clearRoute()">
+        Clear route
       </button>
 
       <div id="status" role="status" aria-live="polite">
-        Enter a starting point and destination to begin.
+        Choose Walking or Driving, then enter your starting point
+        and destination.
       </div>
 
       <div class="stats">
         <div class="stat">
-          Distance
+          Route distance
           <strong id="distance">—</strong>
         </div>
 
@@ -272,51 +295,92 @@
         </div>
       </div>
 
-      <h3>Route steps</h3>
+      <!-- Smart Ride Assist: appears for walking routes over 5 km. -->
+      <div
+        id="rideAlert"
+        class="ride-alert"
+        role="region"
+        aria-labelledby="rideTitle"
+        aria-live="polite"
+      >
+        <h3 id="rideTitle">Smart Ride Assist</h3>
+
+        <p id="rideMessage">
+          This walking journey is longer than 5 km.
+          Would you like to consider booking a ride instead?
+        </p>
+
+        <a
+          id="grabLink"
+          href="https://www.grab.com/my/transport/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Grab ride options
+        </a>
+
+        <p class="hint">
+          This opens Grab's transport page. Confirm your pickup,
+          destination, fare and booking in Grab. BlindPath will not
+          book a ride automatically.
+        </p>
+      </div>
+
+      <h3>Route instructions</h3>
 
       <p class="hint">
-        These are route instructions from the driving-route service.
-        They are not live instructions that track your movement.
+        Instructions are generated from the selected routing service.
+        They do not track your live position.
       </p>
 
       <ol id="directions">
-        <li>Your route instructions will appear here after a route is found.</li>
+        <li>Your route instructions will appear here.</li>
       </ol>
     </section>
 
     <section class="panel">
-      <h2>Map</h2>
+      <h2>Journey map</h2>
 
-      <div id="map" aria-label="Map showing the selected route"></div>
+      <div
+        id="map"
+        aria-label="Map showing the route"
+      ></div>
 
       <button
         id="googleBtn"
-        type="button"
         class="secondary"
         onclick="openGoogleMaps()"
         disabled
       >
-        Open route in Google Maps
+        Continue in Google Maps
       </button>
     </section>
   </main>
 
   <footer>
     Map data © OpenStreetMap contributors.
-    Routing by the public OSRM demo service.
+    Routing provided by FOSSGIS routing services.
+    External services may be unavailable or change their policies.
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Set up the map, initially centred on Kuala Lumpur.
+    // ==========================================
+    // 1. INITIALISE THE MAP
+    // ==========================================
+
     const map = L.map("map").setView([3.139, 101.6869], 12);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-    }).addTo(map);
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+          'OpenStreetMap contributors</a>'
+      }
+    ).addTo(map);
 
     let startMarker = null;
     let destinationMarker = null;
@@ -325,28 +389,23 @@
     let startCoords = null;
     let destinationCoords = null;
 
-    let voiceAnnouncementsEnabled = true;
+    let voiceEnabled = true;
+    let lastRideAlertRoute = null;
 
     const locationCache = new Map();
     const statusBox = document.getElementById("status");
     const routeButton = document.getElementById("routeBtn");
 
-    // Update the message shown on the page.
-    function setStatus(message, shouldSpeak = false) {
-      statusBox.textContent = message;
+    const WALKING_LIMIT_METRES = 5000;
 
-      if (shouldSpeak) {
-        speak(message);
-      }
-    }
+    // ==========================================
+    // 2. VOICE ANNOUNCEMENTS
+    // ==========================================
 
-    // Read a message aloud if browser speech is supported.
     function speak(message) {
-      if (!voiceAnnouncementsEnabled) return;
+      if (!voiceEnabled) return;
 
       if (!("speechSynthesis" in window)) {
-        statusBox.textContent +=
-          " Speech is not supported in this browser.";
         return;
       }
 
@@ -354,92 +413,91 @@
 
       const utterance = new SpeechSynthesisUtterance(message);
 
-      // The available voice and accent depend on the user's device.
       utterance.lang = "en-MY";
-      utterance.rate = 0.95;
+      utterance.rate = 0.9;
 
       window.speechSynthesis.speak(utterance);
     }
 
-    // Turn voice announcements on or off.
+    function setStatus(message, announce = false) {
+      statusBox.textContent = message;
+
+      if (announce) {
+        speak(message);
+      }
+    }
+
     function toggleVoiceAnnouncements() {
-      voiceAnnouncementsEnabled = !voiceAnnouncementsEnabled;
+      voiceEnabled = !voiceEnabled;
 
       document.getElementById("voiceStatus").textContent =
-        voiceAnnouncementsEnabled ? "ON" : "OFF";
+        voiceEnabled ? "ON" : "OFF";
 
-      if (
-        !voiceAnnouncementsEnabled &&
-        "speechSynthesis" in window
-      ) {
+      if (!voiceEnabled && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
 
       setStatus(
-        voiceAnnouncementsEnabled
+        voiceEnabled
           ? "Voice announcements are on."
           : "Voice announcements are off.",
-        voiceAnnouncementsEnabled
+        voiceEnabled
       );
     }
 
-    // Walking is deliberately unavailable in this prototype.
+    // ==========================================
+    // 3. TRAVEL MODE
+    // ==========================================
+
     function onModeChanged() {
       const mode = document.getElementById("mode").value;
 
-      if (mode === "walking") {
-        setStatus(
-          "Walking routes are not available in this prototype. Please choose driving mode."
-        );
+      hideRideAlert();
+      resetRouteResults();
 
-        document.getElementById("mode").value = "driving";
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (mode === "foot") {
+        setStatus(
+          "Walking mode selected. Routes will use the available foot-routing service."
+        );
       } else {
         setStatus(
-          "Driving mode selected. This prototype does not calculate verified pedestrian routes."
+          "Driving mode selected. The 5 km walking reminder will not apply."
         );
       }
     }
 
-    // Clear the distance, duration and instruction list.
-    function resetResults() {
-      document.getElementById("distance").textContent = "—";
-      document.getElementById("duration").textContent = "—";
-      document.getElementById("googleBtn").disabled = true;
+    // ==========================================
+    // 4. FIND A PLACE
+    // ==========================================
 
-      const list = document.getElementById("directions");
-      list.replaceChildren();
-
-      const item = document.createElement("li");
-      item.textContent =
-        "Your route instructions will appear here after a route is found.";
-
-      list.appendChild(item);
-    }
-
-    // Convert a place name or "latitude, longitude" into coordinates.
     async function geocode(place) {
       const key = place.trim().toLowerCase();
 
-      const coordinateMatch = place.match(
+      // Allow users to enter coordinates directly.
+      const match = place.match(
         /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/
       );
 
-      if (coordinateMatch) {
-        const lat = Number(coordinateMatch[1]);
-        const lon = Number(coordinateMatch[2]);
+      if (match) {
+        const lat = Number(match[1]);
+        const lon = Number(match[2]);
 
         if (
           lat < -90 || lat > 90 ||
           lon < -180 || lon > 180
         ) {
           throw new Error(
-            "Those coordinates are outside the valid range."
+            "The coordinates are outside the valid range."
           );
         }
 
         return {
-          lat: lat,
-          lon: lon,
+          lat,
+          lon,
           name: place
         };
       }
@@ -448,7 +506,7 @@
         return locationCache.get(key);
       }
 
-      // Add a delay between requests to respect the public geocoding service.
+      // Respect a minimum delay between geocoding requests.
       if (geocode.lastRequest) {
         const wait = 1100 - (Date.now() - geocode.lastRequest);
 
@@ -460,14 +518,15 @@
       geocode.lastRequest = Date.now();
 
       const url =
-        "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" +
+        "https://nominatim.openstreetmap.org/search" +
+        "?format=jsonv2&limit=1&q=" +
         encodeURIComponent(place);
 
       const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error(
-          "The location search service is unavailable. Please try again."
+          "Location search is unavailable. Please try again."
         );
       }
 
@@ -475,7 +534,7 @@
 
       if (!results.length) {
         throw new Error(
-          'Location not found: "' + place +
+          'Could not find "' + place +
           '". Try adding the city or state.'
         );
       }
@@ -491,7 +550,62 @@
       return result;
     }
 
-    // Show markers for the start and destination.
+    // ==========================================
+    // 5. ROUTING: WALKING OR DRIVING
+    // ==========================================
+
+    async function getRoute(start, destination, mode) {
+      const coordinates =
+        start.lon + "," + start.lat + ";" +
+        destination.lon + "," + destination.lat;
+
+      /*
+        Important:
+        - routed-foot uses the foot-routing profile.
+        - routed-car uses the car-routing profile.
+        The final "driving" segment is part of this service's
+        OSRM-compatible URL format. The server prefix selects
+        the actual routing profile.
+      */
+
+      const service =
+        mode === "foot"
+          ? "https://routing.openstreetmap.de/routed-foot"
+          : "https://routing.openstreetmap.de/routed-car";
+
+      const url =
+        service +
+        "/route/v1/driving/" +
+        coordinates +
+        "?overview=full&geometries=geojson&steps=true";
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(
+          "The routing service could not calculate this route. Please try again later."
+        );
+      }
+
+      const data = await response.json();
+
+      if (
+        data.code !== "Ok" ||
+        !data.routes ||
+        data.routes.length === 0
+      ) {
+        throw new Error(
+          "No route was found. Try different starting or destination locations."
+        );
+      }
+
+      return data.routes[0];
+    }
+
+    // ==========================================
+    // 6. DISPLAY THE START AND DESTINATION
+    // ==========================================
+
     function displayLocations(start, destination) {
       if (startMarker) map.removeLayer(startMarker);
       if (destinationMarker) map.removeLayer(destinationMarker);
@@ -514,45 +628,12 @@
         ),
         { padding: [35, 35] }
       );
-
-      startMarker.openPopup();
     }
 
-    // The public OSRM demo endpoint calculates driving routes.
-    async function getRoute(start, destination) {
-      const coordinates =
-        start.lon + "," + start.lat + ";" +
-        destination.lon + "," + destination.lat;
+    // ==========================================
+    // 7. DISPLAY ROUTE INSTRUCTIONS
+    // ==========================================
 
-      const url =
-        "https://router.project-osrm.org/route/v1/driving/" +
-        coordinates +
-        "?overview=full&geometries=geojson&steps=true";
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(
-          "The routing service is unavailable. Please try again."
-        );
-      }
-
-      const data = await response.json();
-
-      if (
-        data.code !== "Ok" ||
-        !data.routes ||
-        !data.routes.length
-      ) {
-        throw new Error(
-          "No driving route was found for those locations."
-        );
-      }
-
-      return data.routes[0];
-    }
-
-    // Turn route-service instructions into readable text.
     function describeManeuver(step) {
       const maneuver = step.maneuver || {};
       const type = maneuver.type || "";
@@ -562,18 +643,23 @@
       if (type === "depart") return "Start" + road;
       if (type === "arrive") return "Arrive at your destination";
       if (type === "turn") return "Turn " + modifier + road;
+
       if (type === "continue" || type === "new name") {
         return "Continue" + road;
       }
+
       if (type === "merge") return "Merge " + modifier + road;
       if (type === "on ramp") return "Take the ramp" + road;
       if (type === "off ramp") return "Take the exit" + road;
+
       if (type === "roundabout" || type === "rotary") {
         return "Enter the roundabout" + road;
       }
+
       if (type === "fork") {
         return "At the fork, keep " + modifier + road;
       }
+
       if (type === "end of road") {
         return "At the end of the road, turn " + modifier + road;
       }
@@ -581,7 +667,6 @@
       return (type ? type.replace(/_/g, " ") : "Continue") + road;
     }
 
-    // Display the list of route instructions.
     function showDirections(route) {
       const list = document.getElementById("directions");
       list.replaceChildren();
@@ -603,8 +688,7 @@
 
       if (!steps.length) {
         const item = document.createElement("li");
-        item.textContent =
-          "No detailed instructions were returned for this route.";
+        item.textContent = "No detailed route instructions available.";
         list.appendChild(item);
         return;
       }
@@ -616,7 +700,56 @@
       });
     }
 
-    // Find both places, calculate a driving route and show the results.
+    // ==========================================
+    // 8. SMART RIDE ASSIST
+    // ==========================================
+
+    function hideRideAlert() {
+      document.getElementById("rideAlert").style.display = "none";
+      lastRideAlertRoute = null;
+    }
+
+    function showRideAlert(distanceMetres, start, destination) {
+      const alertBox = document.getElementById("rideAlert");
+      const messageBox = document.getElementById("rideMessage");
+
+      const distanceKm = (distanceMetres / 1000).toFixed(1);
+
+      messageBox.textContent =
+        "Your walking route is approximately " +
+        distanceKm +
+        " km, which exceeds your 5 km reminder setting. " +
+        "Would you prefer to consider booking a ride instead?";
+
+      alertBox.style.display = "block";
+
+      // Build a Grab Malaysia transport page link.
+      // This does not book a ride or send a booking automatically.
+      document.getElementById("grabLink").href =
+        "https://www.grab.com/my/transport/";
+
+      const routeKey =
+        start.lat + "," + start.lon + "|" +
+        destination.lat + "," + destination.lon;
+
+      // Avoid repeating the same reminder if the route is unchanged.
+      if (lastRideAlertRoute !== routeKey) {
+        speak(
+          "Smart Ride Assist. Your walking route is " +
+          distanceKm +
+          " kilometres, which is more than 5 kilometres. " +
+          "You may wish to consider booking a ride. " +
+          "You can open Grab using the ride options link on the page."
+        );
+
+        lastRideAlertRoute = routeKey;
+      }
+    }
+
+    // ==========================================
+    // 9. FIND AND DISPLAY THE ROUTE
+    // ==========================================
+
     async function findRoute() {
       const startText =
         document.getElementById("start").value.trim();
@@ -624,17 +757,11 @@
       const destinationText =
         document.getElementById("destination").value.trim();
 
+      const mode = document.getElementById("mode").value;
+
       if (!startText || !destinationText) {
         setStatus(
-          "Please enter both a starting point and a destination.",
-          true
-        );
-        return;
-      }
-
-      if (document.getElementById("mode").value !== "driving") {
-        setStatus(
-          "Only driving routes are supported in this prototype.",
+          "Please enter both your starting point and destination.",
           true
         );
         return;
@@ -642,14 +769,16 @@
 
       routeButton.disabled = true;
       routeButton.textContent = "Finding route...";
-      resetResults();
+
+      hideRideAlert();
+      resetRouteResults();
 
       try {
-        setStatus("Searching for the starting point...");
+        setStatus("Finding your starting point...");
 
         const start = await geocode(startText);
 
-        setStatus("Searching for the destination...");
+        setStatus("Finding your destination...");
 
         const destination = await geocode(destinationText);
 
@@ -658,9 +787,13 @@
 
         displayLocations(start, destination);
 
-        setStatus("Calculating the driving route...");
+        setStatus(
+          mode === "foot"
+            ? "Calculating your walking route..."
+            : "Calculating your driving route..."
+        );
 
-        const route = await getRoute(start, destination);
+        const route = await getRoute(start, destination, mode);
 
         if (routeLine) {
           map.removeLayer(routeLine);
@@ -668,9 +801,9 @@
 
         routeLine = L.geoJSON(route.geometry, {
           style: {
-            color: "#1769ff",
+            color: mode === "foot" ? "#17694e" : "#1769ff",
             weight: 5,
-            opacity: 0.85
+            opacity: 0.9
           }
         }).addTo(map);
 
@@ -678,7 +811,8 @@
           padding: [35, 35]
         });
 
-        const km = route.distance / 1000;
+        const metres = route.distance;
+        const km = metres / 1000;
         const minutes = Math.round(route.duration / 60);
 
         document.getElementById("distance").textContent =
@@ -694,29 +828,51 @@
 
         document.getElementById("googleBtn").disabled = false;
 
-        const timeText =
+        const modeName =
+          mode === "foot" ? "walking" : "driving";
+
+        const durationText =
           minutes >= 60
             ? Math.floor(minutes / 60) + " hours and " +
               (minutes % 60) + " minutes"
             : minutes + " minutes";
 
         setStatus(
-          "Driving route found. Distance " +
-          km.toFixed(1) +
-          " kilometres. Estimated duration " +
-          timeText +
-          ". These are estimates, not live navigation instructions.",
+          "Your " + modeName + " route has been calculated. " +
+          "Distance: " + km.toFixed(1) + " kilometres. " +
+          "Estimated duration: " + durationText + ".",
           true
         );
+
+        // Only trigger the 5 km reminder in walking mode.
+        if (mode === "foot" && metres > WALKING_LIMIT_METRES) {
+          showRideAlert(metres, start, destination);
+        } else {
+          hideRideAlert();
+
+          if (mode === "foot") {
+            speak(
+              "Your walking route is below the 5 kilometre reminder threshold."
+            );
+          }
+        }
       } catch (error) {
-        setStatus(error.message || "Something went wrong.", true);
+        hideRideAlert();
+
+        setStatus(
+          error.message || "Something went wrong. Please try again.",
+          true
+        );
       } finally {
         routeButton.disabled = false;
         routeButton.textContent = "Find route";
       }
     }
 
-    // Use the browser's location permission to fill in the starting point.
+    // ==========================================
+    // 10. USE THE USER'S CURRENT LOCATION
+    // ==========================================
+
     function useMyLocation() {
       if (!navigator.geolocation) {
         setStatus(
@@ -727,7 +883,7 @@
       }
 
       setStatus(
-        "Requesting your location. Your browser may ask for permission."
+        "Requesting your location. Please allow location access if prompted."
       );
 
       navigator.geolocation.getCurrentPosition(
@@ -736,15 +892,15 @@
           const lon = position.coords.longitude;
 
           startCoords = {
-            lat: lat,
-            lon: lon,
+            lat,
+            lon,
             name: "Your current location"
           };
 
           document.getElementById("start").value =
             lat.toFixed(6) + ", " + lon.toFixed(6);
 
-          map.setView([lat, lon], 15);
+          map.setView([lat, lon], 16);
 
           if (startMarker) {
             map.removeLayer(startMarker);
@@ -756,19 +912,20 @@
             .openPopup();
 
           setStatus(
-            "Your location has been added as the starting point. Enter a destination and click Find route.",
+            "Your location has been entered as the starting point. " +
+            "Enter your destination and click Find route.",
             true
           );
         },
         error => {
           const messages = {
-            1: "Location permission was denied. Allow location access in your browser if you want to use this feature.",
-            2: "Your location is currently unavailable.",
+            1: "Location permission was denied. Check your browser settings.",
+            2: "Your current location is unavailable.",
             3: "The location request timed out. Please try again."
           };
 
           setStatus(
-            messages[error.code] || "Could not get your location.",
+            messages[error.code] || "Unable to get your location.",
             true
           );
         },
@@ -780,9 +937,17 @@
       );
     }
 
-    // Open the same start and destination in Google Maps.
+    // ==========================================
+    // 11. OPEN THE ROUTE IN GOOGLE MAPS
+    // ==========================================
+
     function openGoogleMaps() {
       if (!startCoords || !destinationCoords) return;
+
+      const mode =
+        document.getElementById("mode").value === "foot"
+          ? "walking"
+          : "driving";
 
       const url =
         "https://www.google.com/maps/dir/?api=1" +
@@ -794,12 +959,29 @@
         encodeURIComponent(
           destinationCoords.lat + "," + destinationCoords.lon
         ) +
-        "&travelmode=driving";
+        "&travelmode=" + mode;
 
       window.open(url, "_blank", "noopener,noreferrer");
     }
 
-    // Remove markers, route line and previous results.
+    // ==========================================
+    // 12. RESET THE PAGE
+    // ==========================================
+
+    function resetRouteResults() {
+      document.getElementById("distance").textContent = "—";
+      document.getElementById("duration").textContent = "—";
+      document.getElementById("googleBtn").disabled = true;
+
+      const list = document.getElementById("directions");
+      list.replaceChildren();
+
+      const item = document.createElement("li");
+      item.textContent = "Your route instructions will appear here.";
+
+      list.appendChild(item);
+    }
+
     function clearRoute() {
       if (startMarker) map.removeLayer(startMarker);
       if (destinationMarker) map.removeLayer(destinationMarker);
@@ -815,18 +997,18 @@
       document.getElementById("start").value = "";
       document.getElementById("destination").value = "";
 
-      resetResults();
+      hideRideAlert();
+      resetRouteResults();
 
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
 
-      setStatus("Map cleared. Enter a new journey to begin.");
+      setStatus("Route cleared. Enter a new journey to begin.");
 
       map.setView([3.139, 101.6869], 12);
     }
 
-    // Ensure the map displays correctly after the page loads.
     window.addEventListener("load", () => {
       map.invalidateSize();
     });
