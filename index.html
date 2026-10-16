@@ -3,95 +3,178 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BlindPath</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b5b">
+<title>BlindPath | Accessible Township Navigation</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 :root {
-  --navy: #102a43;
-  --blue: #1769aa;
-  --line: #d7e1ea;
-  --ink: #172b4d;
+  --green: #176b5b;
+  --green-dark: #104b41;
+  --mint: #eaf5f1;
+  --ink: #193b36;
+  --muted: #526a65;
+  --line: #cfddd8;
+  --white: #ffffff;
+  --warning: #fff3d4;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  background: #f4f8fb;
+  background: #f5f8f7;
   color: var(--ink);
-  font: 16px/1.5 Arial, sans-serif;
+  font: 16px/1.55 Arial, Helvetica, sans-serif;
 }
 
-header {
-  background: var(--navy);
-  color: white;
-  padding: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+button, input, select, textarea {
+  font: inherit;
 }
 
-header h1 { margin: 0; }
-
-main {
-  max-width: 1050px;
-  margin: 20px auto;
-  padding: 0 14px;
+button, a, input, select, textarea {
+  touch-action: manipulation;
 }
-
-.panel {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 16px;
-}
-
-.hidden { display: none !important; }
-
-button, input, select, textarea { font: inherit; }
 
 button {
   border: 0;
   border-radius: 9px;
-  padding: 12px 15px;
+  padding: 12px 16px;
   min-height: 44px;
-  background: var(--blue);
+  background: var(--green);
   color: white;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
 }
 
-button.secondary {
-  background: #e8f0f7;
-  color: var(--navy);
-  border: 1px solid #cbd9e6;
-}
-
-button.danger { background: #9d2424; }
-
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
+button:hover {
+  background: var(--green-dark);
 }
 
 button:focus-visible,
+a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #f2b84b;
-  outline-offset: 2px;
+  outline: 3px solid #d89b00;
+  outline-offset: 3px;
+}
+
+button.secondary {
+  background: #e5eeeb;
+  color: var(--ink);
+  border: 1px solid #cfddd8;
+}
+
+button.secondary:hover {
+  background: #d5e3de;
+}
+
+button.danger {
+  background: #803b3b;
+}
+
+a {
+  color: var(--green-dark);
+}
+
+header {
+  background: var(--green-dark);
+  color: white;
+  padding: 24px 20px;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+header p {
+  margin: 5px 0 0;
+  max-width: 760px;
+}
+
+main, footer {
+  max-width: 1100px;
+  margin: auto;
+}
+
+main {
+  padding: 22px 16px 40px;
+}
+
+footer {
+  padding: 0 16px 26px;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.panel {
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px #163b3510;
+  min-width: 0;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 1.45rem;
+}
+
+h3 {
+  margin: 20px 0 8px;
+}
+
+.muted, .help {
+  color: var(--muted);
+  font-size: .93rem;
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #9aada7;
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 9px;
   margin-top: 12px;
 }
 
@@ -103,55 +186,56 @@ textarea:focus-visible {
 
 .home-button {
   width: 100%;
-  min-height: 82px;
+  min-height: 95px;
+  padding: 18px;
+  background: var(--green);
+  color: white;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 1.05rem;
+  transition: background .2s, transform .2s;
 }
 
-label {
-  display: block;
+.home-button:hover {
+  background: var(--green-dark);
+  transform: translateY(-2px);
+}
+
+.home-intro {
+  background: var(--mint);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.home-intro h2 {
+  color: var(--green-dark);
+}
+
+.home-label {
+  color: var(--green-dark);
   font-weight: bold;
-  margin: 10px 0 5px;
+  margin: 20px 0 10px;
 }
-
-input, select, textarea {
-  width: 100%;
-  border: 1px solid #aabaca;
-  border-radius: 8px;
-  padding: 11px;
-  background: white;
-  color: var(--ink);
-}
-
-textarea { min-height: 80px; }
 
 .status {
   padding: 12px;
   border-radius: 9px;
-  background: #eef6fc;
+  background: var(--mint);
   margin-top: 12px;
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
 
 .warn {
-  background: #fff1dc !important;
+  background: var(--warning) !important;
   color: #704700;
 }
 
 .good {
   background: #e8f7ef !important;
   color: #155b3a;
-}
-
-.muted {
-  color: #526579;
-  font-size: .92rem;
-}
-
-#map {
-  height: 350px;
-  border-radius: 10px;
-  margin-top: 14px;
-  border: 1px solid var(--line);
 }
 
 .stats {
@@ -162,20 +246,32 @@ textarea { min-height: 80px; }
 }
 
 .stats div {
-  padding: 10px;
-  background: #eef4f8;
+  padding: 12px;
+  background: var(--mint);
   border-radius: 9px;
 }
 
-.stats strong { display: block; }
+.stats strong {
+  display: block;
+  margin-top: 4px;
+}
 
 .instruction {
   font-size: 1.2rem;
   font-weight: bold;
   padding: 14px;
-  border: 2px solid #a6c3d9;
+  border: 2px solid #9fc8ba;
+  background: #f4faf7;
   border-radius: 10px;
   margin-top: 12px;
+}
+
+#map {
+  height: 350px;
+  border-radius: 12px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  background: #e2eae7;
 }
 
 .item {
@@ -183,20 +279,33 @@ textarea { min-height: 80px; }
   border: 1px solid var(--line);
   border-radius: 9px;
   margin: 8px 0;
+  overflow-wrap: anywhere;
 }
 
-footer {
-  max-width: 1050px;
-  margin: auto;
-  padding: 0 14px 25px;
-  color: #526579;
-  font-size: .85rem;
+.notice {
+  padding: 12px 14px;
+  border-left: 4px solid #c58b00;
+  border-radius: 7px;
+  background: var(--warning);
+  margin-top: 14px;
 }
 
 @media (max-width: 600px) {
-  .grid, .fields { grid-template-columns: 1fr; }
-  .stats { grid-template-columns: 1fr; }
-  #map { height: 290px; }
+  .grid, .fields {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  #map {
+    height: 290px;
+  }
+
+  .home-button {
+    min-height: 75px;
+  }
 }
 </style>
 </head>
@@ -204,37 +313,54 @@ footer {
 <body>
 
 <header>
-  <div>
-    <h1>BlindPath</h1>
-    <div>Voice-first accessible navigation prototype</div>
-  </div>
+  <div class="header-inner">
+    <div>
+      <h1>BlindPath</h1>
+      <p>Accessible navigation and community reporting for more inclusive townships.</p>
+    </div>
 
-  <div class="actions" style="margin:0">
-    <button class="secondary" onclick="show('home')">Home</button>
-    <button class="secondary" onclick="show(user ? 'profile' : 'auth')">
-      Login / Profile
-    </button>
+    <div class="actions" style="margin:0">
+      <button class="secondary" onclick="show('home')">Home</button>
+      <button class="secondary" onclick="show(user ? 'profile' : 'auth')">
+        Login / Profile
+      </button>
+    </div>
   </div>
 </header>
 
 <main>
 
-<!-- HOME: the four main buttons are preserved -->
+<!-- HOME PAGE -->
 <section id="home" class="screen">
-  <div class="panel">
+
+  <div class="home-intro">
     <h2>Welcome to BlindPath</h2>
-    <p>Explore routes, report accessibility issues and adjust spoken guidance.</p>
+    <p>
+      Making townships more accessible through voice-first navigation,
+      community reporting and inclusive mobility support.
+    </p>
+    <p>
+      BlindPath is a prototype designed to help users explore routes
+      and document accessibility problems.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>What would you like to do?</h2>
 
     <div class="grid">
       <button class="home-button" onclick="show('navigation')">
         🧭 Start Navigation
       </button>
+
       <button class="home-button" onclick="show('report')">
         📣 Report an Issue
       </button>
+
       <button class="home-button" onclick="show('settings')">
         🔊 Voice &amp; Settings
       </button>
+
       <button class="home-button" onclick="show('community')">
         🤝 Community
       </button>
@@ -247,12 +373,21 @@ footer {
   </div>
 
   <div class="panel">
-    <h2>Safety note</h2>
+    <h2>Our mission</h2>
     <p>
-      GPS and map data do not detect obstacles, confirm tactile paving,
-      verify traffic signals or guarantee that a crossing is safe.
+      BlindPath aims to support a more inclusive township by helping
+      people plan routes, report blocked tactile paving and share
+      accessibility concerns.
     </p>
+
+    <div class="notice">
+      <strong>Safety reminder:</strong>
+      GPS and map data do not detect physical obstacles, confirm
+      tactile paving, verify traffic-light signals or guarantee
+      that a crossing is safe.
+    </div>
   </div>
+
 </section>
 
 <!-- LOGIN -->
@@ -260,7 +395,7 @@ footer {
   <div class="panel">
     <h2>Login</h2>
     <p class="muted">
-      Demo account details are stored in this browser only.
+      Demo accounts are stored in this browser only.
       Do not use a real or reused password.
     </p>
 
@@ -341,13 +476,14 @@ footer {
   </div>
 </section>
 
-<!-- DEMO VERIFICATION -->
+<!-- OKU VERIFICATION DEMO -->
 <section id="verification" class="screen hidden">
   <div class="panel">
     <h2>Verification workflow demo</h2>
     <p>
-      This is simulated only. It is not connected to JKM, MyGOV or an
-      official database. Do not enter identity numbers or upload documents.
+      This is simulated only. It is not connected to JKM, MyGOV
+      or an official database. Do not enter identity numbers
+      or upload official documents.
     </p>
 
     <div id="verifyStatus" class="status"></div>
@@ -365,10 +501,9 @@ footer {
 <section id="navigation" class="screen hidden">
   <div class="panel">
     <h2>Start Navigation</h2>
-
     <p class="muted">
-      Enter a start point and destination. Browser location permission
-      is needed for live GPS guidance.
+      Enter a starting point and destination. Allow location access
+      to use live GPS guidance.
     </p>
 
     <div class="fields">
@@ -385,7 +520,7 @@ footer {
       <div>
         <label for="mode">Travel mode</label>
         <select id="mode">
-          <option value="foot" selected>Walking</option>
+          <option value="foot">Walking</option>
           <option value="car">Driving</option>
         </select>
       </div>
@@ -450,14 +585,13 @@ footer {
   </div>
 </section>
 
-<!-- REPORT -->
+<!-- REPORT AN ISSUE -->
 <section id="report" class="screen hidden">
   <div class="panel">
     <h2>Report an Accessibility Issue</h2>
-
     <p>
-      Reports are saved only in this browser; they are not sent to authorities
-      or shared with other users.
+      Reports are saved only in this browser. They are not sent
+      to authorities or shared with other users.
     </p>
 
     <form id="reportForm">
@@ -492,7 +626,7 @@ footer {
   </div>
 </section>
 
-<!-- SETTINGS -->
+<!-- VOICE SETTINGS -->
 <section id="settings" class="screen hidden">
   <div class="panel">
     <h2>Voice &amp; Settings</h2>
@@ -507,18 +641,9 @@ footer {
     <label for="voice">Voice</label>
     <select id="voice"></select>
 
-    <label for="rate">
-      Speech speed: <span id="rateLabel">1.0×</span>
-    </label>
-    <input
-      id="rate"
-      type="range"
-      min=".7"
-      max="1.3"
-      step=".1"
-      value="1"
-      oninput="rateLabel.textContent=Number(this.value).toFixed(1)+'×'"
-    >
+    <label for="rate">Speech speed: <span id="rateLabel">1.0×</span></label>
+    <input id="rate" type="range" min=".7" max="1.3" step=".1"
+      value="1" oninput="rateLabel.textContent=Number(this.value).toFixed(1)+'×'">
 
     <label for="threshold">Smart Ride Assist threshold (km)</label>
     <input id="threshold" type="number" min="1" max="50" value="5">
@@ -532,8 +657,8 @@ footer {
     <div id="voiceStatus" class="status" role="status"></div>
 
     <p class="muted">
-      Voice options depend on browser and operating system. A selected
-      language does not guarantee a Malaysian accent.
+      Voice options depend on your browser and operating system.
+      Selecting a language does not guarantee a Malaysian accent.
     </p>
   </div>
 </section>
@@ -542,7 +667,10 @@ footer {
 <section id="community" class="screen hidden">
   <div class="panel">
     <h2>Community</h2>
-    <p>Prototype community view of local, unverified reports.</p>
+    <p>
+      This page shows accessibility reports saved locally on this device.
+      They are unverified and are not shared with other users.
+    </p>
 
     <div id="communityList"></div>
 
@@ -563,380 +691,301 @@ footer {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-const UKEY = 'blindpath_users_demo';
-const RKEY = 'blindpath_reports_demo';
-const SKEY = 'blindpath_session_demo';
+const UKEY='blindpath_users_demo',
+RKEY='blindpath_reports_demo',
+SKEY='blindpath_session_demo';
 
-let user = null;
-let map = null;
-let routeLayer = null;
-let reportLayer = null;
-let userMarker = null;
-let route = null;
-let coords = [];
-let steps = [];
-let stepIdx = 0;
-let watch = null;
-let active = false;
-let paused = false;
-let lastOff = 0;
-let lastProgress = 0;
-let startPoint = null;
-let endPoint = null;
-let lastPos = null;
-let voices = [];
+let user=null,map=null,routeLayer=null,reportLayer=null,
+userMarker=null,route=null,coords=[],steps=[],stepIdx=0,
+watch=null,active=false,paused=false,lastOff=0,lastProgress=0,
+startPoint=null,endPoint=null,lastPos=null,voices=[];
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-function read(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch (e) {
-    return fallback;
-  }
+function read(k,d){
+  try{return JSON.parse(localStorage.getItem(k))??d}
+  catch(e){return d}
 }
 
-function users() {
-  return read(UKEY, []);
-}
+function users(){return read(UKEY,[])}
+function reports(){return read(RKEY,[])}
+function saveReports(a){localStorage.setItem(RKEY,JSON.stringify(a))}
 
-function reports() {
-  return read(RKEY, []);
-}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>
+    s.classList.toggle('hidden',s.id!==id)
+  );
 
-function saveReports(list) {
-  localStorage.setItem(RKEY, JSON.stringify(list));
-}
+  if(id==='profile')renderProfile();
+  if(id==='verification')renderVerify();
+  if(id==='report')renderReports();
+  if(id==='community')renderCommunity();
 
-function show(id) {
-  document.querySelectorAll('.screen').forEach(section => {
-    section.classList.toggle('hidden', section.id !== id);
-  });
-
-  if (id === 'profile') renderProfile();
-  if (id === 'verification') renderVerify();
-  if (id === 'report') renderReports();
-  if (id === 'community') renderCommunity();
-
-  if (id === 'navigation') {
-    setTimeout(() => {
+  if(id==='navigation'){
+    setTimeout(()=>{
       initMap();
-      if (map) map.invalidateSize();
-    }, 100);
+      if(map)map.invalidateSize();
+    },100);
   }
 
-  if (id === 'settings') loadVoices();
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if(id==='settings')loadVoices();
+  scrollTo({top:0,behavior:'smooth'});
 }
 
-function status(id, message, kind = '') {
-  const element = $(id);
-  element.textContent = message;
-  element.className = 'status ' + kind;
+function status(id,msg,kind=''){
+  let e=$(id);
+  e.textContent=msg;
+  e.className='status '+kind;
 }
 
-function init() {
-  const email = localStorage.getItem(SKEY);
-  user = email ? users().find(u => u.email === email) || null : null;
+function init(){
+  const email=localStorage.getItem(SKEY);
+  user=email?users().find(x=>x.email===email)||null:null;
 
   initMap();
   loadVoices();
   renderReports();
 
-  $('registerForm').addEventListener('submit', register);
-  $('loginForm').addEventListener('submit', login);
-  $('reportForm').addEventListener('submit', saveReport);
+  $('registerForm').addEventListener('submit',register);
+  $('loginForm').addEventListener('submit',login);
+  $('reportForm').addEventListener('submit',saveReport);
 
-  if ('speechSynthesis' in window) {
-    speechSynthesis.onvoiceschanged = loadVoices;
+  if('speechSynthesis' in window){
+    speechSynthesis.onvoiceschanged=loadVoices;
   }
 
   show('home');
 }
 
-/* LOGIN AND REGISTER */
+function register(e){
+  e.preventDefault();
 
-function register(event) {
-  event.preventDefault();
+  let email=$('regEmail').value.trim().toLowerCase();
 
-  const email = $('regEmail').value.trim().toLowerCase();
-
-  if (users().some(u => u.email === email)) {
-    status('regStatus', 'That email already has a demo account.', 'warn');
+  if(users().some(u=>u.email===email)){
+    status('regStatus','That email already has a demo account.','warn');
     return;
   }
 
-  const list = users();
+  let a=users();
 
-  list.push({
-    name: $('regName').value.trim(),
+  a.push({
+    name:$('regName').value.trim(),
     email,
-    password: $('regPassword').value,
-    pref: 'voice',
-    verification: 'not_requested'
+    password:$('regPassword').value,
+    pref:'voice',
+    verification:'not_requested'
   });
 
-  localStorage.setItem(UKEY, JSON.stringify(list));
-  $('loginEmail').value = email;
+  localStorage.setItem(UKEY,JSON.stringify(a));
+  $('loginEmail').value=email;
 
-  status('regStatus', 'Account created. Please log in.', 'good');
+  status('regStatus','Account created. Please log in.','good');
   show('auth');
 }
 
-function login(event) {
-  event.preventDefault();
+function login(e){
+  e.preventDefault();
 
-  const email = $('loginEmail').value.trim().toLowerCase();
-  const password = $('loginPassword').value;
+  let email=$('loginEmail').value.trim().toLowerCase();
 
-  const found = users().find(
-    u => u.email === email && u.password === password
+  let u=users().find(x=>
+    x.email===email && x.password===$('loginPassword').value
   );
 
-  if (!found) {
-    status('authStatus', 'Email or password is incorrect.', 'warn');
+  if(!u){
+    status('authStatus','Email or password is incorrect.','warn');
     return;
   }
 
-  user = found;
-  localStorage.setItem(SKEY, email);
+  user=u;
+  localStorage.setItem(SKEY,email);
   show('profile');
 }
 
-function renderProfile() {
-  if (!user) {
-    show('auth');
-    return;
-  }
+function renderProfile(){
+  if(!user){show('auth');return}
 
-  $('profileEmail').textContent = 'Signed in as ' + user.email;
-  $('profileName').value = user.name || '';
-  $('profilePref').value = user.pref || 'voice';
+  $('profileEmail').textContent='Signed in as '+user.email;
+  $('profileName').value=user.name||'';
+  $('profilePref').value=user.pref||'voice';
 }
 
-function saveProfile() {
-  if (!user) return;
+function saveProfile(){
+  if(!user)return;
 
   updateUser({
-    name: $('profileName').value.trim(),
-    pref: $('profilePref').value
+    name:$('profileName').value.trim(),
+    pref:$('profilePref').value
   });
 
-  status('profileStatus', 'Profile saved on this device.', 'good');
+  status('profileStatus','Profile saved on this device.','good');
 }
 
-function updateUser(changes) {
-  const list = users();
-  const index = list.findIndex(u => u.email === user.email);
+function updateUser(p){
+  let a=users();
+  let i=a.findIndex(x=>x.email===user.email);
 
-  if (index < 0) return;
-
-  list[index] = { ...list[index], ...changes };
-  localStorage.setItem(UKEY, JSON.stringify(list));
-  user = list[index];
+  a[i]={...a[i],...p};
+  localStorage.setItem(UKEY,JSON.stringify(a));
+  user=a[i];
 }
 
-function logout() {
-  user = null;
+function logout(){
+  user=null;
   localStorage.removeItem(SKEY);
   show('home');
 }
 
-/* DEMO OKU VERIFICATION */
+function renderVerify(){
+  if(!user){show('auth');return}
 
-function renderVerify() {
-  if (!user) {
-    show('auth');
-    return;
-  }
-
-  const current = user.verification || 'not_requested';
-
-  $('verifyStatus').textContent =
-    'Demo status: ' + current + '. This is not official verification.';
+  let s=user.verification||'not_requested';
+  $('verifyStatus').textContent=
+    'Demo status: '+s+'. This is not official verification.';
 }
 
-function verify(value) {
-  if (!user) {
-    show('auth');
-    return;
-  }
-
-  updateUser({ verification: value });
+function verify(s){
+  if(!user){show('auth');return}
+  updateUser({verification:s});
   renderVerify();
 }
 
-/* MAP */
+function initMap(){
+  if(map||!window.L)return;
 
-function initMap() {
-  if (map || !window.L || !$('map')) return;
+  map=L.map('map').setView([3.139,101.686],12);
 
-  map = L.map('map').setView([3.139, 101.686], 12);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,
+    attribution:'© OpenStreetMap contributors'
   }).addTo(map);
 
-  routeLayer = L.layerGroup().addTo(map);
-  reportLayer = L.layerGroup().addTo(map);
-
+  routeLayer=L.layerGroup().addTo(map);
+  reportLayer=L.layerGroup().addTo(map);
   drawReports();
 }
 
-async function geocode(query) {
-  const response = await fetch(
-    'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
-    encodeURIComponent(query)
+async function geocode(q){
+  let r=await fetch(
+    'https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+
+    encodeURIComponent(q)
   );
 
-  if (!response.ok) {
-    throw Error('Place search service unavailable.');
-  }
+  if(!r.ok)throw Error('Place search service unavailable.');
 
-  const results = await response.json();
+  let a=await r.json();
 
-  if (!results.length) {
-    throw Error('Could not find location: ' + query);
-  }
+  if(!a.length)throw Error('Could not find location: '+q);
 
   return {
-    lat: Number(results[0].lat),
-    lng: Number(results[0].lon),
-    label: results[0].display_name
+    lat:+a[0].lat,
+    lng:+a[0].lon,
+    label:a[0].display_name
   };
 }
 
-function geoErr(error) {
-  if (error.code === 1) {
-    return 'Location permission denied. Allow location access or enter an address.';
-  }
-
-  if (error.code === 2) return 'Current location unavailable.';
-  if (error.code === 3) return 'Location request timed out.';
-
-  return 'Could not access GPS.';
+function geoErr(e){
+  return e.code===1
+    ?'Location permission denied. Allow location access or enter an address.'
+    :e.code===2
+    ?'Current location unavailable.'
+    :e.code===3
+    ?'Location request timed out.'
+    :'Could not access GPS.';
 }
 
-function setCurrentStart() {
-  if (!navigator.geolocation) {
-    status('navStatus', 'GPS is not supported.', 'warn');
+function setCurrentStart(){
+  if(!navigator.geolocation){
+    status('navStatus','GPS is not supported.','warn');
     return;
   }
 
-  status('navStatus', 'Requesting location permission…');
+  status('navStatus','Requesting location permission…');
 
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      startPoint = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+  navigator.geolocation.getCurrentPosition(p=>{
+    startPoint={
+      lat:p.coords.latitude,
+      lng:p.coords.longitude
+    };
 
-      lastPos = startPoint;
-      $('start').value = 'My current location';
+    lastPos=startPoint;
+    $('start').value='My current location';
 
-      initMap();
-      putMarker(startPoint);
-      map.setView([startPoint.lat, startPoint.lng], 17);
+    initMap();
+    putMarker(startPoint);
+    map.setView([startPoint.lat,startPoint.lng],17);
 
-      status(
-        'navStatus',
-        'Current location set. Enter a destination and find route.',
-        'good'
-      );
-    },
-    error => status('navStatus', geoErr(error), 'warn'),
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 5000
-    }
-  );
+    status(
+      'navStatus',
+      'Current location set. Enter a destination and find route.',
+      'good'
+    );
+  },e=>status('navStatus',geoErr(e),'warn'),{
+    enableHighAccuracy:true,
+    timeout:15000,
+    maximumAge:5000
+  });
 }
 
-/* ROUTE CALCULATION */
-
-async function findRoute() {
-  try {
+async function findRoute(){
+  try{
     stopWatch();
-    active = false;
-    paused = false;
-
-    status('navStatus', 'Finding route…');
+    active=false;
+    paused=false;
+    status('navStatus','Finding route…');
     initMap();
 
     let start;
 
-    const startText = $('start').value.trim();
-
-    if (startText && startText.toLowerCase() !== 'my current location') {
-      start = await geocode(startText);
-    } else {
-      if (!lastPos && !startPoint) {
+    if($('start').value.trim() &&
+       $('start').value.trim().toLowerCase()!=='my current location'){
+      start=await geocode($('start').value.trim());
+    }else{
+      if(!lastPos&&!startPoint){
         throw Error('Use current location or enter a start address.');
       }
-
-      start = startPoint || lastPos;
+      start=startPoint||lastPos;
     }
 
-    const destinationText = $('dest').value.trim();
+    let dest=await geocode($('dest').value.trim());
 
-    if (!destinationText) {
-      throw Error('Please enter a destination.');
-    }
+    startPoint={lat:start.lat,lng:start.lng};
+    endPoint={lat:dest.lat,lng:dest.lng};
 
-    const destination = await geocode(destinationText);
+    let foot=$('mode').value==='foot';
 
-    startPoint = { lat: start.lat, lng: start.lng };
-    endPoint = { lat: destination.lat, lng: destination.lng };
+    let base=foot
+      ?'https://routing.openstreetmap.de/routed-foot/route/v1/driving/'
+      :'https://router.project-osrm.org/route/v1/driving/';
 
-    const walking = $('mode').value === 'foot';
+    let r=await fetch(
+      base+start.lng+','+start.lat+';'+dest.lng+','+dest.lat+
+      '?overview=full&geometries=geojson&steps=true'
+    );
 
-    const routingBase = walking
-      ? 'https://routing.openstreetmap.de/routed-foot/route/v1/driving/'
-      : 'https://router.project-osrm.org/route/v1/driving/';
+    if(!r.ok)throw Error('Routing service unavailable. Try again.');
 
-    const url =
-      routingBase +
-      start.lng + ',' + start.lat + ';' +
-      destination.lng + ',' + destination.lat +
-      '?overview=full&geometries=geojson&steps=true';
+    let d=await r.json();
 
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw Error('Routing service unavailable. Try again.');
-    }
-
-    const data = await response.json();
-
-    if (data.code !== 'Ok' || !data.routes || !data.routes.length) {
+    if(d.code!=='Ok'||!d.routes?.length){
       throw Error('No route found. Try another destination or mode.');
     }
 
-    route = data.routes[0];
-
-    coords = route.geometry.coordinates.map(point => ({
-      lat: point[1],
-      lng: point[0]
-    }));
-
-    steps = (route.legs || []).flatMap(leg => leg.steps || []);
-    stepIdx = 0;
-    lastProgress = 0;
-    lastOff = 0;
+    route=d.routes[0];
+    coords=route.geometry.coordinates.map(c=>({lat:c[1],lng:c[0]}));
+    steps=(route.legs||[]).flatMap(l=>l.steps||[]);
+    stepIdx=0;
+    lastProgress=0;
 
     drawRoute();
 
-    $('distance').textContent = dist(route.distance);
-    $('duration').textContent = duration(route.duration);
-    $('progress').textContent = '0%';
-    $('instruction').textContent = instruction(0);
-
-    $('startNav').disabled = false;
-    $('pauseNav').disabled = true;
+    $('distance').textContent=dist(route.distance);
+    $('duration').textContent=duration(route.duration);
+    $('progress').textContent='0%';
+    $('instruction').textContent=instruction(0);
+    $('startNav').disabled=false;
+    $('pauseNav').disabled=true;
 
     status(
       'navStatus',
@@ -944,492 +993,374 @@ async function findRoute() {
       'good'
     );
 
-    rideAssist(route.distance / 1000);
+    rideAssist(route.distance/1000);
     routeWarnings();
 
-  } catch (error) {
-    status(
-      'navStatus',
-      error.message || 'Could not calculate route.',
-      'warn'
-    );
+  }catch(e){
+    status('navStatus',e.message||'Could not calculate route.','warn');
   }
 }
 
-function drawRoute() {
+function drawRoute(){
   routeLayer.clearLayers();
 
-  L.polyline(
-    coords.map(point => [point.lat, point.lng]),
-    { color: '#1769aa', weight: 6 }
-  ).addTo(routeLayer);
+  L.polyline(coords.map(p=>[p.lat,p.lng]),{
+    color:'#176b5b',
+    weight:6
+  }).addTo(routeLayer);
 
-  L.marker([startPoint.lat, startPoint.lng])
-    .bindPopup('Start')
-    .addTo(routeLayer);
+  L.marker([startPoint.lat,startPoint.lng])
+    .bindPopup('Start').addTo(routeLayer);
 
-  L.marker([endPoint.lat, endPoint.lng])
-    .bindPopup('Destination')
-    .addTo(routeLayer);
+  L.marker([endPoint.lat,endPoint.lng])
+    .bindPopup('Destination').addTo(routeLayer);
 
   drawReports();
-
-  map.fitBounds(
-    coords.map(point => [point.lat, point.lng]),
-    { padding: [20, 20] }
-  );
+  map.fitBounds(coords.map(p=>[p.lat,p.lng]),{padding:[20,20]});
 }
 
-function putMarker(point) {
-  if (!map) return;
+function putMarker(p){
+  if(!map)return;
 
-  if (userMarker) {
-    userMarker.setLatLng([point.lat, point.lng]);
-  } else {
-    userMarker = L.circleMarker(
-      [point.lat, point.lng],
-      {
-        radius: 8,
-        color: '#fff',
-        weight: 3,
-        fillColor: '#087b52',
-        fillOpacity: 1
-      }
-    ).addTo(map).bindPopup('Your GPS position');
+  if(userMarker){
+    userMarker.setLatLng([p.lat,p.lng]);
+  }else{
+    userMarker=L.circleMarker([p.lat,p.lng],{
+      radius:8,
+      color:'#fff',
+      weight:3,
+      fillColor:'#176b5b',
+      fillOpacity:1
+    }).addTo(map).bindPopup('Your GPS position');
   }
 }
 
-/* LIVE GPS NAVIGATION */
-
-function startNav() {
-  if (!route) {
-    status('navStatus', 'Find a route first.', 'warn');
+function startNav(){
+  if(!route){
+    status('navStatus','Find a route first.','warn');
     return;
   }
 
-  if (!navigator.geolocation) {
-    status('navStatus', 'GPS is not supported.', 'warn');
+  if(!navigator.geolocation){
+    status('navStatus','GPS is not supported.','warn');
     return;
   }
 
-  active = true;
-  paused = false;
+  active=true;
+  paused=false;
+  $('startNav').disabled=true;
+  $('pauseNav').disabled=false;
+  $('pauseNav').textContent='Pause';
 
-  $('startNav').disabled = true;
-  $('pauseNav').disabled = false;
-  $('pauseNav').textContent = 'Pause';
+  status('navStatus','Live guidance active.','good');
+  say('Navigation started. '+instruction(stepIdx));
 
-  status('navStatus', 'Live guidance active.', 'good');
-
-  say('Navigation started. ' + instruction(stepIdx));
-
-  watch = navigator.geolocation.watchPosition(
+  watch=navigator.geolocation.watchPosition(
     onPosition,
-    error => status('navStatus', geoErr(error), 'warn'),
-    {
-      enableHighAccuracy: true,
-      maximumAge: 2000,
-      timeout: 15000
-    }
+    e=>status('navStatus',geoErr(e),'warn'),
+    {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
   );
 }
 
-function pauseNav() {
-  if (!active) return;
+function pauseNav(){
+  if(!active)return;
 
-  if (!paused) {
-    paused = true;
+  if(!paused){
+    paused=true;
     stopWatch();
-
-    $('pauseNav').textContent = 'Resume';
-
-    status('navStatus', 'Navigation paused. GPS tracking stopped.', 'warn');
+    $('pauseNav').textContent='Resume';
+    status('navStatus','Navigation paused. GPS tracking stopped.','warn');
     say('Navigation paused.');
-  } else {
-    paused = false;
+  }else{
+    paused=false;
 
-    watch = navigator.geolocation.watchPosition(
+    watch=navigator.geolocation.watchPosition(
       onPosition,
-      error => status('navStatus', geoErr(error), 'warn'),
-      {
-        enableHighAccuracy: true,
-        maximumAge: 2000,
-        timeout: 15000
-      }
+      e=>status('navStatus',geoErr(e),'warn'),
+      {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
     );
 
-    $('pauseNav').textContent = 'Pause';
-
-    status('navStatus', 'Navigation resumed.', 'good');
-    say('Navigation resumed. ' + instruction(stepIdx));
+    $('pauseNav').textContent='Pause';
+    status('navStatus','Navigation resumed.','good');
+    say('Navigation resumed. '+instruction(stepIdx));
   }
 }
 
-function stopWatch() {
-  if (watch !== null && navigator.geolocation) {
+function stopWatch(){
+  if(watch!==null&&navigator.geolocation){
     navigator.geolocation.clearWatch(watch);
   }
-
-  watch = null;
+  watch=null;
 }
 
-function endNav() {
+function endNav(){
   stopWatch();
+  active=false;
+  paused=false;
 
-  active = false;
-  paused = false;
-
-  $('startNav').disabled = !route;
-  $('pauseNav').disabled = true;
-  $('pauseNav').textContent = 'Pause';
+  $('startNav').disabled=!route;
+  $('pauseNav').disabled=true;
+  $('pauseNav').textContent='Pause';
 
   stopSpeech();
-  status('navStatus', 'Navigation ended.');
+  status('navStatus','Navigation ended.');
 }
 
-function onPosition(position) {
-  if (!active || paused || !route || !coords.length) return;
+function onPosition(pos){
+  if(!active||paused)return;
 
-  const point = {
-    lat: position.coords.latitude,
-    lng: position.coords.longitude
+  let p={
+    lat:pos.coords.latitude,
+    lng:pos.coords.longitude
   };
 
-  lastPos = point;
-  putMarker(point);
+  lastPos=p;
+  putMarker(p);
 
-  let nearestDistance = Infinity;
-  let nearestIndex = 0;
+  let best=Infinity,bi=0;
 
-  for (let i = 0; i < coords.length; i++) {
-    const distance = meters(point, coords[i]);
-
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestIndex = i;
+  for(let i=0;i<coords.length;i++){
+    let d=meters(p,coords[i]);
+    if(d<best){
+      best=d;
+      bi=i;
     }
   }
 
-  const percentage = Math.round(
-    nearestIndex / Math.max(1, coords.length - 1) * 100
-  );
+  let pct=Math.round(bi/Math.max(1,coords.length-1)*100);
+  lastProgress=Math.max(lastProgress,pct);
 
-  lastProgress = Math.max(lastProgress, percentage);
+  $('progress').textContent=lastProgress+'%';
+  $('distance').textContent=
+    dist(route.distance*(1-lastProgress/100))+' remaining';
 
-  $('progress').textContent = lastProgress + '%';
-
-  $('distance').textContent =
-    dist(route.distance * (1 - lastProgress / 100)) + ' remaining';
-
-  if (lastProgress >= 98) {
-    $('instruction').textContent =
+  if(lastProgress>=98){
+    $('instruction').textContent=
       'You appear to be near your destination. Check your surroundings carefully.';
 
-    say(
-      'You appear to be near your destination. Check your surroundings carefully.'
-    );
-
+    say('You appear to be near your destination. Check your surroundings carefully.');
     endNav();
     return;
   }
 
-  /*
-    Advance to the nearest upcoming maneuver when GPS approaches it.
-    GPS accuracy and route geometry can affect timing.
-  */
-  let nextIndex = -1;
-  let nearestManeuverDistance = Infinity;
+  let next=-1,near=Infinity;
 
-  for (let i = stepIdx; i < steps.length; i++) {
-    const location = steps[i].maneuver && steps[i].maneuver.location;
+  for(let i=stepIdx;i<steps.length;i++){
+    let loc=steps[i].maneuver?.location;
+    if(!loc)continue;
 
-    if (!location) continue;
+    let d=meters(p,{lat:loc[1],lng:loc[0]});
 
-    const distance = meters(point, {
-      lat: location[1],
-      lng: location[0]
-    });
-
-    if (distance < nearestManeuverDistance) {
-      nearestManeuverDistance = distance;
-      nextIndex = i;
+    if(d<near){
+      near=d;
+      next=i;
     }
   }
 
-  if (
-    nextIndex >= 0 &&
-    nearestManeuverDistance < 65 &&
-    nextIndex !== stepIdx
-  ) {
-    stepIdx = nextIndex;
-
-    const text = instruction(stepIdx);
-    $('instruction').textContent = text;
+  if(next>=0&&near<65&&next!==stepIdx){
+    stepIdx=next;
+    let text=instruction(stepIdx);
+    $('instruction').textContent=text;
     say(text);
   }
 
-  /*
-    Off-route check: compare current GPS position with sampled route points.
-    This is an estimate, not a guarantee of route safety.
-  */
-  let offRouteDistance = Infinity;
-  const sampleEvery = Math.max(1, Math.floor(coords.length / 200));
+  let off=Infinity;
 
-  for (let i = 0; i < coords.length; i += sampleEvery) {
-    offRouteDistance = Math.min(
-      offRouteDistance,
-      meters(point, coords[i])
-    );
+  for(let i=0;i<coords.length;i+=Math.max(1,Math.floor(coords.length/200))){
+    off=Math.min(off,meters(p,coords[i]));
   }
 
-  if (
-    offRouteDistance > Number($('offLimit').value) &&
-    Date.now() - lastOff > 20000
-  ) {
-    lastOff = Date.now();
+  if(off>Number($('offLimit').value)&&Date.now()-lastOff>20000){
+    lastOff=Date.now();
 
-    const message =
-      'You may be away from the planned route. Stop somewhere safe if possible and check your route.';
+    let msg='You may be away from the planned route. Stop somewhere safe if possible and check your route.';
 
-    status('navStatus', message, 'warn');
-    say(message);
+    status('navStatus',msg,'warn');
+    say(msg);
   }
 }
 
-function instruction(index) {
-  if (!steps.length) {
+function instruction(i){
+  if(!steps.length){
     return 'Follow the route shown on the map. Turn details are unavailable.';
   }
 
-  const step = steps[Math.min(index, steps.length - 1)];
-  const maneuver = step.maneuver || {};
+  let s=steps[Math.min(i,steps.length-1)];
+  let m=s.maneuver||{};
+  let a='Continue';
 
-  let action = 'Continue';
+  if(m.type==='depart')a='Start by continuing';
+  else if(m.type==='arrive')a='You are approaching your destination';
+  else if(m.type==='turn')a='Turn '+(m.modifier||'');
+  else if(m.type==='roundabout'||m.type==='rotary')a='Enter the roundabout';
+  else if(m.type==='merge')a='Merge '+(m.modifier||'');
+  else if(m.type==='fork')a='Keep '+(m.modifier||'');
+  else if(m.type==='on ramp')a='Take the ramp';
+  else if(m.type==='off ramp')a='Take the exit';
 
-  if (maneuver.type === 'depart') {
-    action = 'Start by continuing';
-  } else if (maneuver.type === 'arrive') {
-    action = 'You are approaching your destination';
-  } else if (maneuver.type === 'turn') {
-    action = 'Turn ' + (maneuver.modifier || '');
-  } else if (
-    maneuver.type === 'roundabout' ||
-    maneuver.type === 'rotary'
-  ) {
-    action = 'Enter the roundabout';
-  } else if (maneuver.type === 'merge') {
-    action = 'Merge ' + (maneuver.modifier || '');
-  } else if (maneuver.type === 'fork') {
-    action = 'Keep ' + (maneuver.modifier || '');
-  } else if (maneuver.type === 'on ramp') {
-    action = 'Take the ramp';
-  } else if (maneuver.type === 'off ramp') {
-    action = 'Take the exit';
-  }
-
-  return action +
-    (step.distance ? ' for ' + dist(step.distance) : '') +
-    (step.name ? ' onto ' + step.name : '') +
-    '.';
+  return a+
+    (s.distance?' for '+dist(s.distance):'')+
+    (s.name?' onto '+s.name:'')+'.';
 }
 
-function repeatInstruction() {
-  const text = $('instruction').textContent;
+function repeatInstruction(){
+  let t=$('instruction').textContent;
 
-  if (text && text !== 'Route instructions will appear here.') {
-    say(text);
-  } else {
+  if(t&&t!=='Route instructions will appear here.'){
+    say(t);
+  }else{
     say('No navigation instruction available.');
   }
 }
 
-/* SMART RIDE ASSIST */
+function rideAssist(km){
+  let threshold=Math.max(1,Number($('threshold').value)||5);
+  let el=$('ride');
 
-function rideAssist(kilometres) {
-  const threshold = Math.max(1, Number($('threshold').value) || 5);
-  const element = $('ride');
-
-  if (kilometres > threshold) {
-    element.classList.remove('hidden');
-
-    element.textContent =
-      'Smart Ride Assist: this route is ' +
-      kilometres.toFixed(1) +
-      ' km, longer than your ' +
-      threshold +
+  if(km>threshold){
+    el.classList.remove('hidden');
+    el.textContent=
+      'Smart Ride Assist: this route is '+km.toFixed(1)+
+      ' km, longer than your '+threshold+
       ' km setting. You may arrange a ride if you prefer. This does not book a ride. ';
 
-    const button = document.createElement('button');
-    button.className = 'secondary';
-    button.textContent = 'Open Grab Malaysia';
+    let b=document.createElement('button');
+    b.className='secondary';
+    b.textContent='Open Grab Malaysia';
+    b.onclick=()=>window.open('https://www.grab.com/my/','_blank','noopener');
 
-    button.onclick = () => {
-      window.open('https://www.grab.com/my/', '_blank', 'noopener');
-    };
+    el.appendChild(b);
 
-    element.appendChild(button);
-
-    say(
-      'This route is longer than your Smart Ride Assist distance setting. You may choose to arrange a ride.'
-    );
-  } else {
-    element.classList.add('hidden');
+    say('This route is longer than your Smart Ride Assist distance setting. You may choose to arrange a ride.');
+  }else{
+    el.classList.add('hidden');
   }
 }
 
-function externalMap() {
-  if (!startPoint || !endPoint) {
-    status('navStatus', 'Find a route first.', 'warn');
+function externalMap(){
+  if(!startPoint||!endPoint){
+    status('navStatus','Find a route first.','warn');
     return;
   }
 
-  const mode = $('mode').value === 'foot' ? 'walking' : 'driving';
+  let mode=$('mode').value==='foot'?'walking':'driving';
 
-  const url =
-    'https://www.google.com/maps/dir/?api=1' +
-    '&origin=' + startPoint.lat + ',' + startPoint.lng +
-    '&destination=' + endPoint.lat + ',' + endPoint.lng +
-    '&travelmode=' + mode;
-
-  window.open(url, '_blank', 'noopener');
+  window.open(
+    'https://www.google.com/maps/dir/?api=1&origin='+
+    startPoint.lat+','+startPoint.lng+
+    '&destination='+endPoint.lat+','+endPoint.lng+
+    '&travelmode='+mode,
+    '_blank',
+    'noopener'
+  );
 }
 
-function recenter() {
-  if (lastPos && map) {
-    map.setView([lastPos.lat, lastPos.lng], 17);
-  } else if (startPoint && map) {
-    map.setView([startPoint.lat, startPoint.lng], 16);
-  } else {
+function recenter(){
+  if(lastPos&&map){
+    map.setView([lastPos.lat,lastPos.lng],17);
+  }else if(startPoint&&map){
+    map.setView([startPoint.lat,startPoint.lng],16);
+  }else{
     say('Set your current location first.');
   }
 }
 
-/* ACCESSIBILITY REPORTS NEAR ROUTE */
+function routeWarnings(){
+  let near=[];
 
-function routeWarnings() {
-  const nearby = [];
+  for(let r of reports()){
+    if(!r.lat||!r.lng)continue;
 
-  for (const report of reports()) {
-    if (report.lat == null || report.lng == null) continue;
+    let d=Infinity;
 
-    let nearest = Infinity;
-    const sampleEvery = Math.max(1, Math.floor(coords.length / 150));
-
-    for (let i = 0; i < coords.length; i += sampleEvery) {
-      nearest = Math.min(
-        nearest,
-        meters(
-          { lat: report.lat, lng: report.lng },
-          coords[i]
-        )
-      );
+    for(let i=0;i<coords.length;i+=Math.max(1,Math.floor(coords.length/150))){
+      d=Math.min(d,meters({lat:r.lat,lng:r.lng},coords[i]));
     }
 
-    if (nearest < 150) {
-      nearby.push(
-        report.type + ' at ' + report.location +
-        ' (about ' + Math.round(nearest) + ' metres from route)'
+    if(d<150){
+      near.push(
+        r.type+' at '+r.location+
+        ' (about '+Math.round(d)+' metres from route)'
       );
     }
   }
 
-  $('routeIssues').textContent = nearby.length
-    ? 'Unverified saved reports near route: ' +
-      nearby.join('; ') +
+  $('routeIssues').textContent=near.length
+    ?'Unverified saved reports near route: '+near.join('; ')+
       '. A lack of reports does not mean the route is obstacle-free.'
-    : 'No saved reports found within about 150 metres of this route. This does not mean the route is obstacle-free.';
+    :'No saved reports found within about 150 metres of this route. This does not mean the route is obstacle-free.';
 }
 
-function drawReports() {
-  if (!map || !reportLayer) return;
+function drawReports(){
+  if(!map||!reportLayer)return;
 
   reportLayer.clearLayers();
 
-  reports().forEach(report => {
-    if (report.lat == null || report.lng == null) return;
-
-    L.circleMarker(
-      [report.lat, report.lng],
-      {
-        radius: 7,
-        color: '#fff',
-        weight: 2,
-        fillColor: '#b24a16',
-        fillOpacity: 1
-      }
-    )
-    .bindPopup(
-      '<b>Reported issue (unverified)</b><br>' +
-      esc(report.type) + '<br>' +
-      esc(report.location)
-    )
-    .addTo(reportLayer);
+  reports().forEach(r=>{
+    if(r.lat&&r.lng){
+      L.circleMarker([r.lat,r.lng],{
+        radius:7,
+        color:'#fff',
+        weight:2,
+        fillColor:'#b24a16',
+        fillOpacity:1
+      })
+      .bindPopup(
+        '<b>Reported issue (unverified)</b><br>'+
+        esc(r.type)+'<br>'+esc(r.location)
+      )
+      .addTo(reportLayer);
+    }
   });
 }
 
-/* REPORT FORM */
-
-function reportGPS() {
-  if (!navigator.geolocation) {
-    status(
-      'reportStatus',
-      'GPS is not supported. Enter a location manually.',
-      'warn'
-    );
+function reportGPS(){
+  if(!navigator.geolocation){
+    status('reportStatus','GPS is not supported. Enter a location manually.','warn');
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      $('reportLocation').value = 'Current GPS location';
-      $('reportLocation').dataset.lat = position.coords.latitude;
-      $('reportLocation').dataset.lng = position.coords.longitude;
-
-      status('reportStatus', 'GPS location attached.', 'good');
-    },
-    error => status('reportStatus', geoErr(error), 'warn'),
-    { enableHighAccuracy: true, timeout: 15000 }
-  );
+  navigator.geolocation.getCurrentPosition(p=>{
+    $('reportLocation').value='Current GPS location';
+    $('reportLocation').dataset.lat=p.coords.latitude;
+    $('reportLocation').dataset.lng=p.coords.longitude;
+    status('reportStatus','GPS location attached.','good');
+  },e=>status('reportStatus',geoErr(e),'warn'),{
+    enableHighAccuracy:true,
+    timeout:15000
+  });
 }
 
-async function saveReport(event) {
-  event.preventDefault();
+async function saveReport(e){
+  e.preventDefault();
 
-  const location = $('reportLocation').value.trim();
+  let loc=$('reportLocation').value.trim();
+  let lat=Number($('reportLocation').dataset.lat)||null;
+  let lng=Number($('reportLocation').dataset.lng)||null;
 
-  let lat = $('reportLocation').dataset.lat
-    ? Number($('reportLocation').dataset.lat)
-    : null;
-
-  let lng = $('reportLocation').dataset.lng
-    ? Number($('reportLocation').dataset.lng)
-    : null;
-
-  if (lat === null || lng === null) {
-    try {
-      const place = await geocode(location);
-      lat = place.lat;
-      lng = place.lng;
-    } catch (error) {
-      /* The report can still be saved without coordinates. */
-    }
+  if(!lat||!lng){
+    try{
+      let p=await geocode(loc);
+      lat=p.lat;
+      lng=p.lng;
+    }catch(e){}
   }
 
-  const list = reports();
+  let a=reports();
 
-  list.unshift({
-    id: Date.now(),
-    type: $('reportType').value,
-    location,
-    details: $('reportDetails').value.trim(),
+  a.unshift({
+    id:Date.now(),
+    type:$('reportType').value,
+    location:loc,
+    details:$('reportDetails').value.trim(),
     lat,
     lng,
-    created: new Date().toISOString()
+    created:new Date().toISOString()
   });
 
-  saveReports(list);
-
+  saveReports(a);
   $('reportForm').reset();
+
   delete $('reportLocation').dataset.lat;
   delete $('reportLocation').dataset.lng;
 
@@ -1441,219 +1372,154 @@ async function saveReport(event) {
 
   renderReports();
   drawReports();
-
-  if (route) routeWarnings();
+  routeWarnings();
 }
 
-function renderReports() {
-  const element = $('reportList');
-  if (!element) return;
+function renderReports(){
+  let el=$('reportList');
+  if(!el)return;
 
-  element.innerHTML = '';
+  el.innerHTML='';
+  let a=reports();
 
-  const list = reports();
-
-  if (!list.length) {
-    element.textContent = 'No local reports yet.';
+  if(!a.length){
+    el.textContent='No local reports yet.';
     return;
   }
 
-  list.forEach(report => {
-    const item = document.createElement('div');
-    item.className = 'item';
+  a.forEach(r=>{
+    let d=document.createElement('div');
+    d.className='item';
 
-    const title = document.createElement('b');
-    title.textContent = report.type;
+    d.innerHTML=
+      '<b>'+esc(r.type)+'</b>'+
+      '<p>'+esc(r.location)+'</p>'+
+      '<p class="muted">'+esc(r.details||'No extra details')+
+      ' · '+new Date(r.created).toLocaleString()+'</p>'+
+      '<button class="danger" onclick="deleteReport('+Number(r.id)+')">Delete</button>';
 
-    const location = document.createElement('p');
-    location.textContent = report.location;
-
-    const details = document.createElement('p');
-    details.className = 'muted';
-    details.textContent =
-      (report.details || 'No extra details') +
-      ' · ' +
-      new Date(report.created).toLocaleString();
-
-    const button = document.createElement('button');
-    button.className = 'danger';
-    button.textContent = 'Delete';
-    button.onclick = () => deleteReport(report.id);
-
-    item.append(title, location, details, button);
-    element.appendChild(item);
+    el.appendChild(d);
   });
 }
 
-function deleteReport(id) {
-  saveReports(reports().filter(report => report.id !== id));
-
+function deleteReport(id){
+  saveReports(reports().filter(r=>r.id!==id));
   renderReports();
   renderCommunity();
   drawReports();
-
-  if (route) routeWarnings();
+  routeWarnings();
 }
 
-function renderCommunity() {
-  const element = $('communityList');
-  if (!element) return;
+function renderCommunity(){
+  let el=$('communityList');
+  el.innerHTML='';
 
-  element.innerHTML = '';
+  let a=reports();
 
-  const list = reports();
-
-  if (!list.length) {
-    element.textContent = 'No local reports yet.';
+  if(!a.length){
+    el.textContent='No local reports yet.';
     return;
   }
 
-  list.slice(0, 15).forEach(report => {
-    const item = document.createElement('p');
-    item.className = 'item';
-    item.textContent =
-      report.type + ' — ' + report.location +
-      ' (unverified local report)';
-
-    element.appendChild(item);
+  a.slice(0,15).forEach(r=>{
+    let p=document.createElement('p');
+    p.className='item';
+    p.textContent=r.type+' — '+r.location+' (unverified local report)';
+    el.appendChild(p);
   });
 }
 
-/* MULTILINGUAL SPEECH */
-
-function loadVoices() {
-  if (!('speechSynthesis' in window)) {
-    $('voice').innerHTML = '<option>Speech unavailable</option>';
+function loadVoices(){
+  if(!('speechSynthesis' in window)){
+    $('voice').innerHTML='<option>Speech unavailable</option>';
     return;
   }
 
-  voices = speechSynthesis.getVoices();
+  voices=speechSynthesis.getVoices();
+  let prefix=$('language').value;
+  let match=voices.filter(v=>v.lang.toLowerCase().startsWith(prefix));
 
-  const language = $('language').value;
+  $('voice').innerHTML='';
 
-  const matching = voices.filter(voice =>
-    voice.lang.toLowerCase().startsWith(language)
-  );
-
-  $('voice').innerHTML = '';
-
-  (matching.length ? matching : voices).forEach(voice => {
-    const option = document.createElement('option');
-
-    option.value = voice.name;
-    option.textContent = voice.name + ' (' + voice.lang + ')';
-
-    $('voice').appendChild(option);
+  (match.length?match:voices).forEach(v=>{
+    let o=document.createElement('option');
+    o.value=v.name;
+    o.textContent=v.name+' ('+v.lang+')';
+    $('voice').appendChild(o);
   });
 }
 
-function say(text) {
-  if (!('speechSynthesis' in window)) {
-    status(
-      'voiceStatus',
-      'Speech synthesis is not supported in this browser.',
-      'warn'
-    );
+function say(text){
+  if(!('speechSynthesis' in window)){
+    status('voiceStatus','Speech synthesis is not supported in this browser.','warn');
     return;
   }
 
   speechSynthesis.cancel();
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  const language = $('language').value;
+  let u=new SpeechSynthesisUtterance(text);
+  let lang=$('language').value;
 
-  utterance.lang =
-    language === 'zh' ? 'zh-CN' :
-    language === 'ms' ? 'ms-MY' :
-    'en-MY';
+  u.lang=lang==='zh'?'zh-CN':lang==='ms'?'ms-MY':'en-MY';
+  u.rate=Number($('rate').value)||1;
 
-  utterance.rate = Number($('rate').value) || 1;
+  let v=voices.find(v=>v.name===$('voice').value);
+  if(v)u.voice=v;
 
-  const selectedVoice = voices.find(
-    voice => voice.name === $('voice').value
-  );
+  u.onerror=()=>status('voiceStatus','Speech failed. Try another voice or browser.','warn');
+  u.onend=()=>status('voiceStatus','Speech finished.');
 
-  if (selectedVoice) utterance.voice = selectedVoice;
-
-  utterance.onerror = () => {
-    status(
-      'voiceStatus',
-      'Speech failed. Try another voice or browser.',
-      'warn'
-    );
-  };
-
-  utterance.onend = () => {
-    status('voiceStatus', 'Speech finished.');
-  };
-
-  speechSynthesis.speak(utterance);
+  speechSynthesis.speak(u);
 }
 
-function testVoice() {
-  const language = $('language').value;
+function testVoice(){
+  let l=$('language').value;
 
   say(
-    language === 'zh'
-      ? '欢迎使用盲路导航。请注意周围环境。'
-      : language === 'ms'
-      ? 'Selamat datang ke BlindPath. Sila peka terhadap persekitaran anda.'
-      : 'Welcome to BlindPath. Please stay aware of your surroundings.'
+    l==='zh'
+      ?'欢迎使用盲路导航。请注意周围环境。'
+      :l==='ms'
+      ?'Selamat datang ke BlindPath. Sila peka terhadap persekitaran anda.'
+      :'Welcome to BlindPath. Please stay aware of your surroundings.'
   );
 }
 
-function stopSpeech() {
-  if ('speechSynthesis' in window) {
-    speechSynthesis.cancel();
-  }
-
-  status('voiceStatus', 'Speech stopped.');
+function stopSpeech(){
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  status('voiceStatus','Speech stopped.');
 }
 
-/* DISTANCE AND GENERAL HELPERS */
-
-function dist(metresValue) {
-  return metresValue >= 1000
-    ? (metresValue / 1000).toFixed(1) + ' km'
-    : Math.round(metresValue) + ' m';
+function dist(m){
+  return m>=1000?(m/1000).toFixed(1)+' km':Math.round(m)+' m';
 }
 
-function duration(seconds) {
-  const minutes = Math.round(seconds / 60);
-
-  return minutes < 60
-    ? minutes + ' min'
-    : Math.floor(minutes / 60) + ' hr ' + minutes % 60 + ' min';
+function duration(s){
+  let n=Math.round(s/60);
+  return n<60?n+' min':Math.floor(n/60)+' hr '+n%60+' min';
 }
 
-function meters(a, b) {
-  const earthRadius = 6371000;
-  const radians = value => value * Math.PI / 180;
+function meters(a,b){
+  let R=6371000;
+  let rad=x=>x*Math.PI/180;
+  let d1=rad(b.lat-a.lat);
+  let d2=rad(b.lng-a.lng);
+  let q=Math.sin(d1/2)**2+
+    Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(d2/2)**2;
 
-  const dLat = radians(b.lat - a.lat);
-  const dLng = radians(b.lng - a.lng);
-
-  const value =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(radians(a.lat)) *
-    Math.cos(radians(b.lat)) *
-    Math.sin(dLng / 2) ** 2;
-
-  return 2 * earthRadius *
-    Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
+  return 2*R*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));
 }
 
-function esc(value) {
-  return String(value).replace(/[&<>"']/g, character => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[character]));
+function esc(s){
+  return String(s).replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
 }
 
-window.addEventListener('load', init);
+window.addEventListener('load',init);
 </script>
 
 </body>
