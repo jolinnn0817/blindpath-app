@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#176b5b">
-<title>BlindPath | Accessible Township Navigation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlindPath | Accessible Navigation</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
@@ -15,1512 +13,293 @@
   --green-dark: #104b41;
   --mint: #eaf5f1;
   --ink: #193b36;
-  --muted: #526a65;
-  --line: #cfddd8;
+  --muted: #5b706a;
+  --line: #d8e5df;
+  --bg: #f5f8f6;
   --white: #ffffff;
-  --warning: #fff3d4;
+  --focus: #ffbf47;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #f5f8f7;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
   color: var(--ink);
-  font: 16px/1.55 Arial, Helvetica, sans-serif;
+  line-height: 1.5;
 }
 
-button, input, select, textarea {
-  font: inherit;
-}
-
-button, a, input, select, textarea {
-  touch-action: manipulation;
-}
-
-button {
-  border: 0;
-  border-radius: 9px;
-  padding: 12px 16px;
-  min-height: 44px;
-  background: var(--green);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button:hover {
-  background: var(--green-dark);
-}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
 
 button:focus-visible,
-a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #d89b00;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 
-button.secondary {
-  background: #e5eeeb;
-  color: var(--ink);
-  border: 1px solid #cfddd8;
-}
-
-button.secondary:hover {
-  background: #d5e3de;
-}
-
-button.danger {
-  background: #803b3b;
-}
-
-a {
-  color: var(--green-dark);
-}
-
 header {
-  background: var(--green-dark);
+  background: var(--green);
   color: white;
-  padding: 24px 20px;
+  padding: 18px 16px;
 }
 
 .header-inner {
-  max-width: 1100px;
+  max-width: 980px;
   margin: auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-header h1 {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-
-header p {
-  margin: 5px 0 0;
-  max-width: 760px;
-}
-
-main, footer {
-  max-width: 1100px;
-  margin: auto;
-}
+.brand { font-size: 1.45rem; font-weight: 800; }
+.tagline { font-size: .92rem; opacity: .92; }
 
 main {
-  padding: 22px 16px 40px;
+  max-width: 980px;
+  margin: 22px auto;
+  padding: 0 14px 36px;
 }
 
-footer {
-  padding: 0 16px 26px;
-  color: var(--muted);
-  font-size: .9rem;
-}
+.screen { display: none; }
+.screen.active { display: block; }
 
-.hidden {
-  display: none !important;
-}
+h1 { font-size: 1.65rem; line-height: 1.2; margin: 0 0 8px; }
+h2 { font-size: 1.2rem; margin: 0 0 8px; }
+h3 { margin-bottom: 6px; }
+p { margin: 6px 0 12px; }
+.muted { color: var(--muted); }
 
-.panel {
-  padding: 20px;
-  background: white;
+.card {
+  background: var(--white);
   border: 1px solid var(--line);
   border-radius: 16px;
-  margin-bottom: 18px;
-  box-shadow: 0 2px 8px #163b3510;
-  min-width: 0;
+  padding: 18px;
+  margin: 14px 0;
+  box-shadow: 0 2px 8px #173c2c0a;
 }
 
-h2 {
-  margin: 0 0 10px;
-  font-size: 1.45rem;
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
 }
 
-h3 {
-  margin: 20px 0 8px;
-}
-
-.muted, .help {
-  color: var(--muted);
-  font-size: .93rem;
-}
-
-label {
-  display: block;
-  font-weight: 700;
-  margin: 10px 0 6px;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #9aada7;
-  border-radius: 8px;
-  background: white;
+.home-action {
+  min-height: 130px;
+  text-align: left;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
   color: var(--ink);
 }
 
-textarea {
-  min-height: 100px;
-  resize: vertical;
+.home-action:hover {
+  border-color: var(--green);
+  background: var(--mint);
 }
 
-.actions {
+.home-action .symbol {
+  display: block;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.home-action strong { display: block; font-size: 1.08rem; }
+.home-action small { display: block; color: var(--muted); margin-top: 4px; font-size: .92rem; }
+
+.primary, .secondary, .danger, .nav-button {
+  border-radius: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--green);
+  font-weight: 700;
+}
+
+.primary { background: var(--green); color: #fff; }
+.primary:hover { background: var(--green-dark); }
+.secondary { background: #fff; color: var(--green); }
+.danger { background: #fff; color: #9c2525; border-color: #c77; }
+.nav-button { background: transparent; color: #fff; border-color: #ffffff8a; }
+
+.button-row {
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
   margin-top: 12px;
 }
 
-.grid, .fields {
+label { display: block; font-weight: 700; margin: 12px 0 5px; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #aebeb5;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+}
+
+textarea { min-height: 92px; resize: vertical; }
+
+.field-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.home-button {
-  width: 100%;
-  min-height: 95px;
-  padding: 18px;
-  background: var(--green);
-  color: white;
+.notice {
+  background: #fff7df;
+  border: 1px solid #e5cb78;
   border-radius: 12px;
-  text-align: left;
-  font-size: 1.05rem;
-  transition: background .2s, transform .2s;
+  padding: 12px;
+  margin: 12px 0;
 }
 
-.home-button:hover {
-  background: var(--green-dark);
-  transform: translateY(-2px);
-}
-
-.home-intro {
+.good-note {
   background: var(--mint);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
-}
-
-.home-intro h2 {
-  color: var(--green-dark);
-}
-
-.home-label {
-  color: var(--green-dark);
-  font-weight: bold;
-  margin: 20px 0 10px;
+  border: 1px solid #b6d6c4;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
 }
 
 .status {
+  background: #f0f5f2;
+  border-radius: 10px;
   padding: 12px;
-  border-radius: 9px;
-  background: var(--mint);
   margin-top: 12px;
-  white-space: pre-line;
   overflow-wrap: anywhere;
+  white-space: pre-line;
 }
 
-.warn {
-  background: var(--warning) !important;
-  color: #704700;
-}
+.status.good { background: #e5f6ec; color: #155b3a; }
+.status.warn { background: #fff1dc; color: #704700; }
 
-.good {
-  background: #e8f7ef !important;
-  color: #155b3a;
+#map {
+  height: 340px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  margin-top: 12px;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
   margin-top: 12px;
 }
 
-.stats div {
-  padding: 12px;
+.stat {
   background: var(--mint);
-  border-radius: 9px;
+  padding: 12px;
+  border-radius: 10px;
 }
 
-.stats strong {
-  display: block;
-  margin-top: 4px;
-}
+.stat strong { display: block; font-size: 1.15rem; margin-top: 4px; }
 
 .instruction {
   font-size: 1.2rem;
-  font-weight: bold;
-  padding: 14px;
-  border: 2px solid #9fc8ba;
-  background: #f4faf7;
-  border-radius: 10px;
+  font-weight: 700;
+  padding: 16px;
+  border: 2px solid #b6d6c4;
+  background: #f5fbf7;
+  border-radius: 12px;
   margin-top: 12px;
 }
 
-#map {
-  height: 350px;
+.report-item {
+  border: 1px solid var(--line);
   border-radius: 12px;
-  margin-top: 14px;
-  border: 1px solid var(--line);
-  background: #e2eae7;
-}
-
-.item {
   padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  margin: 8px 0;
-  overflow-wrap: anywhere;
+  margin: 10px 0;
+  background: #fff;
 }
 
-.notice {
-  padding: 12px 14px;
-  border-left: 4px solid #c58b00;
-  border-radius: 7px;
-  background: var(--warning);
-  margin-top: 14px;
+.report-item p { margin: 4px 0; }
+.pill { display: inline-block; background: var(--mint); color: var(--green); padding: 3px 8px; border-radius: 99px; font-size: .85rem; font-weight: 700; }
+.hidden { display: none !important; }
+
+footer {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 14px 24px;
+  color: var(--muted);
+  font-size: .86rem;
 }
 
-@media (max-width: 600px) {
-  .grid, .fields {
-    grid-template-columns: 1fr;
-  }
+a { color: var(--green); }
 
-  .stats {
-    grid-template-columns: 1fr;
-  }
-
-  #map {
-    height: 290px;
-  }
-
-  .home-button {
-    min-height: 75px;
-  }
+@media(max-width:620px) {
+  .home-grid, .field-grid { grid-template-columns: 1fr; }
+  .home-action { min-height: 105px; }
+  .header-inner { align-items: flex-start; }
+  #map { height: 280px; }
+  .stats { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 
 <body>
-
 <header>
   <div class="header-inner">
     <div>
-      <h1>BlindPath</h1>
-      <p>Accessible navigation and community reporting for more inclusive townships.</p>
+      <div class="brand">BlindPath</div>
+      <div class="tagline">Accessible navigation, designed with visually impaired people in mind.</div>
     </div>
-
-    <div class="actions" style="margin:0">
-      <button class="secondary" onclick="show('home')">Home</button>
-      <button class="secondary" onclick="show(user ? 'profile' : 'auth')">
-        Login / Profile
-      </button>
+    <div class="button-row" style="margin-top:0">
+      <button class="nav-button" onclick="goTo('home')">Home</button>
+      <button class="nav-button" onclick="goTo(currentUser ? 'profile' : 'auth')">Login / Profile</button>
     </div>
   </div>
 </header>
 
 <main>
 
-<!-- HOME PAGE -->
-<section id="home" class="screen">
+  <!-- HOME: the original four main buttons remain unchanged -->
+  <section id="screen-home" class="screen active">
+    <div class="card">
+      <h1>How can BlindPath help you?</h1>
+      <p class="muted">Choose one action to get started. Keep the experience simple and audio-friendly.</p>
 
-  <div class="home-intro">
-    <h2>Welcome to BlindPath</h2>
-    <p>
-      Making townships more accessible through voice-first navigation,
-      community reporting and inclusive mobility support.
-    </p>
-    <p>
-      BlindPath is a prototype designed to help users explore routes
-      and document accessibility problems.
-    </p>
-  </div>
+      <div class="good-note">
+        <strong>Tactile-path priority</strong><br>
+        BlindPath aims to prioritise routes with verified tactile paving (盲道). This demo does not yet contain a complete verified tactile-path map.
+      </div>
 
-  <div class="panel">
-    <h2>What would you like to do?</h2>
+      <div class="home-grid">
+        <button class="home-action" onclick="goTo('plan')">
+          <span class="symbol" aria-hidden="true">🧭</span>
+          <strong>Start Navigation</strong>
+          <small>Plan a walking or driving route</small>
+        </button>
 
-    <div class="grid">
-      <button class="home-button" onclick="show('navigation')">
-        🧭 Start Navigation
-      </button>
+        <button class="home-action" onclick="goTo('report')">
+          <span class="symbol" aria-hidden="true">⚑</span>
+          <strong>Report an Issue</strong>
+          <small>Blocked, damaged or missing tactile paving</small>
+        </button>
 
-      <button class="home-button" onclick="show('report')">
-        📣 Report an Issue
-      </button>
+        <button class="home-action" onclick="goTo('settings')">
+          <span class="symbol" aria-hidden="true">🔊</span>
+          <strong>Voice &amp; Settings</strong>
+          <small>Language and spoken guidance</small>
+        </button>
 
-      <button class="home-button" onclick="show('settings')">
-        🔊 Voice &amp; Settings
-      </button>
-
-      <button class="home-button" onclick="show('community')">
-        🤝 Community
-      </button>
-    </div>
-
-    <div class="actions">
-      <button class="secondary" onclick="show('auth')">Login</button>
-      <button class="secondary" onclick="show('register')">Register</button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2>Our mission</h2>
-    <p>
-      BlindPath aims to support a more inclusive township by helping
-      people plan routes, report blocked tactile paving and share
-      accessibility concerns.
-    </p>
-
-    <div class="notice">
-      <strong>Safety reminder:</strong>
-      GPS and map data do not detect physical obstacles, confirm
-      tactile paving, verify traffic-light signals or guarantee
-      that a crossing is safe.
-    </div>
-  </div>
-
-</section>
-
-<!-- LOGIN -->
-<section id="auth" class="screen hidden">
-  <div class="panel">
-    <h2>Login</h2>
-    <p class="muted">
-      Demo accounts are stored in this browser only.
-      Do not use a real or reused password.
-    </p>
-
-    <form id="loginForm">
-      <label for="loginEmail">Email</label>
-      <input id="loginEmail" type="email" required>
-
-      <label for="loginPassword">Password</label>
-      <input id="loginPassword" type="password" required>
-
-      <div class="actions">
-        <button type="submit">Login</button>
-        <button type="button" class="secondary" onclick="show('register')">
-          Create account
+        <button class="home-action" onclick="goTo('community')">
+          <span class="symbol" aria-hidden="true">🤝</span>
+          <strong>Community</strong>
+          <small>Review reports saved on this device</small>
         </button>
       </div>
-    </form>
-
-    <div id="authStatus" class="status" role="status"></div>
-  </div>
-</section>
-
-<!-- REGISTER -->
-<section id="register" class="screen hidden">
-  <div class="panel">
-    <h2>Register</h2>
-    <p class="muted">
-      Prototype only. Passwords are stored locally in plain text.
-      Do not use real credentials.
-    </p>
-
-    <form id="registerForm">
-      <label for="regName">Display name</label>
-      <input id="regName" required maxlength="60">
-
-      <label for="regEmail">Email</label>
-      <input id="regEmail" type="email" required>
-
-      <label for="regPassword">Password (demo only)</label>
-      <input id="regPassword" type="password" minlength="4" required>
-
-      <div class="actions">
-        <button type="submit">Create account</button>
-        <button type="button" class="secondary" onclick="show('auth')">
-          Back to login
-        </button>
-      </div>
-    </form>
-
-    <div id="regStatus" class="status" role="status"></div>
-  </div>
-</section>
-
-<!-- PROFILE -->
-<section id="profile" class="screen hidden">
-  <div class="panel">
-    <h2>My Profile</h2>
-    <p id="profileEmail"></p>
-
-    <label for="profileName">Display name</label>
-    <input id="profileName">
-
-    <label for="profilePref">Navigation preference</label>
-    <select id="profilePref">
-      <option value="voice">Voice-first</option>
-      <option value="voice-map">Voice with map</option>
-    </select>
-
-    <div class="actions">
-      <button onclick="saveProfile()">Save profile</button>
-      <button class="secondary" onclick="show('verification')">
-        Demo OKU verification
-      </button>
-      <button class="danger" onclick="logout()">Log out</button>
     </div>
 
-    <div id="profileStatus" class="status"></div>
-  </div>
-</section>
-
-<!-- OKU VERIFICATION DEMO -->
-<section id="verification" class="screen hidden">
-  <div class="panel">
-    <h2>Verification workflow demo</h2>
-    <p>
-      This is simulated only. It is not connected to JKM, MyGOV
-      or an official database. Do not enter identity numbers
-      or upload official documents.
-    </p>
-
-    <div id="verifyStatus" class="status"></div>
-
-    <div class="actions">
-      <button onclick="verify('pending')">Request review</button>
-      <button onclick="verify('verified_demo')">Simulate approval</button>
-      <button onclick="verify('unable')">Unable to verify</button>
-      <button class="secondary" onclick="verify('not_requested')">Reset</button>
-    </div>
-  </div>
-</section>
-
-<!-- NAVIGATION -->
-<section id="navigation" class="screen hidden">
-  <div class="panel">
-    <h2>Start Navigation</h2>
-    <p class="muted">
-      Enter a starting point and destination. Allow location access
-      to use live GPS guidance.
-    </p>
-
-    <div class="fields">
-      <div>
-        <label for="start">Starting point</label>
-        <input id="start" placeholder="Address or place; blank = current GPS">
-      </div>
-
-      <div>
-        <label for="dest">Destination</label>
-        <input id="dest" placeholder="e.g. KL Sentral" required>
-      </div>
-
-      <div>
-        <label for="mode">Travel mode</label>
-        <select id="mode">
-          <option value="foot">Walking</option>
-          <option value="car">Driving</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="offLimit">Off-route alert threshold</label>
-        <select id="offLimit">
-          <option value="40">40 metres</option>
-          <option value="60" selected>60 metres</option>
-          <option value="100">100 metres</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button onclick="setCurrentStart()">Use my current location</button>
-      <button onclick="findRoute()">Find route</button>
-    </div>
-
-    <div id="navStatus" class="status" role="status" aria-live="polite">
-      Enter a destination to calculate a route.
-    </div>
-
-    <div class="stats">
-      <div>Distance<strong id="distance">—</strong></div>
-      <div>Estimated time<strong id="duration">—</strong></div>
-      <div>Progress<strong id="progress">0%</strong></div>
-    </div>
-
-    <div id="instruction" class="instruction" aria-live="assertive">
-      Route instructions will appear here.
-    </div>
-
-    <div class="actions">
-      <button id="startNav" onclick="startNav()" disabled>
-        Start live guidance
-      </button>
-      <button id="pauseNav" class="secondary" onclick="pauseNav()" disabled>
-        Pause
-      </button>
-      <button class="secondary" onclick="repeatInstruction()">
-        Repeat instruction
-      </button>
-      <button class="secondary" onclick="stopSpeech()">Stop speech</button>
-      <button class="danger" onclick="endNav()">End navigation</button>
-      <button class="secondary" onclick="recenter()">Recenter map</button>
-      <button class="secondary" onclick="externalMap()">Open Google Maps</button>
-    </div>
-
-    <div id="map" aria-label="Map showing route, GPS position and reported issues"></div>
-
-    <div id="routeIssues" class="status">
-      Saved accessibility reports near the route will be listed here.
-    </div>
-
-    <div id="ride" class="status hidden"></div>
-
-    <p class="muted">
-      Walking route quality varies and does not guarantee accessible sidewalks.
-      Reports are unverified.
-    </p>
-  </div>
-</section>
-
-<!-- REPORT AN ISSUE -->
-<section id="report" class="screen hidden">
-  <div class="panel">
-    <h2>Report an Accessibility Issue</h2>
-    <p>
-      Reports are saved only in this browser. They are not sent
-      to authorities or shared with other users.
-    </p>
-
-    <form id="reportForm">
-      <label for="reportType">Issue type</label>
-      <select id="reportType">
-        <option>Blocked tactile paving</option>
-        <option>Damaged tactile paving</option>
-        <option>Obstacle on walkway</option>
-        <option>Inaccessible crossing</option>
-        <option>Missing curb ramp</option>
-        <option>Other accessibility issue</option>
-      </select>
-
-      <label for="reportLocation">Location or address</label>
-      <input id="reportLocation" required placeholder="Describe location">
-
-      <label for="reportDetails">Details</label>
-      <textarea id="reportDetails" maxlength="500"></textarea>
-
-      <div class="actions">
-        <button type="submit">Save report locally</button>
-        <button type="button" class="secondary" onclick="reportGPS()">
-          Use current GPS location
-        </button>
-      </div>
-    </form>
-
-    <div id="reportStatus" class="status" role="status"></div>
-
-    <h3>Saved reports</h3>
-    <div id="reportList"></div>
-  </div>
-</section>
-
-<!-- VOICE SETTINGS -->
-<section id="settings" class="screen hidden">
-  <div class="panel">
-    <h2>Voice &amp; Settings</h2>
-
-    <label for="language">Language</label>
-    <select id="language" onchange="loadVoices()">
-      <option value="en">English</option>
-      <option value="ms">Bahasa Melayu</option>
-      <option value="zh">中文（普通话）</option>
-    </select>
-
-    <label for="voice">Voice</label>
-    <select id="voice"></select>
-
-    <label for="rate">Speech speed: <span id="rateLabel">1.0×</span></label>
-    <input id="rate" type="range" min=".7" max="1.3" step=".1"
-      value="1" oninput="rateLabel.textContent=Number(this.value).toFixed(1)+'×'">
-
-    <label for="threshold">Smart Ride Assist threshold (km)</label>
-    <input id="threshold" type="number" min="1" max="50" value="5">
-
-    <div class="actions">
-      <button onclick="testVoice()">Test voice</button>
-      <button class="secondary" onclick="repeatInstruction()">Repeat instruction</button>
-      <button class="secondary" onclick="stopSpeech()">Stop speech</button>
-    </div>
-
-    <div id="voiceStatus" class="status" role="status"></div>
-
-    <p class="muted">
-      Voice options depend on your browser and operating system.
-      Selecting a language does not guarantee a Malaysian accent.
-    </p>
-  </div>
-</section>
-
-<!-- COMMUNITY -->
-<section id="community" class="screen hidden">
-  <div class="panel">
-    <h2>Community</h2>
-    <p>
-      This page shows accessibility reports saved locally on this device.
-      They are unverified and are not shared with other users.
-    </p>
-
-    <div id="communityList"></div>
-
-    <div class="actions">
-      <button onclick="show('report')">Make a report</button>
-      <button class="secondary" onclick="show('navigation')">View map</button>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  BlindPath hackathon prototype. Not a substitute for mobility assistance
-  or verified pedestrian infrastructure data.
-</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-const UKEY='blindpath_users_demo',
-RKEY='blindpath_reports_demo',
-SKEY='blindpath_session_demo';
-
-let user=null,map=null,routeLayer=null,reportLayer=null,
-userMarker=null,route=null,coords=[],steps=[],stepIdx=0,
-watch=null,active=false,paused=false,lastOff=0,lastProgress=0,
-startPoint=null,endPoint=null,lastPos=null,voices=[];
-
-const $=id=>document.getElementById(id);
-
-function read(k,d){
-  try{return JSON.parse(localStorage.getItem(k))??d}
-  catch(e){return d}
-}
-
-function users(){return read(UKEY,[])}
-function reports(){return read(RKEY,[])}
-function saveReports(a){localStorage.setItem(RKEY,JSON.stringify(a))}
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>
-    s.classList.toggle('hidden',s.id!==id)
-  );
-
-  if(id==='profile')renderProfile();
-  if(id==='verification')renderVerify();
-  if(id==='report')renderReports();
-  if(id==='community')renderCommunity();
-
-  if(id==='navigation'){
-    setTimeout(()=>{
-      initMap();
-      if(map)map.invalidateSize();
-    },100);
-  }
-
-  if(id==='settings')loadVoices();
-  scrollTo({top:0,behavior:'smooth'});
-}
-
-function status(id,msg,kind=''){
-  let e=$(id);
-  e.textContent=msg;
-  e.className='status '+kind;
-}
-
-function init(){
-  const email=localStorage.getItem(SKEY);
-  user=email?users().find(x=>x.email===email)||null:null;
-
-  initMap();
-  loadVoices();
-  renderReports();
-
-  $('registerForm').addEventListener('submit',register);
-  $('loginForm').addEventListener('submit',login);
-  $('reportForm').addEventListener('submit',saveReport);
-
-  if('speechSynthesis' in window){
-    speechSynthesis.onvoiceschanged=loadVoices;
-  }
-
-  show('home');
-}
-
-function register(e){
-  e.preventDefault();
-
-  let email=$('regEmail').value.trim().toLowerCase();
-
-  if(users().some(u=>u.email===email)){
-    status('regStatus','That email already has a demo account.','warn');
-    return;
-  }
-
-  let a=users();
-
-  a.push({
-    name:$('regName').value.trim(),
-    email,
-    password:$('regPassword').value,
-    pref:'voice',
-    verification:'not_requested'
-  });
-
-  localStorage.setItem(UKEY,JSON.stringify(a));
-  $('loginEmail').value=email;
-
-  status('regStatus','Account created. Please log in.','good');
-  show('auth');
-}
-
-function login(e){
-  e.preventDefault();
-
-  let email=$('loginEmail').value.trim().toLowerCase();
-
-  let u=users().find(x=>
-    x.email===email && x.password===$('loginPassword').value
-  );
-
-  if(!u){
-    status('authStatus','Email or password is incorrect.','warn');
-    return;
-  }
-
-  user=u;
-  localStorage.setItem(SKEY,email);
-  show('profile');
-}
-
-function renderProfile(){
-  if(!user){show('auth');return}
-
-  $('profileEmail').textContent='Signed in as '+user.email;
-  $('profileName').value=user.name||'';
-  $('profilePref').value=user.pref||'voice';
-}
-
-function saveProfile(){
-  if(!user)return;
-
-  updateUser({
-    name:$('profileName').value.trim(),
-    pref:$('profilePref').value
-  });
-
-  status('profileStatus','Profile saved on this device.','good');
-}
-
-function updateUser(p){
-  let a=users();
-  let i=a.findIndex(x=>x.email===user.email);
-
-  a[i]={...a[i],...p};
-  localStorage.setItem(UKEY,JSON.stringify(a));
-  user=a[i];
-}
-
-function logout(){
-  user=null;
-  localStorage.removeItem(SKEY);
-  show('home');
-}
-
-function renderVerify(){
-  if(!user){show('auth');return}
-
-  let s=user.verification||'not_requested';
-  $('verifyStatus').textContent=
-    'Demo status: '+s+'. This is not official verification.';
-}
-
-function verify(s){
-  if(!user){show('auth');return}
-  updateUser({verification:s});
-  renderVerify();
-}
-
-function initMap(){
-  if(map||!window.L)return;
-
-  map=L.map('map').setView([3.139,101.686],12);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,
-    attribution:'© OpenStreetMap contributors'
-  }).addTo(map);
-
-  routeLayer=L.layerGroup().addTo(map);
-  reportLayer=L.layerGroup().addTo(map);
-  drawReports();
-}
-
-async function geocode(q){
-  let r=await fetch(
-    'https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+
-    encodeURIComponent(q)
-  );
-
-  if(!r.ok)throw Error('Place search service unavailable.');
-
-  let a=await r.json();
-
-  if(!a.length)throw Error('Could not find location: '+q);
-
-  return {
-    lat:+a[0].lat,
-    lng:+a[0].lon,
-    label:a[0].display_name
-  };
-}
-
-function geoErr(e){
-  return e.code===1
-    ?'Location permission denied. Allow location access or enter an address.'
-    :e.code===2
-    ?'Current location unavailable.'
-    :e.code===3
-    ?'Location request timed out.'
-    :'Could not access GPS.';
-}
-
-function setCurrentStart(){
-  if(!navigator.geolocation){
-    status('navStatus','GPS is not supported.','warn');
-    return;
-  }
-
-  status('navStatus','Requesting location permission…');
-
-  navigator.geolocation.getCurrentPosition(p=>{
-    startPoint={
-      lat:p.coords.latitude,
-      lng:p.coords.longitude
-    };
-
-    lastPos=startPoint;
-    $('start').value='My current location';
-
-    initMap();
-    putMarker(startPoint);
-    map.setView([startPoint.lat,startPoint.lng],17);
-
-    status(
-      'navStatus',
-      'Current location set. Enter a destination and find route.',
-      'good'
-    );
-  },e=>status('navStatus',geoErr(e),'warn'),{
-    enableHighAccuracy:true,
-    timeout:15000,
-    maximumAge:5000
-  });
-}
-
-async function findRoute(){
-  try{
-    stopWatch();
-    active=false;
-    paused=false;
-    status('navStatus','Finding route…');
-    initMap();
-
-    let start;
-
-    if($('start').value.trim() &&
-       $('start').value.trim().toLowerCase()!=='my current location'){
-      start=await geocode($('start').value.trim());
-    }else{
-      if(!lastPos&&!startPoint){
-        throw Error('Use current location or enter a start address.');
-      }
-      start=startPoint||lastPos;
-    }
-
-    let dest=await geocode($('dest').value.trim());
-
-    startPoint={lat:start.lat,lng:start.lng};
-    endPoint={lat:dest.lat,lng:dest.lng};
-
-    let foot=$('mode').value==='foot';
-
-    let base=foot
-      ?'https://routing.openstreetmap.de/routed-foot/route/v1/driving/'
-      :'https://router.project-osrm.org/route/v1/driving/';
-
-    let r=await fetch(
-      base+start.lng+','+start.lat+';'+dest.lng+','+dest.lat+
-      '?overview=full&geometries=geojson&steps=true'
-    );
-
-    if(!r.ok)throw Error('Routing service unavailable. Try again.');
-
-    let d=await r.json();
-
-    if(d.code!=='Ok'||!d.routes?.length){
-      throw Error('No route found. Try another destination or mode.');
-    }
-
-    route=d.routes[0];
-    coords=route.geometry.coordinates.map(c=>({lat:c[1],lng:c[0]}));
-    steps=(route.legs||[]).flatMap(l=>l.steps||[]);
-    stepIdx=0;
-    lastProgress=0;
-
-    drawRoute();
-
-    $('distance').textContent=dist(route.distance);
-    $('duration').textContent=duration(route.duration);
-    $('progress').textContent='0%';
-    $('instruction').textContent=instruction(0);
-    $('startNav').disabled=false;
-    $('pauseNav').disabled=true;
-
-    status(
-      'navStatus',
-      'Route ready. Press Start live guidance to enable GPS and spoken directions.',
-      'good'
-    );
-
-    rideAssist(route.distance/1000);
-    routeWarnings();
-
-  }catch(e){
-    status('navStatus',e.message||'Could not calculate route.','warn');
-  }
-}
-
-function drawRoute(){
-  routeLayer.clearLayers();
-
-  L.polyline(coords.map(p=>[p.lat,p.lng]),{
-    color:'#176b5b',
-    weight:6
-  }).addTo(routeLayer);
-
-  L.marker([startPoint.lat,startPoint.lng])
-    .bindPopup('Start').addTo(routeLayer);
-
-  L.marker([endPoint.lat,endPoint.lng])
-    .bindPopup('Destination').addTo(routeLayer);
-
-  drawReports();
-  map.fitBounds(coords.map(p=>[p.lat,p.lng]),{padding:[20,20]});
-}
-
-function putMarker(p){
-  if(!map)return;
-
-  if(userMarker){
-    userMarker.setLatLng([p.lat,p.lng]);
-  }else{
-    userMarker=L.circleMarker([p.lat,p.lng],{
-      radius:8,
-      color:'#fff',
-      weight:3,
-      fillColor:'#176b5b',
-      fillOpacity:1
-    }).addTo(map).bindPopup('Your GPS position');
-  }
-}
-
-function startNav(){
-  if(!route){
-    status('navStatus','Find a route first.','warn');
-    return;
-  }
-
-  if(!navigator.geolocation){
-    status('navStatus','GPS is not supported.','warn');
-    return;
-  }
-
-  active=true;
-  paused=false;
-  $('startNav').disabled=true;
-  $('pauseNav').disabled=false;
-  $('pauseNav').textContent='Pause';
-
-  status('navStatus','Live guidance active.','good');
-  say('Navigation started. '+instruction(stepIdx));
-
-  watch=navigator.geolocation.watchPosition(
-    onPosition,
-    e=>status('navStatus',geoErr(e),'warn'),
-    {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
-  );
-}
-
-function pauseNav(){
-  if(!active)return;
-
-  if(!paused){
-    paused=true;
-    stopWatch();
-    $('pauseNav').textContent='Resume';
-    status('navStatus','Navigation paused. GPS tracking stopped.','warn');
-    say('Navigation paused.');
-  }else{
-    paused=false;
-
-    watch=navigator.geolocation.watchPosition(
-      onPosition,
-      e=>status('navStatus',geoErr(e),'warn'),
-      {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
-    );
-
-    $('pauseNav').textContent='Pause';
-    status('navStatus','Navigation resumed.','good');
-    say('Navigation resumed. '+instruction(stepIdx));
-  }
-}
-
-function stopWatch(){
-  if(watch!==null&&navigator.geolocation){
-    navigator.geolocation.clearWatch(watch);
-  }
-  watch=null;
-}
-
-function endNav(){
-  stopWatch();
-  active=false;
-  paused=false;
-
-  $('startNav').disabled=!route;
-  $('pauseNav').disabled=true;
-  $('pauseNav').textContent='Pause';
-
-  stopSpeech();
-  status('navStatus','Navigation ended.');
-}
-
-function onPosition(pos){
-  if(!active||paused)return;
-
-  let p={
-    lat:pos.coords.latitude,
-    lng:pos.coords.longitude
-  };
-
-  lastPos=p;
-  putMarker(p);
-
-  let best=Infinity,bi=0;
-
-  for(let i=0;i<coords.length;i++){
-    let d=meters(p,coords[i]);
-    if(d<best){
-      best=d;
-      bi=i;
-    }
-  }
-
-  let pct=Math.round(bi/Math.max(1,coords.length-1)*100);
-  lastProgress=Math.max(lastProgress,pct);
-
-  $('progress').textContent=lastProgress+'%';
-  $('distance').textContent=
-    dist(route.distance*(1-lastProgress/100))+' remaining';
-
-  if(lastProgress>=98){
-    $('instruction').textContent=
-      'You appear to be near your destination. Check your surroundings carefully.';
-
-    say('You appear to be near your destination. Check your surroundings carefully.');
-    endNav();
-    return;
-  }
-
-  let next=-1,near=Infinity;
-
-  for(let i=stepIdx;i<steps.length;i++){
-    let loc=steps[i].maneuver?.location;
-    if(!loc)continue;
-
-    let d=meters(p,{lat:loc[1],lng:loc[0]});
-
-    if(d<near){
-      near=d;
-      next=i;
-    }
-  }
-
-  if(next>=0&&near<65&&next!==stepIdx){
-    stepIdx=next;
-    let text=instruction(stepIdx);
-    $('instruction').textContent=text;
-    say(text);
-  }
-
-  let off=Infinity;
-
-  for(let i=0;i<coords.length;i+=Math.max(1,Math.floor(coords.length/200))){
-    off=Math.min(off,meters(p,coords[i]));
-  }
-
-  if(off>Number($('offLimit').value)&&Date.now()-lastOff>20000){
-    lastOff=Date.now();
-
-    let msg='You may be away from the planned route. Stop somewhere safe if possible and check your route.';
-
-    status('navStatus',msg,'warn');
-    say(msg);
-  }
-}
-
-function instruction(i){
-  if(!steps.length){
-    return 'Follow the route shown on the map. Turn details are unavailable.';
-  }
-
-  let s=steps[Math.min(i,steps.length-1)];
-  let m=s.maneuver||{};
-  let a='Continue';
-
-  if(m.type==='depart')a='Start by continuing';
-  else if(m.type==='arrive')a='You are approaching your destination';
-  else if(m.type==='turn')a='Turn '+(m.modifier||'');
-  else if(m.type==='roundabout'||m.type==='rotary')a='Enter the roundabout';
-  else if(m.type==='merge')a='Merge '+(m.modifier||'');
-  else if(m.type==='fork')a='Keep '+(m.modifier||'');
-  else if(m.type==='on ramp')a='Take the ramp';
-  else if(m.type==='off ramp')a='Take the exit';
-
-  return a+
-    (s.distance?' for '+dist(s.distance):'')+
-    (s.name?' onto '+s.name:'')+'.';
-}
-
-function repeatInstruction(){
-  let t=$('instruction').textContent;
-
-  if(t&&t!=='Route instructions will appear here.'){
-    say(t);
-  }else{
-    say('No navigation instruction available.');
-  }
-}
-
-function rideAssist(km){
-  let threshold=Math.max(1,Number($('threshold').value)||5);
-  let el=$('ride');
-
-  if(km>threshold){
-    el.classList.remove('hidden');
-    el.textContent=
-      'Smart Ride Assist: this route is '+km.toFixed(1)+
-      ' km, longer than your '+threshold+
-      ' km setting. You may arrange a ride if you prefer. This does not book a ride. ';
-
-    let b=document.createElement('button');
-    b.className='secondary';
-    b.textContent='Open Grab Malaysia';
-    b.onclick=()=>window.open('https://www.grab.com/my/','_blank','noopener');
-
-    el.appendChild(b);
-
-    say('This route is longer than your Smart Ride Assist distance setting. You may choose to arrange a ride.');
-  }else{
-    el.classList.add('hidden');
-  }
-}
-
-function externalMap(){
-  if(!startPoint||!endPoint){
-    status('navStatus','Find a route first.','warn');
-    return;
-  }
-
-  let mode=$('mode').value==='foot'?'walking':'driving';
-
-  window.open(
-    'https://www.google.com/maps/dir/?api=1&origin='+
-    startPoint.lat+','+startPoint.lng+
-    '&destination='+endPoint.lat+','+endPoint.lng+
-    '&travelmode='+mode,
-    '_blank',
-    'noopener'
-  );
-}
-
-function recenter(){
-  if(lastPos&&map){
-    map.setView([lastPos.lat,lastPos.lng],17);
-  }else if(startPoint&&map){
-    map.setView([startPoint.lat,startPoint.lng],16);
-  }else{
-    say('Set your current location first.');
-  }
-}
-
-function routeWarnings(){
-  let near=[];
-
-  for(let r of reports()){
-    if(!r.lat||!r.lng)continue;
-
-    let d=Infinity;
-
-    for(let i=0;i<coords.length;i+=Math.max(1,Math.floor(coords.length/150))){
-      d=Math.min(d,meters({lat:r.lat,lng:r.lng},coords[i]));
-    }
-
-    if(d<150){
-      near.push(
-        r.type+' at '+r.location+
-        ' (about '+Math.round(d)+' metres from route)'
-      );
-    }
-  }
-
-  $('routeIssues').textContent=near.length
-    ?'Unverified saved reports near route: '+near.join('; ')+
-      '. A lack of reports does not mean the route is obstacle-free.'
-    :'No saved reports found within about 150 metres of this route. This does not mean the route is obstacle-free.';
-}
-
-function drawReports(){
-  if(!map||!reportLayer)return;
-
-  reportLayer.clearLayers();
-
-  reports().forEach(r=>{
-    if(r.lat&&r.lng){
-      L.circleMarker([r.lat,r.lng],{
-        radius:7,
-        color:'#fff',
-        weight:2,
-        fillColor:'#b24a16',
-        fillOpacity:1
-      })
-      .bindPopup(
-        '<b>Reported issue (unverified)</b><br>'+
-        esc(r.type)+'<br>'+esc(r.location)
-      )
-      .addTo(reportLayer);
-    }
-  });
-}
-
-function reportGPS(){
-  if(!navigator.geolocation){
-    status('reportStatus','GPS is not supported. Enter a location manually.','warn');
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(p=>{
-    $('reportLocation').value='Current GPS location';
-    $('reportLocation').dataset.lat=p.coords.latitude;
-    $('reportLocation').dataset.lng=p.coords.longitude;
-    status('reportStatus','GPS location attached.','good');
-  },e=>status('reportStatus',geoErr(e),'warn'),{
-    enableHighAccuracy:true,
-    timeout:15000
-  });
-}
-
-async function saveReport(e){
-  e.preventDefault();
-
-  let loc=$('reportLocation').value.trim();
-  let lat=Number($('reportLocation').dataset.lat)||null;
-  let lng=Number($('reportLocation').dataset.lng)||null;
-
-  if(!lat||!lng){
-    try{
-      let p=await geocode(loc);
-      lat=p.lat;
-      lng=p.lng;
-    }catch(e){}
-  }
-
-  let a=reports();
-
-  a.unshift({
-    id:Date.now(),
-    type:$('reportType').value,
-    location:loc,
-    details:$('reportDetails').value.trim(),
-    lat,
-    lng,
-    created:new Date().toISOString()
-  });
-
-  saveReports(a);
-  $('reportForm').reset();
-
-  delete $('reportLocation').dataset.lat;
-  delete $('reportLocation').dataset.lng;
-
-  status(
-    'reportStatus',
-    'Report saved on this device only; it has not been sent to anyone.',
-    'good'
-  );
-
-  renderReports();
-  drawReports();
-  routeWarnings();
-}
-
-function renderReports(){
-  let el=$('reportList');
-  if(!el)return;
-
-  el.innerHTML='';
-  let a=reports();
-
-  if(!a.length){
-    el.textContent='No local reports yet.';
-    return;
-  }
-
-  a.forEach(r=>{
-    let d=document.createElement('div');
-    d.className='item';
-
-    d.innerHTML=
-      '<b>'+esc(r.type)+'</b>'+
-      '<p>'+esc(r.location)+'</p>'+
-      '<p class="muted">'+esc(r.details||'No extra details')+
-      ' · '+new Date(r.created).toLocaleString()+'</p>'+
-      '<button class="danger" onclick="deleteReport('+Number(r.id)+')">Delete</button>';
-
-    el.appendChild(d);
-  });
-}
-
-function deleteReport(id){
-  saveReports(reports().filter(r=>r.id!==id));
-  renderReports();
-  renderCommunity();
-  drawReports();
-  routeWarnings();
-}
-
-function renderCommunity(){
-  let el=$('communityList');
-  el.innerHTML='';
-
-  let a=reports();
-
-  if(!a.length){
-    el.textContent='No local reports yet.';
-    return;
-  }
-
-  a.slice(0,15).forEach(r=>{
-    let p=document.createElement('p');
-    p.className='item';
-    p.textContent=r.type+' — '+r.location+' (unverified local report)';
-    el.appendChild(p);
-  });
-}
-
-function loadVoices(){
-  if(!('speechSynthesis' in window)){
-    $('voice').innerHTML='<option>Speech unavailable</option>';
-    return;
-  }
-
-  voices=speechSynthesis.getVoices();
-  let prefix=$('language').value;
-  let match=voices.filter(v=>v.lang.toLowerCase().startsWith(prefix));
-
-  $('voice').innerHTML='';
-
-  (match.length?match:voices).forEach(v=>{
-    let o=document.createElement('option');
-    o.value=v.name;
-    o.textContent=v.name+' ('+v.lang+')';
-    $('voice').appendChild(o);
-  });
-}
-
-function say(text){
-  if(!('speechSynthesis' in window)){
-    status('voiceStatus','Speech synthesis is not supported in this browser.','warn');
-    return;
-  }
-
-  speechSynthesis.cancel();
-
-  let u=new SpeechSynthesisUtterance(text);
-  let lang=$('language').value;
-
-  u.lang=lang==='zh'?'zh-CN':lang==='ms'?'ms-MY':'en-MY';
-  u.rate=Number($('rate').value)||1;
-
-  let v=voices.find(v=>v.name===$('voice').value);
-  if(v)u.voice=v;
-
-  u.onerror=()=>status('voiceStatus','Speech failed. Try another voice or browser.','warn');
-  u.onend=()=>status('voiceStatus','Speech finished.');
-
-  speechSynthesis.speak(u);
-}
-
-function testVoice(){
-  let l=$('language').value;
-
-  say(
-    l==='zh'
-      ?'欢迎使用盲路导航。请注意周围环境。'
-      :l==='ms'
-      ?'Selamat datang ke BlindPath. Sila peka terhadap persekitaran anda.'
-      :'Welcome to BlindPath. Please stay aware of your surroundings.'
-  );
-}
-
-function stopSpeech(){
-  if('speechSynthesis' in window)speechSynthesis.cancel();
-  status('voiceStatus','Speech stopped.');
-}
-
-function dist(m){
-  return m>=1000?(m/1000).toFixed(1)+' km':Math.round(m)+' m';
-}
-
-function duration(s){
-  let n=Math.round(s/60);
-  return n<60?n+' min':Math.floor(n/60)+' hr '+n%60+' min';
-}
-
-function meters(a,b){
-  let R=6371000;
-  let rad=x=>x*Math.PI/180;
-  let d1=rad(b.lat-a.lat);
-  let d2=rad(b.lng-a.lng);
-  let q=Math.sin(d1/2)**2+
-    Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(d2/2)**2;
-
-  return 2*R*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));
-}
-
-function esc(s){
-  return String(s).replace(/[&<>"']/g,c=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
-  }[c]));
-}
-
-window.addEventListener('load',init);
-</script>
-
-</body>
-</html>
+    <div class="card">
+      <h2>Safety note</h2>
+      <p>GPS and map data do not detect obstacles, confirm tactile paving, verify traffic signals or guarantee that
