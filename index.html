@@ -6,19 +6,15 @@
 <title>BlindPath | Accessible Journeys</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root {
-  --green:#176b5b;--green-dark:#104b41;--mint:#eaf5f1;--ink:#193b36;
-  --white:#fff;--muted:#61736f;--border:#d9e7e2;--orange:#fff0dc;
-}
+:root{--green:#176b5b;--dark:#104b41;--mint:#eaf5f1;--ink:#193b36;--muted:#61736f;--border:#d9e7e2;--orange:#fff0dc}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#f7faf8}
-header{background:var(--white);border-bottom:1px solid var(--border);padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:1000}
+header{background:white;border-bottom:1px solid var(--border);padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:1000}
 .logo{color:var(--green);font-size:25px;font-weight:800;cursor:pointer}
 .header-actions,.form-actions{display:flex;flex-wrap:wrap;gap:8px}
 button,.link-button{border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:white;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-button:hover,.link-button:hover{background:var(--green-dark)}
-button.secondary{background:var(--mint);color:var(--green-dark)}
-button.secondary:hover{background:#d8ebe4}
+button:hover,.link-button:hover{background:var(--dark)}
+button.secondary{background:var(--mint);color:var(--dark)}
 button:focus,input:focus,select:focus,textarea:focus,a:focus{outline:3px solid #e8ae4b;outline-offset:2px}
 main{max-width:1100px;padding:28px 20px 60px;margin:auto}
 .screen{display:none}.screen.active{display:block}
@@ -36,7 +32,7 @@ h2{margin-top:0}.muted{color:var(--muted);line-height:1.6}
 .home-card span{font-weight:400;line-height:1.5}
 label{display:block;font-weight:700;margin:15px 0 7px}
 input,select,textarea{width:100%;padding:13px;border:1px solid #b9cec6;border-radius:9px;font:inherit;background:white;color:var(--ink)}
-input[type="range"]{padding:8px 0}
+input[type=range]{padding:8px 0}
 textarea{min-height:100px;resize:vertical}
 .form-actions{margin-top:18px}
 .notice{background:var(--mint);border-left:4px solid var(--green);padding:14px;border-radius:8px;line-height:1.6;margin:15px 0}
@@ -51,14 +47,8 @@ textarea{min-height:100px;resize:vertical}
 .route-step small{color:var(--muted)}
 .pill{display:inline-block;padding:5px 10px;border-radius:30px;background:var(--mint);font-size:13px;font-weight:700}
 .hidden{display:none!important}
-footer{text-align:center;padding:22px;background:var(--mint);color:var(--green-dark);line-height:1.6}
-@media(max-width:650px){
- header{padding:12px 4%}.logo{font-size:21px}
- .header-actions button{padding:10px;font-size:13px}
- main{padding:18px 14px 40px}.hero{padding:28px 20px}
- .cards,.stats{grid-template-columns:1fr}
- .page-toolbar{align-items:flex-start}
-}
+footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);line-height:1.6}
+@media(max-width:650px){header{padding:12px 4%}.logo{font-size:21px}.header-actions button{padding:10px;font-size:13px}main{padding:18px 14px 40px}.hero{padding:28px 20px}.cards,.stats{grid-template-columns:1fr}.page-toolbar{align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -79,17 +69,17 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--green-d
     <button onclick="showScreen('plan')">Plan a journey</button>
   </div>
   <div class="cards">
-    <button class="home-card" onclick="showScreen('plan')"><strong>Plan a Journey</strong><span>Enter your starting point and destination to find a suggested route.</span></button>
+    <button class="home-card" onclick="showScreen('plan')"><strong>Plan a Journey</strong><span>Enter a starting point and destination to find a suggested route.</span></button>
     <button class="home-card" onclick="showScreen('access')"><strong>Tactile Path Accessibility Map</strong><span>Explore community-submitted reports about tactile paths.</span></button>
     <button class="home-card" onclick="showScreen('report')"><strong>Report an Issue</strong><span>Report blocked, damaged or missing tactile paths.</span></button>
     <button class="home-card" onclick="showScreen('settings')"><strong>Settings & Voice</strong><span>Choose a voice, language, speaking speed and ride threshold.</span></button>
   </div>
-  <div class="notice"><strong>Important:</strong> BlindPath is a prototype. It does not detect obstacles, verify continuous tactile paths or confirm safe crossings.</div>
+  <div class="notice"><strong>Important:</strong> This is a prototype. It does not detect obstacles, verify continuous tactile paths or confirm safe crossings.</div>
 </section>
 
 <section id="plan" class="screen">
   <div class="page-toolbar"><h2>Plan your journey</h2><button class="secondary" onclick="goBack()">← Back</button></div>
-  <p class="muted">Enter a starting point and destination to calculate an estimated walking route.</p>
+  <p class="muted">Enter your starting point and destination to calculate an estimated walking route.</p>
   <div class="card">
     <label for="origin">Starting point</label>
     <input id="origin" placeholder="e.g. Universiti Malaya">
@@ -227,8 +217,8 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--green-d
       <option value="zh-CN">中文 (Mandarin)</option>
     </select>
     <label for="voiceChoice">Voice</label>
-    <select id="voiceChoice" onchange="saveSettings()"><option value="">System default voice</option></select>
-    <p class="muted">The available voices depend on your browser and operating system.</p>
+    <select id="voiceChoice" onchange="saveSettings()"><option value="">Automatic voice</option></select>
+    <p class="muted">Available voices depend on your browser and operating system.</p>
     <label for="voiceRate">Speaking speed</label>
     <input id="voiceRate" type="range" min="0.7" max="1.3" step="0.1" value="0.9" oninput="saveSettings()">
     <label for="voicePitch">Voice pitch</label>
@@ -240,39 +230,30 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--green-d
       <option value="8">8 km</option>
       <option value="10">10 km</option>
     </select>
-    <p class="muted">BlindPath announces a ride suggestion when the estimated walking route exceeds this distance.</p>
+    <p class="muted">A ride suggestion is announced when the estimated walking route exceeds this distance.</p>
     <div class="form-actions"><button onclick="testVoice()">Test voice</button></div>
     <p id="settingsStatus" class="muted" role="status" aria-live="polite"></p>
   </div>
 </section>
 </main>
 
-<footer>
-  <strong>BlindPath</strong><br>
-  An accessibility-focused navigation prototype.<br>
-  Always verify real-world conditions independently.
-</footer>
-
+<footer><strong>BlindPath</strong><br>An accessibility-focused navigation prototype.<br>Always verify real-world conditions independently.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const STORAGE_REPORTS="blindpath_reports_v1";
 const STORAGE_PROFILE="blindpath_profile_v1";
 const STORAGE_SETTINGS="blindpath_settings_v1";
-
 let routeData=null,planMap=null,navMap=null,accessMap=null;
 let routeLayer=null,navRouteLayer=null,userMarker=null,accessMarkers=[],tactileLayerGroup=null;
-let tactileFeatures=[],announcedTactileIds=new Set();
-let currentCoords=null,reportCoords=null,watchId=null,navigationActive=false,currentStepIndex=0;
-let previousScreens=[],currentScreen="home";
+let tactileFeatures=[],announcedTactileIds=new Set(),currentCoords=null,reportCoords=null;
+let watchId=null,navigationActive=false,currentStepIndex=0,previousScreens=[],currentScreen="home";
+let lastAnnouncementKey="",lastAnnouncementTime=0;
 
-function getReports(){
-  try{return JSON.parse(localStorage.getItem(STORAGE_REPORTS)||"[]")}
-  catch(e){return []}
-}
+function getReports(){try{return JSON.parse(localStorage.getItem(STORAGE_REPORTS)||"[]")}catch(e){return[]}}
 function saveReports(reports){localStorage.setItem(STORAGE_REPORTS,JSON.stringify(reports))}
 function getSettings(){
   try{return JSON.parse(localStorage.getItem(STORAGE_SETTINGS)||'{"language":"en-US","threshold":5,"voiceURI":"","rate":0.9,"pitch":1}')}
-  catch(e){return {language:"en-US",threshold:5,voiceURI:"",rate:0.9,pitch:1}}
+  catch(e){return{language:"en-US",threshold:5,voiceURI:"",rate:0.9,pitch:1}}
 }
 function getThreshold(){return Number(document.getElementById("rideThreshold").value||5)}
 
@@ -283,7 +264,7 @@ function showScreen(id){
 }
 function displayScreen(id){
   stopNavigation();
-  document.querySelectorAll(".screen").forEach(screen=>screen.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   currentScreen=id;
   if(id==="plan"&&planMap)setTimeout(()=>planMap.invalidateSize(),100);
@@ -293,174 +274,145 @@ function displayScreen(id){
 function goBack(){
   stopNavigation();
   const previous=previousScreens.pop();
-  if(previous&&document.getElementById(previous))displayScreen(previous);
-  else displayScreen("home");
+  displayScreen(previous&&document.getElementById(previous)?previous:"home");
 }
 function goHome(){stopNavigation();previousScreens=[];displayScreen("home")}
 
-function createBaseMap(elementId,lat=3.139,lon=101.6869,zoom=12){
-  const map=L.map(elementId).setView([lat,lon],zoom);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-    maxZoom:19,
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
+function createBaseMap(id,lat=3.139,lon=101.6869,zoom=12){
+  const map=L.map(id).setView([lat,lon],zoom);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
   return map;
 }
 function setupPlanMap(){if(!planMap)planMap=createBaseMap("planMap");return planMap}
 function setupNavMap(){if(!navMap)navMap=createBaseMap("navMap");return navMap}
 function setupAccessMap(){if(!accessMap)accessMap=createBaseMap("accessMap");return accessMap}
 
+/* Voice handling */
 function speak(text,onEnd){
-  if(!("speechSynthesis" in window)){
+  if(!("speechSynthesis"in window)||!("SpeechSynthesisUtterance"in window)){
     const status=document.getElementById("navStatus");
-    if(status)status.textContent="Voice guidance is not supported by this browser.";
+    if(status)status.textContent="Voice playback is not supported by this browser.";
     return;
   }
   speechSynthesis.cancel();
   const settings=getSettings();
-  const utterance=new SpeechSynthesisUtterance(text);
+  const utterance=new SpeechSynthesisUtterance(String(text||""));
   utterance.lang=settings.language||"en-US";
   utterance.rate=Number(settings.rate)||0.9;
   utterance.pitch=Number(settings.pitch)||1;
   const voices=speechSynthesis.getVoices();
-  const selectedVoice=voices.find(v=>v.voiceURI===settings.voiceURI);
-  if(selectedVoice)utterance.voice=selectedVoice;
-  utterance.onend=()=>{if(onEnd)onEnd()};
-  speechSynthesis.speak(utterance);
+  const prefix=utterance.lang.split("-")[0].toLowerCase();
+  const selected=voices.find(v=>v.voiceURI===settings.voiceURI&&(v.lang||"").toLowerCase().startsWith(prefix));
+  const matching=voices.find(v=>(v.lang||"").toLowerCase().startsWith(prefix));
+  if(selected)utterance.voice=selected;
+  else if(matching)utterance.voice=matching;
+  utterance.onend=()=>{if(typeof onEnd==="function")onEnd()};
+  utterance.onerror=e=>{
+    const status=document.getElementById("navStatus");
+    if(status&&e.error!=="canceled"&&e.error!=="interrupted")status.textContent="Speech failed. Check your available system voices and test voice settings.";
+  };
+  setTimeout(()=>speechSynthesis.speak(utterance),80);
 }
-
 function loadVoiceOptions(){
-  if(!("speechSynthesis" in window))return;
+  if(!("speechSynthesis"in window))return;
   const select=document.getElementById("voiceChoice");
   if(!select)return;
-  const savedVoice=getSettings().voiceURI||"";
-  const voices=speechSynthesis.getVoices();
-  const language=document.getElementById("voiceLanguage").value;
-  const languagePrefix=language.split("-")[0].toLowerCase();
-  const matchingVoices=voices.filter(v=>v.lang.toLowerCase().startsWith(languagePrefix));
-  const otherVoices=voices.filter(v=>!matchingVoices.includes(v));
+  const settings=getSettings(),prefix=document.getElementById("voiceLanguage").value.split("-")[0].toLowerCase();
+  const voices=speechSynthesis.getVoices().filter(v=>(v.lang||"").toLowerCase().startsWith(prefix));
   select.innerHTML="";
-  const defaultOption=document.createElement("option");
-  defaultOption.value="";
-  defaultOption.textContent="System default voice";
-  select.appendChild(defaultOption);
-  [...matchingVoices,...otherVoices].forEach(voice=>{
+  const automatic=document.createElement("option");
+  automatic.value="";
+  automatic.textContent=voices.length?"Automatic matching voice":"System default (no matching voice found)";
+  select.appendChild(automatic);
+  voices.forEach(v=>{
     const option=document.createElement("option");
-    option.value=voice.voiceURI;
-    option.textContent=voice.name+" ("+voice.lang+")";
+    option.value=v.voiceURI;
+    option.textContent=v.name+" ("+v.lang+")";
     select.appendChild(option);
   });
-  if([...select.options].some(option=>option.value===savedVoice))select.value=savedVoice;
-  else select.value="";
+  if([...select.options].some(o=>o.value===settings.voiceURI))select.value=settings.voiceURI;
+  const status=document.getElementById("settingsStatus");
+  if(status&&!voices.length)status.textContent="No voice matching this language was found on your device. Install or enable a suitable system voice if available.";
 }
 function languageChanged(){loadVoiceOptions();saveSettings()}
 function saveSettings(){
-  const oldSettings=getSettings();
-  const voiceElement=document.getElementById("voiceChoice");
-  const rateElement=document.getElementById("voiceRate");
-  const pitchElement=document.getElementById("voicePitch");
+  const old=getSettings();
   const settings={
     language:document.getElementById("voiceLanguage").value,
     threshold:Number(document.getElementById("rideThreshold").value),
-    voiceURI:voiceElement?voiceElement.value:oldSettings.voiceURI||"",
-    rate:rateElement?Number(rateElement.value):0.9,
-    pitch:pitchElement?Number(pitchElement.value):1
+    voiceURI:document.getElementById("voiceChoice")?.value||"",
+    rate:Number(document.getElementById("voiceRate").value)||0.9,
+    pitch:Number(document.getElementById("voicePitch").value)||1
   };
   localStorage.setItem(STORAGE_SETTINGS,JSON.stringify(settings));
   const status=document.getElementById("settingsStatus");
-  if(status)status.textContent="Settings saved. Available voices depend on your device.";
+  if(status)status.textContent="Settings saved. Voices depend on your device.";
 }
 function testVoice(){
   saveSettings();
   const language=getSettings().language;
   const messages={
-    "en-US":"Welcome to BlindPath. This is a voice guidance test.",
-    "ms-MY":"Selamat datang ke BlindPath. Ini ialah ujian panduan suara.",
-    "zh-CN":"欢迎使用 BlindPath。这是语音导航测试。"
+    "en-US":"Welcome to BlindPath. This is a voice guidance test. If you can hear this message clearly, your voice is working.",
+    "ms-MY":"Selamat datang ke BlindPath. Ini ialah ujian panduan suara. Jika anda dapat mendengar mesej ini dengan jelas, suara anda berfungsi.",
+    "zh-CN":"欢迎使用 BlindPath。这是语音导航测试。如果您能清楚听到这段语音，说明语音功能正常。"
   };
   speak(messages[language]||messages["en-US"]);
 }
 
+/* Speech text for route information */
 function formatDurationForSpeech(seconds,language=getSettings().language||"en-US"){
-  const totalMinutes=Math.max(1,Math.round(Number(seconds||0)/60));
-  const hours=Math.floor(totalMinutes/60),minutes=totalMinutes%60;
-  if(language==="ms-MY"){
-    const parts=[];
-    if(hours)parts.push(hours+" jam");
-    if(minutes)parts.push(minutes+" minit");
-    return parts.join(" ")||"kurang daripada satu minit";
-  }
-  if(language==="zh-CN"){
-    let result="";
-    if(hours)result+=hours+" 小时";
-    if(minutes)result+=minutes+" 分钟";
-    return result||"不到一分钟";
-  }
-  const parts=[];
-  if(hours)parts.push(hours+(hours===1?" hour":" hours"));
-  if(minutes)parts.push(minutes+(minutes===1?" minute":" minutes"));
-  return parts.join(" and ")||"less than one minute";
+  const total=Math.max(1,Math.round(Number(seconds||0)/60));
+  const hours=Math.floor(total/60),minutes=total%60;
+  if(language==="ms-MY")return(hours?hours+" jam ":"")+(minutes?minutes+" minit":"")||"kurang daripada satu minit";
+  if(language==="zh-CN")return(hours?hours+" 小时":"")+(minutes?minutes+" 分钟":"")||"不到一分钟";
+  return(hours?hours+(hours===1?" hour ":" hours "):"")+(minutes?minutes+(minutes===1?" minute":" minutes"):"")||"less than one minute";
 }
-function routeSummaryText(km,durationSeconds){
-  const language=getSettings().language||"en-US";
-  const duration=formatDurationForSpeech(durationSeconds,language);
-  if(language==="ms-MY")return "Laluan telah dikira. Jarak perjalanan dianggarkan "+km.toFixed(1)+" kilometer. Anggaran masa berjalan kaki ialah "+duration+". Masa sebenar mungkin berbeza mengikut kelajuan dan keadaan laluan.";
-  if(language==="zh-CN")return "路线已计算完成。预计距离为 "+km.toFixed(1)+" 公里，预计步行时间为 "+duration+"。实际时间可能因步行速度和路况而有所不同。";
-  return "Your route is ready. The estimated distance is "+km.toFixed(1)+" kilometres, and the estimated walking time is "+duration+". Actual time may vary with walking speed and route conditions.";
+function routeSummaryText(km,seconds){
+  const lang=getSettings().language,duration=formatDurationForSpeech(seconds,lang);
+  if(lang==="ms-MY")return"Laluan telah dikira. Jarak perjalanan dianggarkan "+km.toFixed(1)+" kilometer. Anggaran masa berjalan kaki ialah "+duration+". Masa sebenar mungkin berbeza mengikut kelajuan dan keadaan laluan.";
+  if(lang==="zh-CN")return"路线已计算完成。预计距离为 "+km.toFixed(1)+" 公里，预计步行时间为 "+duration+"。实际时间可能因步行速度和路况而有所不同。";
+  return"Your route is ready. The estimated distance is "+km.toFixed(1)+" kilometres and the estimated walking time is "+duration+". Actual time may vary with walking speed and route conditions.";
 }
 function rideSuggestionText(km,threshold){
-  const language=getSettings().language||"en-US";
-  if(language==="ms-MY")return "Cadangan Smart Ride Assist. Jarak berjalan kaki anda ialah kira-kira "+km.toFixed(1)+" kilometer, melebihi "+threshold+" kilometer. Anda mungkin mahu menempah perjalanan menggunakan Grab. Adakah anda mahu membuka Grab? Pilih butang Buka Grab pada skrin jika anda mahu meneruskan. BlindPath tidak akan membuat tempahan secara automatik.";
-  if(language==="zh-CN")return "智能出行提示。您的预计步行距离约为 "+km.toFixed(1)+" 公里，超过了 "+threshold+" 公里。您可以考虑使用 Grab 叫车。您想打开 Grab 吗？如果想继续，请选择屏幕上的打开 Grab 按钮。BlindPath 不会自动为您预订。";
-  return "Smart Ride Assist. Your estimated walking route is "+km.toFixed(1)+" kilometres, which exceeds "+threshold+" kilometres. You may want to book a ride using Grab. Would you like to open Grab? Select the Open Grab button on the screen if you want to continue. BlindPath will not book a ride automatically.";
+  const lang=getSettings().language;
+  if(lang==="ms-MY")return"Cadangan Smart Ride Assist. Jarak berjalan kaki anda kira-kira "+km.toFixed(1)+" kilometer, melebihi "+threshold+" kilometer. Anda mungkin mahu menggunakan Grab. Jika mahu meneruskan, pilih butang Buka Grab pada skrin. BlindPath tidak membuat tempahan secara automatik.";
+  if(lang==="zh-CN")return"智能出行提示。预计步行距离约为 "+km.toFixed(1)+" 公里，超过了 "+threshold+" 公里。您可以考虑使用 Grab 叫车。如要继续，请选择屏幕上的打开 Grab 按钮。BlindPath 不会自动为您预订。";
+  return"Smart Ride Assist. Your estimated walking route is "+km.toFixed(1)+" kilometres, exceeding your "+threshold+" kilometre threshold. You may want to use Grab. Select the Open Grab button on the screen if you want to continue. BlindPath will not book a ride automatically.";
 }
-function repeatRideSuggestion(){
-  if(!routeData)return;
-  speak(rideSuggestionText(routeData.route.distance/1000,getThreshold()));
+function repeatRideSuggestion(){if(routeData)speak(rideSuggestionText(routeData.route.distance/1000,getThreshold()))}
+
+function formatDistance(metres){
+  return metres>=1000?(metres/1000).toFixed(1)+" kilometres":Math.round(metres)+" metres";
+}
+function formatDuration(seconds){
+  const mins=Math.max(1,Math.round(seconds/60));
+  return mins<60?mins+" min":Math.floor(mins/60)+" hr "+mins%60+" min";
+}
+function distanceMetres(lat1,lon1,lat2,lon2){
+  const R=6371000,rad=n=>n*Math.PI/180;
+  const dLat=rad(lat2-lat1),dLon=rad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
+/* Location search and route calculation */
 async function geocodePlace(place){
-  const coordinateMatch=place.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/);
-  if(coordinateMatch)return {lat:Number(coordinateMatch[1]),lon:Number(coordinateMatch[2]),name:"Entered coordinates"};
-  const url="https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(place);
-  const response=await fetch(url,{headers:{"Accept":"application/json"}});
+  const match=place.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/);
+  if(match)return{lat:Number(match[1]),lon:Number(match[2]),name:"Entered coordinates"};
+  const response=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(place),{headers:{Accept:"application/json"}});
   if(!response.ok)throw new Error("Could not search for this place.");
   const results=await response.json();
   if(!results.length)throw new Error("Place not found: "+place);
-  return {lat:Number(results[0].lat),lon:Number(results[0].lon),name:results[0].display_name};
+  return{lat:Number(results[0].lat),lon:Number(results[0].lon),name:results[0].display_name};
 }
 async function fetchWalkingRoute(start,end){
   const url="https://routing.openstreetmap.de/routed-foot/route/v1/driving/"+start.lon+","+start.lat+";"+end.lon+","+end.lat+"?overview=full&geometries=geojson&steps=true";
   const response=await fetch(url);
   if(!response.ok)throw new Error("The walking route service is unavailable.");
   const data=await response.json();
-  if(data.code!=="Ok"||!data.routes||!data.routes.length)throw new Error("No route was found for these locations.");
+  if(data.code!=="Ok"||!data.routes?.length)throw new Error("No route was found for these locations.");
   return data.routes[0];
 }
-function formatDistance(metres){
-  if(metres>=1000)return (metres/1000).toFixed(1)+" kilometres";
-  return Math.round(metres)+" metres";
-}
-function formatDuration(seconds){
-  const mins=Math.round(seconds/60);
-  if(mins<60)return mins+" min";
-  return Math.floor(mins/60)+" hr "+(mins%60)+" min";
-}
-function routeStepText(step){
-  const maneuver=step.maneuver||{};
-  const type=maneuver.type||"continue";
-  const modifier=maneuver.modifier?" "+maneuver.modifier:"";
-  const road=step.name?" onto "+step.name:"";
-  const distance=step.distance?" for "+formatDistance(step.distance):"";
-  if(type==="depart")return "Start walking"+road+distance+".";
-  if(type==="arrive")return "You have reached your destination.";
-  if(type==="turn")return "Turn"+modifier+road+distance+".";
-  if(type==="end of road")return "At the end of the road, turn"+modifier+road+".";
-  if(type==="roundabout"||type==="rotary")return "At the roundabout, follow the route"+road+".";
-  if(type==="continue")return "Continue straight"+road+distance+".";
-  return "Continue along the route"+road+distance+".";
-}
-
 async function calculateRoute(){
   const startText=document.getElementById("origin").value.trim();
   const endText=document.getElementById("destination").value.trim();
@@ -470,382 +422,4 @@ async function calculateRoute(){
   document.getElementById("planResults").classList.add("hidden");
   document.getElementById("rideAssist").classList.add("hidden");
   try{
-    const start=await geocodePlace(startText);
-    const end=await geocodePlace(endText);
-    const route=await fetchWalkingRoute(start,end);
-    routeData={start,end,route};
-    loadTactileFeaturesForRoute();
-    const km=route.distance/1000,threshold=getThreshold();
-    document.getElementById("routeDistance").textContent=km.toFixed(1)+" km";
-    document.getElementById("routeDuration").textContent=formatDuration(route.duration);
-    const rideAssist=document.getElementById("rideAssist");
-    if(km>threshold){
-      document.getElementById("rideStatus").textContent="Suggested";
-      document.getElementById("rideMessage").textContent="Your estimated walking route is "+km.toFixed(1)+" km, longer than your "+threshold+" km threshold. Consider booking a ride if that better suits your needs.";
-      rideAssist.classList.remove("hidden");
-    }else{
-      document.getElementById("rideStatus").textContent="Not triggered";
-      rideAssist.classList.add("hidden");
-    }
-    drawPlanRoute();
-    document.getElementById("planResults").classList.remove("hidden");
-    status.textContent=km>threshold
-      ?"Route calculated. Distance and estimated time will be announced, followed by a ride suggestion."
-      :"Route calculated. Distance and estimated time will be announced. Check real-world conditions before travelling.";
-    speak(routeSummaryText(km,route.duration),()=>{if(km>threshold)speak(rideSuggestionText(km,threshold))});
-  }catch(error){
-    status.textContent=error.message||"Could not calculate the route. Check your connection.";
-  }
-}
-function drawPlanRoute(){
-  if(!routeData)return;
-  const map=setupPlanMap();
-  if(routeLayer)map.removeLayer(routeLayer);
-  const coords=routeData.route.geometry.coordinates.map(c=>[c[1],c[0]]);
-  routeLayer=L.polyline(coords,{color:"#176b5b",weight:6}).addTo(map);
-  L.marker([routeData.start.lat,routeData.start.lon]).addTo(map).bindPopup("Starting point");
-  L.marker([routeData.end.lat,routeData.end.lon]).addTo(map).bindPopup("Destination");
-  map.fitBounds(routeLayer.getBounds(),{padding:[25,25]});
-}
-function useCurrentLocationForOrigin(){
-  const status=document.getElementById("planStatus");
-  if(!navigator.geolocation){status.textContent="This browser does not support location access.";return}
-  status.textContent="Requesting your location...";
-  navigator.geolocation.getCurrentPosition(position=>{
-    currentCoords={lat:position.coords.latitude,lon:position.coords.longitude};
-    document.getElementById("origin").value=currentCoords.lat.toFixed(6)+", "+currentCoords.lon.toFixed(6);
-    status.textContent="Starting point set to your current coordinates.";
-  },()=>{
-    status.textContent="Location permission was denied or your location is unavailable.";
-  },{enableHighAccuracy:true,timeout:15000});
-}
-
-async function loadTactileFeaturesForRoute(){
-  tactileFeatures=[];
-  announcedTactileIds.clear();
-  if(!routeData)return;
-  const coordinates=routeData.route.geometry.coordinates;
-  const lats=coordinates.map(c=>c[1]),lons=coordinates.map(c=>c[0]);
-  const south=Math.min(...lats)-0.0005,north=Math.max(...lats)+0.0005;
-  const west=Math.min(...lons)-0.0005,east=Math.max(...lons)+0.0005;
-  const query=`
-    [out:json][timeout:20];
-    (
-      node["tactile_paving"~"^(yes|contrasted)$"](${south},${west},${north},${east});
-      way["tactile_paving"~"^(yes|contrasted)$"](${south},${west},${north},${east});
-    );
-    out center tags;
-  `;
-  try{
-    const response=await fetch("https://overpass-api.de/api/interpreter",{
-      method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
-      body:new URLSearchParams({data:query})
-    });
-    if(!response.ok)throw new Error("Map data unavailable");
-    const data=await response.json();
-    const candidates=(data.elements||[]).map(element=>({
-      id:element.type+"-"+element.id,
-      lat:element.lat??element.center?.lat,
-      lon:element.lon??element.center?.lon,
-      tags:element.tags||{}
-    })).filter(feature=>Number.isFinite(feature.lat)&&Number.isFinite(feature.lon));
-    tactileFeatures=candidates.filter(feature=>{
-      let nearestDistance=Infinity;
-      for(const coordinate of coordinates){
-        const distance=distanceMetres(feature.lat,feature.lon,coordinate[1],coordinate[0]);
-        if(distance<nearestDistance)nearestDistance=distance;
-        if(nearestDistance<=35)return true;
-      }
-      return false;
-    });
-    drawTactileMarkers();
-    const status=document.getElementById("navStatus");
-    if(status)status.textContent=tactileFeatures.length
-      ?tactileFeatures.length+" mapped tactile-paving feature(s) found near the route. Not verified."
-      :"No tactile-paving features were found in the map data. This does not mean none exist.";
-  }catch(error){
-    tactileFeatures=[];
-    const status=document.getElementById("navStatus");
-    if(status)status.textContent="Tactile-paving data is unavailable right now. Route guidance can still run.";
-  }
-}
-function drawTactileMarkers(){
-  if(!navMap)return;
-  if(tactileLayerGroup)navMap.removeLayer(tactileLayerGroup);
-  tactileLayerGroup=L.layerGroup().addTo(navMap);
-  tactileFeatures.forEach(feature=>{
-    const marker=L.circleMarker([feature.lat,feature.lon],{
-      radius:8,color:"#104b41",fillColor:"#e8ae4b",fillOpacity:0.95,weight:2
-    });
-    marker.bindPopup("Tactile paving mapped in OpenStreetMap. This location has not been independently verified.");
-    marker.addTo(tactileLayerGroup);
-  });
-}
-function checkNearbyTactilePaving(lat,lon){
-  if(!navigationActive||!tactileFeatures.length)return;
-  for(const feature of tactileFeatures){
-    if(announcedTactileIds.has(feature.id))continue;
-    const distance=distanceMetres(lat,lon,feature.lat,feature.lon);
-    if(distance<=25){
-      announcedTactileIds.add(feature.id);
-      const language=getSettings().language||"en-US";
-      let message;
-      if(language==="ms-MY")message="Makluman: OpenStreetMap menunjukkan laluan berpandu sentuhan dipetakan berhampiran. Lokasi ini belum disahkan. Sila periksa keadaan sekeliling dengan berhati-hati.";
-      else if(language==="zh-CN")message="提示：OpenStreetMap 显示附近有已标记的触觉铺路设施。该位置尚未经过独立核实，请谨慎确认周围环境。";
-      else message="Notice: OpenStreetMap shows tactile paving mapped nearby. This location has not been independently verified. Please check your surroundings carefully.";
-      document.getElementById("currentInstruction").textContent=message;
-      speak(message,()=>{
-        if(navigationActive&&routeData){
-          const steps=routeData.route.legs[0].steps||[];
-          const step=steps[currentStepIndex]||{};
-          const instruction=instructionWithRemainingTime(step);
-          document.getElementById("currentInstruction").textContent=instruction;
-          speak(instruction);
-        }
-      });
-      break;
-    }
-  }
-}
-
-function startNavigation(){
-  if(!routeData)return;
-  currentStepIndex=0;
-  showScreen("navigation");
-  drawNavRoute();
-  renderDirections();
-  document.getElementById("navStatus").textContent="Route ready. Press Start live guidance when you are ready.";
-  const firstStep=routeData.route.legs[0].steps[0]||{};
-  document.getElementById("currentInstruction").textContent=routeStepText(firstStep);
-}
-function drawNavRoute(){
-  if(!routeData)return;
-  const map=setupNavMap();
-  if(navRouteLayer)map.removeLayer(navRouteLayer);
-  const coords=routeData.route.geometry.coordinates.map(c=>[c[1],c[0]]);
-  navRouteLayer=L.polyline(coords,{color:"#176b5b",weight:6}).addTo(map);
-  map.fitBounds(navRouteLayer.getBounds(),{padding:[25,25]});
-  drawTactileMarkers();
-}
-function renderDirections(){
-  if(!routeData)return;
-  const steps=routeData.route.legs[0].steps||[];
-  const list=document.getElementById("directionList");
-  list.innerHTML="";
-  steps.forEach((step,index)=>{
-    const div=document.createElement("div");
-    div.className="route-step"+(index===currentStepIndex?" current":"");
-    const title=document.createElement("strong");
-    title.textContent="Step "+(index+1);
-    const paragraph=document.createElement("p");
-    paragraph.textContent=routeStepText(step);
-    const small=document.createElement("small");
-    small.textContent="Approx. "+formatDistance(step.distance||0);
-    div.append(title,paragraph,small);
-    list.appendChild(div);
-  });
-}
-function beginLiveNavigation(){
-  if(!routeData){document.getElementById("navStatus").textContent="Please plan a journey first.";return}
-  if(!navigator.geolocation){document.getElementById("navStatus").textContent="Location access is not supported.";return}
-  stopNavigation();
-  navigationActive=true;
-  document.getElementById("navStatus").textContent="Live guidance started. GPS accuracy may vary.";
-  announceCurrentStep();
-  watchId=navigator.geolocation.watchPosition(position=>{
-    if(!navigationActive)return;
-    const lat=position.coords.latitude,lon=position.coords.longitude;
-    currentCoords={lat,lon};
-    if(!userMarker)userMarker=L.marker([lat,lon]).addTo(setupNavMap()).bindPopup("Approximate current location");
-    else userMarker.setLatLng([lat,lon]);
-    setupNavMap().panTo([lat,lon],{animate:true});
-    document.getElementById("gpsStatus").textContent="GPS accuracy estimate: "+Math.round(position.coords.accuracy)+" metres.";
-    advanceStepIfNear(lat,lon);
-    checkNearbyTactilePaving(lat,lon);
-  },()=>{
-    document.getElementById("gpsStatus").textContent="Unable to get a reliable location. Check location permission and GPS settings.";
-  },{enableHighAccuracy:true,maximumAge:3000,timeout:15000});
-}
-function getRemainingDurationSeconds(){
-  if(!routeData)return 0;
-  const steps=routeData.route.legs[0].steps||[];
-  return steps.slice(currentStepIndex).reduce((total,step)=>total+Number(step.duration||0),0);
-}
-function instructionWithRemainingTime(step){
-  const instruction=routeStepText(step);
-  const language=getSettings().language||"en-US";
-  const remaining=formatDurationForSpeech(getRemainingDurationSeconds(),language);
-  if(language==="ms-MY")return instruction+" Anggaran masa berjalan kaki yang tinggal ialah "+remaining+".";
-  if(language==="zh-CN")return instruction+" 预计剩余步行时间为 "+remaining+"。";
-  return instruction+" Estimated walking time remaining is "+remaining+".";
-}
-function announceCurrentStep(){
-  if(!routeData||!navigationActive)return;
-  const steps=routeData.route.legs[0].steps||[];
-  if(currentStepIndex>=steps.length){
-    const message="You have reached the end of the listed route. Check your surroundings.";
-    document.getElementById("currentInstruction").textContent=message;
-    speak(message);
-    return;
-  }
-  const instruction=instructionWithRemainingTime(steps[currentStepIndex]);
-  document.getElementById("currentInstruction").textContent=instruction;
-  renderDirections();
-  speak(instruction);
-}
-function repeatInstruction(){
-  if(!routeData)return;
-  const steps=routeData.route.legs[0].steps||[];
-  const step=steps[currentStepIndex]||steps[0]||{};
-  speak(instructionWithRemainingTime(step));
-}
-function advanceStepIfNear(lat,lon){
-  const steps=routeData.route.legs[0].steps||[];
-  if(currentStepIndex>=steps.length-1)return;
-  const step=steps[currentStepIndex];
-  const location=step.maneuver&&step.maneuver.location;
-  if(!location)return;
-  if(distanceMetres(lat,lon,location[1],location[0])<20){
-    currentStepIndex++;
-    announceCurrentStep();
-  }
-}
-function stopNavigation(){
-  navigationActive=false;
-  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}
-  if("speechSynthesis" in window)speechSynthesis.cancel();
-}
-function distanceMetres(lat1,lon1,lat2,lon2){
-  const R=6371000,rad=n=>n*Math.PI/180;
-  const dLat=rad(lat2-lat1),dLon=rad(lon2-lon1);
-  const a=Math.sin(dLat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function issueLabel(type){
-  return ({
-    blocked:"Blocked tactile path",
-    damaged:"Damaged tactile path",
-    missing:"Missing tactile path",
-    gap:"Accessibility gap / no tactile path",
-    other:"Other accessibility issue"
-  })[type]||"Accessibility report";
-}
-function renderAccessibilityMap(){
-  const map=setupAccessMap();
-  const filter=document.getElementById("reportFilter").value;
-  accessMarkers.forEach(marker=>map.removeLayer(marker));
-  accessMarkers=[];
-  const reports=getReports();
-  const shown=reports.filter(report=>filter==="all"||report.type===filter);
-  shown.forEach(report=>{
-    if(typeof report.lat!=="number"||typeof report.lon!=="number")return;
-    const marker=L.marker([report.lat,report.lon]).addTo(map);
-    const popup=document.createElement("div");
-    const title=document.createElement("strong");
-    title.textContent=issueLabel(report.type);
-    const description=document.createElement("p");
-    description.textContent=report.description||"No description provided.";
-    const location=document.createElement("p");
-    location.textContent=report.location||"Location not specified.";
-    const note=document.createElement("small");
-    note.textContent="Community-submitted; not independently verified.";
-    popup.append(title,description,location,note);
-    marker.bindPopup(popup);
-    accessMarkers.push(marker);
-  });
-  document.getElementById("countAll").textContent=reports.length;
-  document.getElementById("countBlocked").textContent=reports.filter(r=>r.type==="blocked").length;
-  document.getElementById("countDamaged").textContent=reports.filter(r=>r.type==="damaged").length;
-  const list=document.getElementById("reportList");
-  list.innerHTML="";
-  if(!shown.length)list.textContent="No reports match this filter yet.";
-  else shown.slice().reverse().forEach(report=>{
-    const card=document.createElement("div");
-    card.className="route-step";
-    const title=document.createElement("strong");
-    title.textContent=issueLabel(report.type);
-    const description=document.createElement("p");
-    description.textContent=report.description||"No description provided.";
-    const location=document.createElement("small");
-    location.textContent=(report.location||"Location not specified")+
-      (typeof report.lat==="number"?" • Coordinates attached":" • No map coordinates");
-    card.append(title,description,location);
-    list.appendChild(card);
-  });
-  document.getElementById("mapStatus").textContent=shown.length+" report(s) shown. Reports are not official verification of conditions.";
-}
-function locateOnAccessMap(){
-  if(!navigator.geolocation){document.getElementById("mapStatus").textContent="Location access is not supported.";return}
-  document.getElementById("mapStatus").textContent="Requesting your location...";
-  navigator.geolocation.getCurrentPosition(position=>{
-    const lat=position.coords.latitude,lon=position.coords.longitude;
-    const map=setupAccessMap();
-    map.setView([lat,lon],16);
-    L.circleMarker([lat,lon],{radius:8,color:"#104b41",fillColor:"#176b5b",fillOpacity:0.8})
-      .addTo(map).bindPopup("Your approximate location").openPopup();
-    document.getElementById("mapStatus").textContent="Showing your approximate location. This does not confirm nearby tactile paths.";
-  },()=>{
-    document.getElementById("mapStatus").textContent="Could not get your location. Check browser location permission.";
-  },{enableHighAccuracy:true,timeout:15000});
-}
-
-function captureReportLocation(){
-  if(!navigator.geolocation){document.getElementById("capturedLocation").textContent="Location access is not supported.";return}
-  document.getElementById("capturedLocation").textContent="Requesting location...";
-  navigator.geolocation.getCurrentPosition(position=>{
-    reportCoords={lat:position.coords.latitude,lon:position.coords.longitude};
-    document.getElementById("capturedLocation").textContent="Coordinates attached: "+reportCoords.lat.toFixed(5)+", "+reportCoords.lon.toFixed(5);
-  },()=>{
-    document.getElementById("capturedLocation").textContent="Could not get location. You can still save a text-only report.";
-  },{enableHighAccuracy:true,timeout:15000});
-}
-function submitReport(){
-  const type=document.getElementById("issueType").value;
-  const description=document.getElementById("issueDescription").value.trim();
-  const location=document.getElementById("issueLocation").value.trim();
-  if(!description){document.getElementById("reportStatus").textContent="Please describe the issue before saving.";return}
-  const reports=getReports();
-  reports.push({
-    id:Date.now(),type,description,location,
-    lat:reportCoords?reportCoords.lat:null,
-    lon:reportCoords?reportCoords.lon:null,
-    createdAt:new Date().toISOString()
-  });
-  saveReports(reports);
-  document.getElementById("issueDescription").value="";
-  document.getElementById("issueLocation").value="";
-  document.getElementById("capturedLocation").textContent="No coordinates attached.";
-  reportCoords=null;
-  document.getElementById("reportStatus").textContent="Report saved locally on this device. It has not been sent to anyone.";
-  renderAccessibilityMap();
-}
-function saveProfile(){
-  localStorage.setItem(STORAGE_PROFILE,JSON.stringify({
-    name:document.getElementById("profileName").value.trim(),
-    preference:document.getElementById("accessNeeds").value
-  }));
-  document.getElementById("profileStatus").textContent="Profile saved locally on this device.";
-}
-function loadSavedSettings(){
-  const settings=getSettings();
-  document.getElementById("voiceLanguage").value=settings.language||"en-US";
-  document.getElementById("rideThreshold").value=String(settings.threshold||5);
-  document.getElementById("voiceRate").value=String(settings.rate||0.9);
-  document.getElementById("voicePitch").value=String(settings.pitch||1);
-  try{
-    const profile=JSON.parse(localStorage.getItem(STORAGE_PROFILE)||"{}");
-    document.getElementById("profileName").value=profile.name||"";
-    document.getElementById("accessNeeds").value=profile.preference||"voice";
-  }catch(e){}
-  loadVoiceOptions();
-}
-loadSavedSettings();
-if("speechSynthesis" in window){
-  speechSynthesis.onvoiceschanged=loadVoiceOptions;
-  setTimeout(loadVoiceOptions,500);
-}
-</script>
-</body>
-</html>
+    const start=await geocodePlace(startText),end=await geocodePlace(endText);
