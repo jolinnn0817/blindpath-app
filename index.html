@@ -4,86 +4,631 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlindPath</title>
+  <meta name="theme-color" content="#123b66">
+  <title>BlindPath | Accessible Township</title>
 
   <style>
+    :root {
+      --navy: #123b66;
+      --blue: #1769aa;
+      --light: #eef5fc;
+      --text: #172b3d;
+      --white: #ffffff;
+      --border: #6b7f91;
+      --yellow: #ffd166;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f6fc;
-      color: #172b4d;
-      padding: 30px 16px;
-    }
-
-    main {
-      max-width: 500px;
-      margin: auto;
-      padding: 24px;
-      background: white;
-      border-radius: 16px;
-    }
-
-    h1 {
-      color: #174ea6;
-      font-size: 36px;
-    }
-
-    p {
+      margin: 0;
+      padding: 20px 14px 40px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--light);
+      color: var(--text);
       font-size: 18px;
       line-height: 1.6;
     }
 
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px #123b6618;
+    }
+
+    h1 {
+      color: var(--navy);
+      font-size: 38px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      color: var(--navy);
+      font-size: 23px;
+      margin-top: 30px;
+    }
+
+    .subtitle {
+      margin-top: 0;
+      color: #40576b;
+    }
+
+    .notice {
+      background: #fff4d6;
+      border-left: 5px solid #9b6700;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    select,
+    input,
     button {
       width: 100%;
-      padding: 18px;
-      margin: 8px 0;
-      border: none;
+      min-height: 50px;
       border-radius: 10px;
-      background: #174ea6;
+      font: inherit;
+    }
+
+    select,
+    input {
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--text);
+      padding: 10px;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border: 2px solid var(--blue);
+      background: var(--blue);
       color: white;
-      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
     }
 
-    button:focus-visible {
-      outline: 4px solid orange;
+    button.secondary {
+      background: white;
+      color: var(--navy);
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 4px solid #a76500;
+      outline-offset: 3px;
+    }
+
+    button:hover {
+      filter: brightness(0.93);
+    }
+
+    .status {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .small {
+      font-size: 15px;
+      color: #40576b;
+    }
+
+    .feature {
+      padding: 12px 0;
+      border-bottom: 1px solid #d7e1eb;
+    }
+
+    .feature:last-child {
+      border-bottom: none;
+    }
+
+    .distance-result {
+      font-weight: bold;
+      margin-top: 14px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 24px;
+      color: #40576b;
     }
   </style>
 </head>
 
 <body>
-  <main>
-    <h1>BlindPath</h1>
-    <p>Accessible navigation for a more inclusive township.</p>
+<main>
+  <h1>BlindPath</h1>
+  <p class="subtitle" id="subtitle">
+    Accessible navigation for a more inclusive township.
+  </p>
 
-    <button onclick="speak('Welcome to BlindPath. Your accessible journey starts here.')">
-      Introduce BlindPath
-    </button>
+  <p class="notice" id="safetyNotice">
+    Prototype only: this website does not currently detect real obstacles,
+    traffic lights or your live location. Do not use it as your only
+    navigation aid when travelling.
+  </p>
 
-    <button onclick="speak('BlindPath aims to help visually impaired users navigate more independently.')">
-      Hear how it works
-    </button>
+  <h2 id="languageHeading">Language and Voice</h2>
 
-    <p id="message" aria-live="polite">
-      Welcome! Choose a button to begin.
-    </p>
-  </main>
+  <label for="language" id="languageLabel">Choose your language</label>
+  <select id="language">
+    <option value="en-MY">English</option>
+    <option value="ms-MY">Bahasa Melayu</option>
+    <option value="zh-CN">中文（普通话）</option>
+  </select>
 
-  <script>
-    function speak(message) {
-      const output = document.getElementById("message");
-      output.textContent = message;
+  <label for="voice" id="voiceLabel">Choose a voice</label>
+  <select id="voice">
+    <option value="auto">Automatic — best available voice</option>
+  </select>
 
-      if (!("speechSynthesis" in window)) {
-        output.textContent = "Audio is not supported by this browser.";
+  <p class="small" id="voiceHelp">
+    Malaysian English is prioritised when an appropriate voice is available.
+    The actual accent depends on your device and browser.
+  </p>
+
+  <button id="welcomeButton">Introduce BlindPath</button>
+  <button id="helpButton" class="secondary">Hear how it works</button>
+  <button id="repeatButton" class="secondary">Repeat last message</button>
+  <button id="stopButton" class="secondary">Stop speaking</button>
+
+  <p class="status" id="message" aria-live="polite">
+    Welcome to BlindPath. Choose your language and press Introduce BlindPath.
+  </p>
+
+  <p class="small" id="voiceStatus" aria-live="polite">
+    Checking available voices...
+  </p>
+
+  <h2 id="featuresHeading">BlindPath Features</h2>
+
+  <div class="feature" id="feature1">
+    <strong>Audio-first guidance</strong><br>
+    Spoken information designed to support visually impaired users.
+  </div>
+
+  <div class="feature" id="feature2">
+    <strong>Accessibility reporting</strong><br>
+    A future reporting system for blocked tactile paths and accessibility problems.
+  </div>
+
+  <div class="feature" id="feature3">
+    <strong>Smart Ride Assist</strong><br>
+    A future option to consider a ride when a walking journey is too long.
+  </div>
+
+  <h2 id="rideHeading">Smart Ride Assist Demo</h2>
+
+  <p id="rideDescription">
+    Enter an estimated walking distance to try the reminder.
+    This demo does not track your GPS location.
+  </p>
+
+  <label for="distance" id="distanceLabel">
+    Estimated walking distance (km)
+  </label>
+  <input
+    id="distance"
+    type="number"
+    min="0"
+    max="100"
+    step="0.1"
+    value="5"
+  >
+
+  <button id="checkDistanceButton">Check walking distance</button>
+
+  <p class="distance-result" id="distanceResult" aria-live="polite"></p>
+
+  <button id="rideButton" class="secondary" hidden>
+    Open ride-booking website
+  </button>
+
+  <p class="small" id="rideNote">
+    The ride button opens an external website. No ride will be booked
+    automatically.
+  </p>
+
+  <footer>
+    BlindPath — Building a more inclusive township.
+  </footer>
+</main>
+
+<script>
+  const languageSelect = document.getElementById("language");
+  const voiceSelect = document.getElementById("voice");
+  const message = document.getElementById("message");
+  const voiceStatus = document.getElementById("voiceStatus");
+
+  let availableVoices = [];
+  let lastMessage = "";
+
+  const translations = {
+    "en-MY": {
+      subtitle: "Accessible navigation for a more inclusive township.",
+      safetyNotice: "Prototype only: this website does not currently detect real obstacles, traffic lights or your live location. Do not use it as your only navigation aid when travelling.",
+      languageHeading: "Language and Voice",
+      languageLabel: "Choose your language",
+      voiceLabel: "Choose a voice",
+      voiceHelp: "Malaysian English is prioritised when an appropriate voice is available. The actual accent depends on your device and browser.",
+      welcomeButton: "Introduce BlindPath",
+      helpButton: "Hear how it works",
+      repeatButton: "Repeat last message",
+      stopButton: "Stop speaking",
+      welcome: "Welcome to BlindPath. Your accessible journey starts here.",
+      help: "BlindPath aims to help visually impaired users travel more independently. Future features may include audio guidance, accessibility reports and smart ride assistance.",
+      initialMessage: "Welcome to BlindPath. Choose your language and press Introduce BlindPath.",
+      featuresHeading: "BlindPath Features",
+      feature1Title: "Audio-first guidance",
+      feature1Text: "Spoken information designed to support visually impaired users.",
+      feature2Title: "Accessibility reporting",
+      feature2Text: "A future reporting system for blocked tactile paths and accessibility problems.",
+      feature3Title: "Smart Ride Assist",
+      feature3Text: "A future option to consider a ride when a walking journey is too long.",
+      rideHeading: "Smart Ride Assist Demo",
+      rideDescription: "Enter an estimated walking distance to try the reminder. This demo does not track your GPS location.",
+      distanceLabel: "Estimated walking distance (km)",
+      checkDistanceButton: "Check walking distance",
+      rideNote: "The ride button opens an external website. No ride will be booked automatically.",
+      tooLong: "This journey is over 5 kilometres. Consider taking a break or choosing a suitable ride. Please check your surroundings and travel needs.",
+      manageable: "This journey is 5 kilometres or less. Remember to rest when needed.",
+      invalidDistance: "Please enter a valid distance of zero kilometres or more.",
+      rideButton: "Open ride-booking website",
+      autoVoice: "Automatic — best available voice",
+      noVoices: "No voices are currently listed. Your browser may use its default voice.",
+      voicesFound: "Available voices updated.",
+      speaking: "Speaking...",
+      finished: "Finished speaking.",
+      stopped: "Speaking stopped.",
+      speechError: "Audio could not be played. Try another voice or check your device settings.",
+      unsupported: "Speech is not supported by this browser."
+    },
+
+    "ms-MY": {
+      subtitle: "Navigasi mudah diakses untuk bandar yang lebih inklusif.",
+      safetyNotice: "Prototaip sahaja: laman web ini belum mengesan halangan sebenar, lampu isyarat atau lokasi semasa anda. Jangan gunakannya sebagai satu-satunya panduan navigasi ketika bergerak.",
+      languageHeading: "Bahasa dan Suara",
+      languageLabel: "Pilih bahasa",
+      voiceLabel: "Pilih suara",
+      voiceHelp: "Suara Bahasa Melayu diutamakan jika tersedia. Aksen sebenar bergantung pada peranti dan pelayar anda.",
+      welcomeButton: "Pengenalan BlindPath",
+      helpButton: "Dengar cara ia berfungsi",
+      repeatButton: "Ulang mesej terakhir",
+      stopButton: "Hentikan suara",
+      welcome: "Selamat datang ke BlindPath. Perjalanan anda yang lebih mudah diakses bermula di sini.",
+      help: "BlindPath bertujuan membantu pengguna cacat penglihatan bergerak dengan lebih berdikari. Ciri masa hadapan mungkin termasuk panduan audio, laporan aksesibiliti dan bantuan pengangkutan pintar.",
+      initialMessage: "Selamat datang ke BlindPath. Pilih bahasa anda dan tekan Pengenalan BlindPath.",
+      featuresHeading: "Ciri-ciri BlindPath",
+      feature1Title: "Panduan berasaskan audio",
+      feature1Text: "Maklumat suara untuk membantu pengguna cacat penglihatan.",
+      feature2Title: "Laporan aksesibiliti",
+      feature2Text: "Sistem laporan masa hadapan untuk laluan sentuhan yang terhalang dan masalah aksesibiliti.",
+      feature3Title: "Bantuan Pengangkutan Pintar",
+      feature3Text: "Pilihan masa hadapan untuk mempertimbangkan pengangkutan apabila perjalanan berjalan kaki terlalu jauh.",
+      rideHeading: "Demo Bantuan Pengangkutan Pintar",
+      rideDescription: "Masukkan anggaran jarak berjalan kaki untuk mencuba peringatan ini. Demo ini tidak mengesan lokasi GPS anda.",
+      distanceLabel: "Anggaran jarak berjalan kaki (km)",
+      checkDistanceButton: "Semak jarak berjalan kaki",
+      rideNote: "Butang pengangkutan akan membuka laman web luaran. Tiada tempahan dibuat secara automatik.",
+      tooLong: "Perjalanan ini melebihi 5 kilometer. Pertimbangkan untuk berehat atau memilih pengangkutan yang sesuai. Sila perhatikan keadaan sekeliling dan keperluan perjalanan anda.",
+      manageable: "Perjalanan ini ialah 5 kilometer atau kurang. Ingat untuk berehat apabila perlu.",
+      invalidDistance: "Sila masukkan jarak yang sah, iaitu sifar kilometer atau lebih.",
+      rideButton: "Buka laman web tempahan pengangkutan",
+      autoVoice: "Automatik — suara terbaik yang tersedia",
+      noVoices: "Tiada suara disenaraikan buat masa ini. Pelayar anda mungkin menggunakan suara lalai.",
+      voicesFound: "Senarai suara telah dikemas kini.",
+      speaking: "Sedang bercakap...",
+      finished: "Selesai bercakap.",
+      stopped: "Suara dihentikan.",
+      speechError: "Audio tidak dapat dimainkan. Cuba suara lain atau semak tetapan peranti anda.",
+      unsupported: "Pelayar ini tidak menyokong fungsi suara."
+    },
+
+    "zh-CN": {
+      subtitle: "打造更具包容性的无障碍城镇导航体验。",
+      safetyNotice: "这只是一个原型：本网站目前无法检测真实障碍物、交通信号灯或您的实时位置。出行时请勿将它作为唯一的导航工具。",
+      languageHeading: "语言与语音",
+      languageLabel: "选择语言",
+      voiceLabel: "选择语音",
+      voiceHelp: "如果设备提供合适的语音，系统会优先选择相应语言。实际口音取决于您的设备和浏览器。",
+      welcomeButton: "介绍 BlindPath",
+      helpButton: "了解使用方式",
+      repeatButton: "重复上一条语音",
+      stopButton: "停止语音",
+      welcome: "欢迎使用 BlindPath。让我们一起开启更无障碍的出行体验。",
+      help: "BlindPath 旨在帮助视障人士更独立地出行。未来功能可能包括语音指引、无障碍问题反馈和智能出行辅助。",
+      initialMessage: "欢迎使用 BlindPath。请选择语言，然后点击介绍 BlindPath。",
+      featuresHeading: "BlindPath 功能",
+      feature1Title: "语音优先指引",
+      feature1Text: "通过语音信息为视障用户提供支持。",
+      feature2Title: "无障碍问题反馈",
+      feature2Text: "未来可用于报告盲道被阻挡及其他无障碍问题。",
+      feature3Title: "智能出行辅助",
+      feature3Text: "当步行距离过长时，未来可考虑其他出行方式。",
+      rideHeading: "智能出行辅助演示",
+      rideDescription: "输入预计步行距离，体验提醒功能。此演示不会追踪您的 GPS 位置。",
+      distanceLabel: "预计步行距离（公里）",
+      checkDistanceButton: "检查步行距离",
+      rideNote: "出行按钮将打开外部网站，不会自动预订车辆。",
+      tooLong: "这段行程超过五公里。您可以考虑休息或选择合适的交通方式。请留意周围环境和自己的出行需求。",
+      manageable: "这段行程为五公里或以内。请根据需要适当休息。",
+      invalidDistance: "请输入有效距离，必须大于或等于零公里。",
+      rideButton: "打开出行预订网站",
+      autoVoice: "自动选择 — 最合适的可用语音",
+      noVoices: "目前没有检测到可用语音，浏览器可能会使用默认语音。",
+      voicesFound: "可用语音列表已更新。",
+      speaking: "正在播放语音...",
+      finished: "语音播放完毕。",
+      stopped: "语音已停止。",
+      speechError: "无法播放语音。请尝试其他声音或检查设备设置。",
+      unsupported: "此浏览器不支持语音功能。"
+    }
+  };
+
+  const textIds = [
+    "subtitle", "safetyNotice", "languageHeading",
+    "languageLabel", "voiceLabel", "voiceHelp",
+    "welcomeButton", "helpButton", "repeatButton",
+    "stopButton", "featuresHeading", "rideHeading",
+    "rideDescription", "distanceLabel",
+    "checkDistanceButton", "rideNote"
+  ];
+
+  function currentText() {
+    return translations[languageSelect.value];
+  }
+
+  function setFeatureText(id, title, description) {
+    const container = document.getElementById(id);
+    container.replaceChildren();
+
+    const heading = document.createElement("strong");
+    heading.textContent = title;
+    container.appendChild(heading);
+    container.appendChild(document.createElement("br"));
+    container.appendChild(document.createTextNode(description));
+  }
+
+  function updateLanguage() {
+    const t = currentText();
+
+    document.documentElement.lang = languageSelect.value;
+
+    textIds.forEach(id => {
+      document.getElementById(id).textContent = t[id];
+    });
+
+    setFeatureText("feature1", t.feature1Title, t.feature1Text);
+    setFeatureText("feature2", t.feature2Title, t.feature2Text);
+    setFeatureText("feature3", t.feature3Title, t.feature3Text);
+
+    message.textContent = t.initialMessage;
+    lastMessage = "";
+    window.speechSynthesis?.cancel();
+
+    refreshVoiceOptions();
+    document.getElementById("distanceResult").textContent = "";
+    document.getElementById("rideButton").hidden = true;
+  }
+
+  function getLanguagePrefix() {
+    return languageSelect.value.split("-")[0].toLowerCase();
+  }
+
+  function getPreferredVoices() {
+    const prefix = getLanguagePrefix();
+
+    return availableVoices.filter(voice =>
+      voice.lang.toLowerCase().startsWith(prefix)
+    );
+  }
+
+  function refreshVoiceOptions() {
+    const t = currentText();
+    const matchingVoices = getPreferredVoices();
+    const previousVoice = voiceSelect.value;
+
+    voiceSelect.replaceChildren();
+
+    const automaticOption = document.createElement("option");
+    automaticOption.value = "auto";
+    automaticOption.textContent = t.autoVoice;
+    voiceSelect.appendChild(automaticOption);
+
+    matchingVoices.forEach((voice, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = voice.name + " (" + voice.lang + ")";
+      voiceSelect.appendChild(option);
+    });
+
+    if (previousVoice !== "auto" &&
+        Number(previousVoice) >= 0 &&
+        Number(previousVoice) < matchingVoices.length) {
+      voiceSelect.value = previousVoice;
+    } else {
+      voiceSelect.value = "auto";
+    }
+
+    if (matchingVoices.length === 0) {
+      voiceStatus.textContent = t.noVoices;
+    } else {
+      voiceStatus.textContent =
+        matchingVoices.length + " compatible voice(s) found.";
+    }
+  }
+
+  function loadVoices() {
+    if (!("speechSynthesis" in window)) {
+      voiceStatus.textContent = currentText().unsupported;
+      return;
+    }
+
+    availableVoices = window.speechSynthesis.getVoices();
+    refreshVoiceOptions();
+  }
+
+  function speak(text) {
+    message.textContent = text;
+    lastMessage = text;
+
+    if (!("speechSynthesis" in window)) {
+      voiceStatus.textContent = currentText().unsupported;
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = languageSelect.value;
+    utterance.rate = 0.9;
+
+    const matchingVoices = getPreferredVoices();
+
+    if (voiceSelect.value !== "auto") {
+      const chosenVoice = matchingVoices[Number(voiceSelect.value)];
+
+      if (chosenVoice) {
+        utterance.voice = chosenVoice;
+        utterance.lang = chosenVoice.lang;
+      }
+    } else {
+      const preferredLocales = {
+        "en-MY": ["en-my", "en-sg", "en-gb", "en-us", "en"],
+        "ms-MY": ["ms-my", "ms", "id"],
+        "zh-CN": ["zh-cn", "zh-sg", "zh"]
+      };
+
+      const priorities = preferredLocales[languageSelect.value] || [];
+      let chosenVoice = null;
+
+      for (const locale of priorities) {
+        chosenVoice = matchingVoices.find(voice =>
+          voice.lang.toLowerCase() === locale
+        );
+
+        if (chosenVoice) break;
+      }
+
+      if (chosenVoice) {
+        utterance.voice = chosenVoice;
+        utterance.lang = chosenVoice.lang;
+      }
+    }
+
+    utterance.onstart = () => {
+      voiceStatus.textContent = currentText().speaking;
+    };
+
+    utterance.onend = () => {
+      voiceStatus.textContent = currentText().finished;
+    };
+
+    utterance.onerror = event => {
+      if (event.error !== "canceled" && event.error !== "interrupted") {
+        voiceStatus.textContent = currentText().speechError;
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  document.getElementById("welcomeButton").addEventListener("click", () => {
+    speak(currentText().welcome);
+  });
+
+  document.getElementById("helpButton").addEventListener("click", () => {
+    speak(currentText().help);
+  });
+
+  document.getElementById("repeatButton").addEventListener("click", () => {
+    if (lastMessage) {
+      speak(lastMessage);
+    } else {
+      speak(currentText().welcome);
+    }
+  });
+
+  document.getElementById("stopButton").addEventListener("click", () => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    voiceStatus.textContent = currentText().stopped;
+  });
+
+  languageSelect.addEventListener("change", updateLanguage);
+
+  voiceSelect.addEventListener("change", () => {
+    const matchingVoices = getPreferredVoices();
+
+    if (voiceSelect.value !== "auto") {
+      const chosenVoice = matchingVoices[Number(voiceSelect.value)];
+
+      if (chosenVoice) {
+        voiceStatus.textContent =
+          "Selected voice: " + chosenVoice.name +
+          ". Press Introduce BlindPath to test it.";
+      }
+    } else {
+      voiceStatus.textContent = currentText().voicesFound;
+    }
+  });
+
+  document.getElementById("checkDistanceButton")
+    .addEventListener("click", () => {
+      const distance = Number(document.getElementById("distance").value);
+      const t = currentText();
+      const result = document.getElementById("distanceResult");
+      const rideButton = document.getElementById("rideButton");
+
+      rideButton.hidden = true;
+
+      if (document.getElementById("distance").value.trim() === "" ||
+          !Number.isFinite(distance) || distance < 0 || distance > 100) {
+        result.textContent = t.invalidDistance;
+        speak(t.invalidDistance);
         return;
       }
 
-      window.speechSynthesis.cancel();
+      if (distance > 5) {
+        result.textContent = t.tooLong;
+        rideButton.hidden = false;
+        speak(t.tooLong);
+      } else {
+        result.textContent = t.manageable;
+        speak(t.manageable);
+      }
+    });
 
-      const voice = new SpeechSynthesisUtterance(message);
-      voice.lang = "en-MY";
-      window.speechSynthesis.speak(voice);
-    }
-  </script>
+  document.getElementById("rideButton").addEventListener("click", () => {
+    window.open("https://www.grab.com/my/", "_blank", "noopener,noreferrer");
+  });
+
+  if ("speechSynthesis" in window) {
+    loadVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+  } else {
+    voiceStatus.textContent = currentText().unsupported;
+  }
+</script>
 </body>
 </html>
