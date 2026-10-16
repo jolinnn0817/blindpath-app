@@ -3,1010 +3,854 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BlindPath - Accessible Navigation</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 :root {
-  --green: #176b5b;
-  --dark: #104b41;
-  --light: #eaf5f1;
-  --text: #193b36;
-  --border: #cfddd8;
+  --green: #174c3c;
+  --light: #e9f4ee;
+  --bg: #f5f8f6;
+  --text: #17231f;
+  --muted: #5b6a63;
+  --border: #d8e2dc;
 }
-
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  line-height: 1.6;
+  background: var(--bg);
   color: var(--text);
-  background: #f5f8f7;
+  line-height: 1.5;
 }
-
-header {
-  background: var(--dark);
-  color: white;
-  padding: 28px 20px;
-}
-
-header, main, footer { padding-left: 20px; padding-right: 20px; }
-header h1 { margin: 0; font-size: 2.4rem; }
-header p { margin-bottom: 0; }
-
-main { max-width: 1100px; margin: auto; padding-top: 20px; padding-bottom: 35px; }
-footer { max-width: 1100px; margin: auto; padding-bottom: 25px; }
-
-.panel {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
-}
-
-h2 { margin-top: 0; }
-label { display: block; font-weight: bold; margin: 12px 0 5px; }
-
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #9aada7;
-  border-radius: 8px;
-  font: inherit;
-  background: white;
-  color: var(--text);
-}
-
-textarea { min-height: 100px; }
-
-button {
-  padding: 12px 16px;
-  margin: 8px 5px 0 0;
-  border: none;
-  border-radius: 8px;
-  background: var(--green);
-  color: white;
-  font: inherit;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover { background: var(--dark); }
-
-button.secondary {
-  background: #e5eeeb;
-  color: var(--text);
-}
-
-button.delete { background: #803b3b; }
-
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
 button:focus-visible, input:focus-visible,
 select:focus-visible, textarea:focus-visible {
-  outline: 3px solid #d89b00;
-  outline-offset: 2px;
+  outline: 3px solid #ffbf47;
+  outline-offset: 3px;
 }
-
-.layout {
+header {
+  background: var(--green);
+  color: white;
+  padding: 18px;
+}
+.header-inner, main, footer {
+  max-width: 900px;
+  margin: auto;
+}
+.brand { font-size: 1.5rem; font-weight: bold; }
+header p { margin: 3px 0 0; }
+main { padding: 18px 14px 35px; }
+.screen { display: none; }
+.screen.active { display: block; }
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 15px;
+}
+h1 { font-size: 1.6rem; margin-top: 0; }
+h2 { font-size: 1.15rem; }
+.muted { color: var(--muted); }
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.home-action {
+  text-align: left;
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 120px;
+}
+.home-action:hover { background: var(--light); }
+.symbol { display: block; font-size: 1.8rem; }
+.home-action strong { display: block; margin: 6px 0; }
+.home-action small { color: var(--muted); }
+label { display: block; font-weight: bold; margin: 12px 0 5px; }
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #aebeb5;
+  border-radius: 9px;
+  background: white;
+  color: var(--text);
+}
+textarea { min-height: 85px; resize: vertical; }
+.field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-}
-
-#map {
-  width: 100%;
-  height: 400px;
-  border-radius: 10px;
-  background: #e2eae7;
-}
-
-.status {
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--light);
-  border-radius: 8px;
-  overflow-wrap: anywhere;
-}
-
-.notice {
-  margin-top: 15px;
-  padding: 12px;
-  background: #fff3d4;
-  border-left: 4px solid #c58b00;
-}
-
-.report-card {
-  padding: 14px;
-  margin-top: 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow-wrap: anywhere;
-}
-
-.report-card h3 { margin-top: 0; }
-.small { font-size: 0.9rem; color: #526a65; }
-
-.features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
-
-.feature {
-  padding: 14px;
-  border-radius: 10px;
-  background: var(--light);
+.button-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.primary, .secondary, .danger {
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-weight: bold;
 }
-
-@media (max-width: 750px) {
-  .layout, .features { grid-template-columns: 1fr; }
-  #map { height: 320px; }
+.primary { background: var(--green); color: white; border: 1px solid var(--green); }
+.secondary { background: white; color: var(--green); border: 1px solid var(--green); }
+.danger { background: white; color: #a12222; border: 1px solid #c77; }
+.note, .success {
+  border-radius: 11px;
+  padding: 12px;
+  margin: 13px 0;
+}
+.note { background: #fff7df; border: 1px solid #e5cb78; }
+.success { background: var(--light); border: 1px solid #b6d6c4; }
+#map {
+  height: 300px;
+  margin-top: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.report-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.hidden { display: none !important; }
+footer { padding: 0 14px 24px; color: var(--muted); font-size: .85rem; }
+@media(max-width:600px) {
+  .home-grid, .field-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 
 <body>
-
 <header>
-  <h1>BlindPath</h1>
-  <p id="tagline">Accessible navigation and community reporting for inclusive townships.</p>
+  <div class="header-inner">
+    <div class="brand">BlindPath</div>
+    <p id="tagline">Accessible navigation for everyone</p>
+    <button class="secondary" onclick="goTo('home')" id="homeButton">
+      Home
+    </button>
+  </div>
 </header>
 
 <main>
 
-  <section class="panel">
-    <label for="language" id="languageLabel">Language / Bahasa / 语言</label>
-    <select id="language">
+<!-- HOME SCREEN -->
+<section id="screen-home" class="screen active">
+  <div class="card">
+    <h1 id="welcome">How can BlindPath help you?</h1>
+    <p class="muted" id="homeIntro">
+      Choose a feature to get started.
+    </p>
+
+    <div class="success">
+      <strong id="priorityTitle">Tactile-path priority</strong>
+      <p id="priorityText">
+        BlindPath aims to prioritise routes with verified tactile paving
+        (盲道). Complete verified path data is not yet available in this demo.
+      </p>
+    </div>
+
+    <div class="home-grid">
+      <button class="home-action" onclick="goTo('navigation')">
+        <span class="symbol">🧭</span>
+        <strong id="navCard">Start Navigation</strong>
+        <small id="navDesc">Plan a walking or driving route</small>
+      </button>
+
+      <button class="home-action" onclick="goTo('report')">
+        <span class="symbol">⚑</span>
+        <strong id="reportCard">Report an Issue</strong>
+        <small id="reportDesc">Report blocked or damaged tactile paths</small>
+      </button>
+
+      <button class="home-action" onclick="goTo('settings')">
+        <span class="symbol">🔊</span>
+        <strong id="settingsCard">Voice & Settings</strong>
+        <small id="settingsDesc">Choose language and speech voice</small>
+      </button>
+
+      <button class="home-action" onclick="goTo('community')">
+        <span class="symbol">🤝</span>
+        <strong id="communityCard">Community</strong>
+        <small id="communityDesc">View accessibility reports</small>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- NAVIGATION SCREEN -->
+<section id="screen-navigation" class="screen">
+  <div class="card">
+    <h1 id="navTitle">Navigation</h1>
+    <p class="muted" id="navIntro2">
+      Enter your starting point and destination.
+    </p>
+
+    <div class="field-grid">
+      <div>
+        <label for="start" id="startLabel">Starting point</label>
+        <input id="start" placeholder="e.g. KL Sentral">
+      </div>
+      <div>
+        <label for="destination" id="destLabel">Destination</label>
+        <input id="destination" placeholder="e.g. KLCC">
+      </div>
+    </div>
+
+    <label for="mode" id="modeLabel">Travel mode</label>
+    <select id="mode">
+      <option value="foot" id="walkingOption">Walking</option>
+      <option value="driving" id="drivingOption">Driving</option>
+    </select>
+
+    <div class="button-row">
+      <button class="primary" onclick="findRoute()" id="findButton">
+        Find Route
+      </button>
+      <button class="secondary" onclick="useMyLocation()" id="locationButton">
+        Use My Location
+      </button>
+      <button class="secondary" onclick="stopSpeech()" id="stopButton">
+        Stop Voice
+      </button>
+    </div>
+
+    <p id="routeStatus" role="status" aria-live="polite"></p>
+    <div id="map" aria-label="Map showing the selected route"></div>
+    <div id="routeResult" class="success hidden" aria-live="polite"></div>
+    <div id="rideAssist" class="note hidden"></div>
+
+    <div class="note">
+      <strong id="safetyTitle">Safety note</strong>
+      <p id="safetyText">
+        This demo does not detect obstacles, verify traffic signals,
+        or confirm the presence of tactile paving. Do not rely on it
+        as a safety system.
+      </p>
+    </div>
+
+    <button class="secondary" onclick="goTo('home')" id="backNav">
+      Back to Home
+    </button>
+  </div>
+</section>
+
+<!-- REPORT SCREEN -->
+<section id="screen-report" class="screen">
+  <div class="card">
+    <h1 id="reportTitle">Report an Accessibility Issue</h1>
+    <p class="muted" id="reportIntro">
+      Help identify problems with tactile paths and pedestrian access.
+    </p>
+
+    <form id="reportForm">
+      <label for="issueType" id="issueLabel">What is the problem?</label>
+      <select id="issueType">
+        <option value="Blocked tactile path">Tactile path blocked</option>
+        <option value="Damaged tactile path">Tactile path damaged</option>
+        <option value="Missing tactile path">Tactile path missing</option>
+        <option value="Inaccessible crossing">Inaccessible crossing</option>
+        <option value="Other accessibility issue">Other issue</option>
+      </select>
+
+      <label for="reportLocation" id="reportLocationLabel">Location</label>
+      <input id="reportLocation"
+        placeholder="e.g. Outside a shopping mall" required>
+
+      <label for="reportDetails" id="detailsLabel">
+        Additional details (optional)
+      </label>
+      <textarea id="reportDetails"
+        placeholder="Describe what you noticed."></textarea>
+
+      <div class="button-row">
+        <button type="button" class="secondary"
+          onclick="addReportLocation()" id="gpsButton">
+          Add My Location
+        </button>
+        <button type="submit" class="primary" id="saveReportButton">
+          Save Report
+        </button>
+      </div>
+      <p id="reportStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="note">
+      <strong id="privacyTitle">Important</strong>
+      <p id="privacyText">
+        Reports are stored only in this browser on this device.
+        They are not sent to authorities or other users.
+      </p>
+    </div>
+
+    <button class="secondary" onclick="goTo('home')" id="backReport">
+      Back to Home
+    </button>
+  </div>
+</section>
+
+<!-- SETTINGS SCREEN -->
+<section id="screen-settings" class="screen">
+  <div class="card">
+    <h1 id="settingsTitle">Voice & Accessibility Settings</h1>
+
+    <label for="language" id="languageLabel">Language</label>
+    <select id="language" onchange="applyLanguage()">
       <option value="en">English</option>
       <option value="ms">Bahasa Melayu</option>
       <option value="zh">中文</option>
     </select>
 
-    <h2 id="welcomeTitle">Welcome to BlindPath</h2>
-    <p id="intro">BlindPath helps users plan routes, hear spoken summaries and report accessibility problems.</p>
+    <label for="voiceSelect" id="voiceLabel">Speech voice</label>
+    <select id="voiceSelect">
+      <option value="">Default device voice</option>
+    </select>
 
-    <button type="button" id="speakIntro">Read introduction aloud</button>
-    <button type="button" class="secondary" id="repeatSpeech">Repeat last message</button>
-    <button type="button" class="secondary" id="stopSpeech">Stop speech</button>
-  </section>
-
-  <div class="layout">
-
-    <section class="panel">
-      <h2 id="navigationTitle">Route Planner</h2>
-      <p class="small" id="navigationHelp">Enter a starting point and destination.</p>
-
-      <label for="travelMode" id="modeLabel">Travel mode</label>
-      <select id="travelMode">
-        <option value="foot">Walking</option>
-        <option value="driving">Driving</option>
-      </select>
-
-      <label for="start" id="startLabel">Starting point</label>
-      <input id="start" placeholder="e.g. Universiti Malaya, Kuala Lumpur">
-
-      <label for="destination" id="destinationLabel">Destination</label>
-      <input id="destination" placeholder="e.g. KL Sentral, Kuala Lumpur">
-
-      <button type="button" id="findRoute">Find route</button>
-      <button type="button" class="secondary" id="useLocation">Use my current location</button>
-
-      <label for="distanceLimit" id="distanceLabel">Smart Ride Assist threshold (km)</label>
-      <input id="distanceLimit" type="number" min="1" max="100" value="5" step="0.5">
-
-      <p class="small" id="distanceHelp">
-        If the route exceeds this distance, BlindPath will provide a spoken reminder and a link to Grab.
-      </p>
-
-      <button type="button" class="secondary" id="voiceToggle">Voice announcements: ON</button>
-      <button type="button" class="secondary" id="clearRoute">Clear route</button>
-
-      <div id="routeStatus" class="status" role="status" aria-live="polite">
-        Ready to plan a route.
-      </div>
-
-      <div id="routeSummary" class="status" hidden></div>
-
-      <div id="rideAssist" class="status" hidden>
-        <h3 id="rideTitle">Smart Ride Assist</h3>
-        <p id="rideText"></p>
-        <a href="https://www.grab.com/my/" target="_blank" rel="noopener noreferrer" id="grabLink">Open Grab Malaysia</a>
-        <p class="small" id="rideNote">Confirm your pickup and destination in Grab. No ride is booked automatically.</p>
-      </div>
-
-      <div class="notice" id="safetyNotice">
-        Safety notice: This is a prototype, not a certified accessible navigation system.
-        It does not detect obstacles or verify traffic-light signals. Always check your surroundings.
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2 id="mapTitle">Map</h2>
-      <div id="map" aria-label="Interactive map"></div>
-      <p class="small" id="mapCredit">Map data © OpenStreetMap contributors.</p>
-      <a id="googleMapsLink" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Open Google Maps</a>
-    </section>
-
-  </div>
-
-  <section class="panel">
-    <h2 id="reportTitle">Accessibility Reporting System</h2>
-    <p id="reportIntro">
-      Report blocked tactile paths, damaged pavements, inaccessible crossings or other accessibility problems.
+    <p class="muted" id="voiceHelp">
+      Available voices depend on your device and browser.
+      A Malaysian accent is not guaranteed.
     </p>
 
-    <form id="reportForm">
-
-      <label for="reportType" id="typeLabel">Problem type</label>
-      <select id="reportType" required>
-        <option value="blocked" id="typeBlocked">Blocked tactile path</option>
-        <option value="damaged" id="typeDamaged">Damaged tactile path or pavement</option>
-        <option value="crossing" id="typeCrossing">Inaccessible pedestrian crossing</option>
-        <option value="other" id="typeOther">Other accessibility problem</option>
-      </select>
-
-      <label for="reportLocation" id="reportLocationLabel">Location</label>
-      <input id="reportLocation" maxlength="200" required placeholder="e.g. Near the main entrance">
-
-      <button type="button" class="secondary" id="reportUseLocation">Use my current location</button>
-
-      <p class="small" id="locationHelp">
-        You can enter a location manually or allow your device to access your current location.
-      </p>
-
-      <label for="reportDescription" id="descriptionLabel">Description</label>
-      <textarea id="reportDescription" maxlength="1000" required
-        placeholder="Describe the problem and any useful details."></textarea>
-
-      <button type="submit" id="submitReport">Submit report</button>
-    </form>
-
-    <div id="reportStatus" class="status" role="status" aria-live="polite">
-      Your reports will appear below.
+    <div class="button-row">
+      <button class="primary" onclick="speakIntro()" id="testVoiceButton">
+        Test Voice
+      </button>
+      <button class="secondary" onclick="stopSpeech()" id="stopVoiceButton">
+        Stop Voice
+      </button>
     </div>
 
-    <h3 id="submittedTitle">Submitted reports on this device</h3>
-    <p class="small" id="storageNote">
-      Demo only: reports are saved in this browser and are not sent to authorities or shared with other users.
+    <div class="note">
+      <strong id="accessibilityTitle">Accessibility reminder</strong>
+      <p id="accessibilityText">
+        Test with visually impaired users before real-world use.
+        This demo is not a certified navigation or safety tool.
+      </p>
+    </div>
+
+    <button class="secondary" onclick="goTo('home')" id="backSettings">
+      Back to Home
+    </button>
+  </div>
+</section>
+
+<!-- COMMUNITY SCREEN -->
+<section id="screen-community" class="screen">
+  <div class="card">
+    <h1 id="communityTitle">Community Reports</h1>
+    <p class="muted" id="communityIntro">
+      View reports saved locally in this browser.
     </p>
+
+    <div class="success">
+      <strong id="futureMapTitle">Future tactile-path map</strong>
+      <p id="futureMapText">
+        Verified path data can help prioritise accessible routes.
+        No report does not mean a path is safe or clear.
+      </p>
+    </div>
 
     <div id="reportList"></div>
-  </section>
 
-  <section class="panel">
-    <h2 id="featuresTitle">BlindPath Features</h2>
-    <div class="features">
-      <div class="feature">
-        <h3 id="feature1Title">Audio-first experience</h3>
-        <p id="feature1Text">Spoken summaries and repeat or stop speech controls.</p>
-      </div>
-      <div class="feature">
-        <h3 id="feature2Title">Smart Ride Assist</h3>
-        <p id="feature2Text">Distance reminders and an external ride-booking link.</p>
-      </div>
-      <div class="feature">
-        <h3 id="feature3Title">Community reporting</h3>
-        <p id="feature3Text">Document accessibility issues in the prototype.</p>
-      </div>
+    <div class="button-row">
+      <button class="secondary" onclick="renderReports()" id="refreshButton">
+        Refresh Reports
+      </button>
+      <button class="danger" onclick="clearReports()" id="deleteButton">
+        Delete All Local Reports
+      </button>
+      <button class="secondary" onclick="goTo('home')" id="backCommunity">
+        Back to Home
+      </button>
     </div>
-  </section>
+  </div>
+</section>
 
 </main>
 
-<footer>
-  <p class="small" id="footerText">
-    BlindPath hackathon prototype. Do not rely on it to determine whether a crossing is safe.
-  </p>
+<footer id="footer">
+  BlindPath demo • Uses public map services • Information may be incomplete.
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-"use strict";
-
-const $ = id => document.getElementById(id);
-
-const translations = {
+const text = {
   en: {
-    tagline: "Accessible navigation and community reporting for inclusive townships.",
-    languageLabel: "Language / Bahasa / 语言",
-    welcomeTitle: "Welcome to BlindPath",
-    intro: "BlindPath helps users plan routes, hear spoken summaries and report accessibility problems.",
-    speakIntro: "Read introduction aloud",
-    repeatSpeech: "Repeat last message",
-    stopSpeech: "Stop speech",
-    navigationTitle: "Route Planner",
-    navigationHelp: "Enter a starting point and destination.",
-    modeLabel: "Travel mode",
-    walking: "Walking",
-    driving: "Driving",
-    startLabel: "Starting point",
-    destinationLabel: "Destination",
-    startPlaceholder: "e.g. Universiti Malaya, Kuala Lumpur",
-    destinationPlaceholder: "e.g. KL Sentral, Kuala Lumpur",
-    findRoute: "Find route",
-    useLocation: "Use my current location",
-    distanceLabel: "Smart Ride Assist threshold (km)",
-    distanceHelp: "If the route exceeds this distance, BlindPath will provide a spoken reminder and a link to Grab.",
-    voiceOn: "Voice announcements: ON",
-    voiceOff: "Voice announcements: OFF",
-    clearRoute: "Clear route",
-    ready: "Ready to plan a route.",
-    mapTitle: "Map",
-    mapCredit: "Map data © OpenStreetMap contributors.",
-    googleMaps: "Open Google Maps",
-    rideTitle: "Smart Ride Assist",
-    rideNote: "Confirm your pickup and destination in Grab. No ride is booked automatically.",
-    safetyNotice: "Safety notice: This is a prototype, not a certified accessible navigation system. It does not detect obstacles or verify traffic-light signals. Always check your surroundings.",
-    reportTitle: "Accessibility Reporting System",
-    reportIntro: "Report blocked tactile paths, damaged pavements, inaccessible crossings or other accessibility problems.",
-    typeLabel: "Problem type",
-    blocked: "Blocked tactile path",
-    damaged: "Damaged tactile path or pavement",
-    crossing: "Inaccessible pedestrian crossing",
-    other: "Other accessibility problem",
-    reportLocationLabel: "Location",
-    reportLocationPlaceholder: "e.g. Near the main entrance",
-    reportUseLocation: "Use my current location",
-    locationHelp: "You can enter a location manually or allow your device to access your current location.",
-    descriptionLabel: "Description",
-    descriptionPlaceholder: "Describe the problem and any useful details.",
-    submitReport: "Submit report",
-    reportReady: "Your reports will appear below.",
-    submittedTitle: "Submitted reports on this device",
-    storageNote: "Demo only: reports are saved in this browser and are not sent to authorities or shared with other users.",
-    empty: "No reports submitted yet.",
-    saved: "Your report is saved in this browser only. It has not been sent to authorities.",
-    required: "Please enter both a location and description.",
-    locationError: "Could not get your location. Please check permissions or type the location manually.",
-    locationAdded: "Current coordinates added. Please check them before submitting.",
-    delete: "Delete this report",
-    deleted: "Report deleted.",
-    problem: "Problem",
-    location: "Location",
-    description: "Description",
-    submitted: "Submitted",
-    coordinates: "Coordinates",
-    featuresTitle: "BlindPath Features",
-    feature1Title: "Audio-first experience",
-    feature1Text: "Spoken summaries and repeat or stop speech controls.",
-    feature2Title: "Smart Ride Assist",
-    feature2Text: "Distance reminders and an external ride-booking link.",
-    feature3Title: "Community reporting",
-    feature3Text: "Document accessibility issues in the prototype.",
-    footerText: "BlindPath hackathon prototype. Do not rely on it to determine whether a crossing is safe.",
-    searching: "Searching for places...",
-    routing: "Finding route...",
-    missing: "Please enter both a starting point and destination.",
-    notFound: "Could not find one of the places. Try a more specific address.",
-    routeError: "Could not find a route. Please try again later.",
-    routeFound: "Route found.",
-    distance: "Distance",
-    duration: "Estimated time",
-    minutes: "minutes",
-    hours: "hours",
-    longRoute: "This route is {distance} km, which exceeds your {limit} km reminder threshold. Consider whether you would prefer another travel option.",
-    spokenRoute: "Route found. Distance: {distance} kilometres. Estimated time: {duration}. This route may not be suitable for pedestrians.",
-    currentSet: "Your current location has been set as the starting point.",
-    currentError: "Could not get your current location. Check location permissions.",
-    cleared: "Route cleared.",
-    introSpeech: "Welcome to BlindPath. This prototype provides route planning, spoken summaries, a distance reminder and a form for reporting accessibility problems. It is not a certified accessible navigation system."
+    tagline:"Accessible navigation for everyone",
+    homeButton:"Home",
+    welcome:"How can BlindPath help you?",
+    homeIntro:"Choose a feature to get started.",
+    priorityTitle:"Tactile-path priority",
+    priorityText:"BlindPath aims to prioritise routes with verified tactile paving (盲道). Complete verified path data is not yet available in this demo.",
+    navCard:"Start Navigation", navDesc:"Plan a walking or driving route",
+    reportCard:"Report an Issue", reportDesc:"Report blocked or damaged tactile paths",
+    settingsCard:"Voice & Settings", settingsDesc:"Choose language and speech voice",
+    communityCard:"Community", communityDesc:"View accessibility reports",
+    navTitle:"Navigation",
+    navIntro2:"Enter your starting point and destination.",
+    startLabel:"Starting point", destLabel:"Destination",
+    modeLabel:"Travel mode", walkingOption:"Walking",
+    drivingOption:"Driving", findButton:"Find Route",
+    locationButton:"Use My Location", stopButton:"Stop Voice",
+    safetyTitle:"Safety note",
+    safetyText:"This demo does not detect obstacles, verify traffic signals, or confirm the presence of tactile paving. Do not rely on it as a safety system.",
+    backNav:"Back to Home",
+    reportTitle:"Report an Accessibility Issue",
+    reportIntro:"Help identify problems with tactile paths and pedestrian access.",
+    issueLabel:"What is the problem?", reportLocationLabel:"Location",
+    detailsLabel:"Additional details (optional)", gpsButton:"Add My Location",
+    saveReportButton:"Save Report", privacyTitle:"Important",
+    privacyText:"Reports are stored only in this browser on this device. They are not sent to authorities or other users.",
+    settingsTitle:"Voice & Accessibility Settings", languageLabel:"Language",
+    voiceLabel:"Speech voice",
+    voiceHelp:"Available voices depend on your device and browser. A Malaysian accent is not guaranteed.",
+    testVoiceButton:"Test Voice", stopVoiceButton:"Stop Voice",
+    accessibilityTitle:"Accessibility reminder",
+    accessibilityText:"Test with visually impaired users before real-world use. This demo is not a certified navigation or safety tool.",
+    communityTitle:"Community Reports",
+    communityIntro:"View reports saved locally in this browser.",
+    futureMapTitle:"Future tactile-path map",
+    futureMapText:"Verified path data can help prioritise accessible routes. No report does not mean a path is safe or clear.",
+    refreshButton:"Refresh Reports", deleteButton:"Delete All Local Reports",
+    backReport:"Back to Home", backSettings:"Back to Home",
+    backCommunity:"Back to Home", footer:"BlindPath demo • Uses public map services • Information may be incomplete.",
+    noReports:"No reports have been saved on this device yet.",
+    reportSaved:"Your report has been saved on this device.",
+    routeFound:"Route found", distance:"Distance", duration:"Estimated time",
+    searching:"Searching public map services…",
+    routeError:"Could not find a route. Check the place names and try again.",
+    rideTitle:"Smart Ride Assist",
+    rideText:"This route is over 5 km. Consider another transport option if needed.",
+    grabLink:"Open Grab Malaysia",
+    locationError:"Could not get your location. Check location permission.",
+    coordinatesAdded:"Your current coordinates have been added.",
+    deleteConfirm:"Delete all locally saved reports?",
+    deleteDone:"All local reports have been deleted.",
+    noSpeech:"Speech is not supported by this browser."
   },
   ms: {
-    tagline: "Navigasi dan laporan komuniti untuk perbandaran yang inklusif.",
-    languageLabel: "Bahasa",
-    welcomeTitle: "Selamat datang ke BlindPath",
-    intro: "BlindPath membantu pengguna merancang laluan, mendengar ringkasan suara dan melaporkan masalah kebolehcapaian.",
-    speakIntro: "Bacakan pengenalan",
-    repeatSpeech: "Ulang mesej terakhir",
-    stopSpeech: "Hentikan suara",
-    navigationTitle: "Perancang Laluan",
-    navigationHelp: "Masukkan lokasi mula dan destinasi.",
-    modeLabel: "Mod perjalanan",
-    walking: "Berjalan kaki",
-    driving: "Memandu",
-    startLabel: "Lokasi mula",
-    destinationLabel: "Destinasi",
-    startPlaceholder: "Contoh: Universiti Malaya, Kuala Lumpur",
-    destinationPlaceholder: "Contoh: KL Sentral, Kuala Lumpur",
-    findRoute: "Cari laluan",
-    useLocation: "Gunakan lokasi semasa saya",
-    distanceLabel: "Had jarak Smart Ride Assist (km)",
-    distanceHelp: "Jika laluan melebihi jarak ini, BlindPath akan memberikan peringatan suara dan pautan ke Grab.",
-    voiceOn: "Pengumuman suara: HIDUP",
-    voiceOff: "Pengumuman suara: MATI",
-    clearRoute: "Padam laluan",
-    ready: "Sedia untuk merancang laluan.",
-    mapTitle: "Peta",
-    mapCredit: "Data peta © penyumbang OpenStreetMap.",
-    googleMaps: "Buka Google Maps",
-    rideTitle: "Smart Ride Assist",
-    rideNote: "Sahkan lokasi ambil dan destinasi anda di Grab. Tempahan tidak dibuat secara automatik.",
-    safetyNotice: "Nota keselamatan: Ini prototaip, bukan sistem navigasi aksesibel yang diperakui. Ia tidak mengesan halangan atau mengesahkan lampu trafik. Sentiasa perhatikan persekitaran.",
-    reportTitle: "Sistem Laporan Kebolehcapaian",
-    reportIntro: "Laporkan laluan sentuhan terhalang, laluan pejalan kaki rosak, lintasan tidak mudah diakses atau masalah lain.",
-    typeLabel: "Jenis masalah",
-    blocked: "Laluan sentuhan terhalang",
-    damaged: "Laluan sentuhan atau laluan pejalan kaki rosak",
-    crossing: "Lintasan pejalan kaki tidak mudah diakses",
-    other: "Masalah kebolehcapaian lain",
-    reportLocationLabel: "Lokasi",
-    reportLocationPlaceholder: "Contoh: Berhampiran pintu masuk utama",
-    reportUseLocation: "Gunakan lokasi semasa saya",
-    locationHelp: "Masukkan lokasi secara manual atau benarkan peranti mengakses lokasi semasa.",
-    descriptionLabel: "Penerangan",
-    descriptionPlaceholder: "Terangkan masalah dan maklumat berkaitan.",
-    submitReport: "Hantar laporan",
-    reportReady: "Laporan anda akan dipaparkan di bawah.",
-    submittedTitle: "Laporan pada peranti ini",
-    storageNote: "Demo sahaja: laporan disimpan dalam pelayar ini dan tidak dihantar kepada pihak berkuasa atau dikongsi.",
-    empty: "Belum ada laporan.",
-    saved: "Laporan disimpan dalam pelayar ini sahaja. Ia belum dihantar kepada pihak berkuasa.",
-    required: "Sila masukkan lokasi dan penerangan.",
-    locationError: "Lokasi tidak dapat diperoleh. Semak kebenaran atau taip lokasi secara manual.",
-    locationAdded: "Koordinat semasa ditambah. Sila semak sebelum menghantar.",
-    delete: "Padam laporan ini",
-    deleted: "Laporan dipadam.",
-    problem: "Masalah",
-    location: "Lokasi",
-    description: "Penerangan",
-    submitted: "Dihantar",
-    coordinates: "Koordinat",
-    featuresTitle: "Ciri-ciri BlindPath",
-    feature1Title: "Pengalaman berasaskan audio",
-    feature1Text: "Ringkasan suara dan kawalan untuk mengulang atau menghentikan suara.",
-    feature2Title: "Smart Ride Assist",
-    feature2Text: "Peringatan jarak dan pautan ke perkhidmatan pengangkutan.",
-    feature3Title: "Laporan komuniti",
-    feature3Text: "Rekod masalah kebolehcapaian dalam prototaip.",
-    footerText: "Prototaip hackathon BlindPath. Jangan gunakannya untuk menentukan sama ada lintasan selamat.",
-    searching: "Sedang mencari lokasi...",
-    routing: "Sedang mencari laluan...",
-    missing: "Sila masukkan lokasi mula dan destinasi.",
-    notFound: "Lokasi tidak ditemui. Cuba alamat yang lebih khusus.",
-    routeError: "Laluan tidak dapat ditemui. Cuba lagi kemudian.",
-    routeFound: "Laluan ditemui.",
-    distance: "Jarak",
-    duration: "Anggaran masa",
-    minutes: "minit",
-    hours: "jam",
-    longRoute: "Laluan ini {distance} km, melebihi tetapan peringatan {limit} km anda. Pertimbangkan pilihan perjalanan lain.",
-    spokenRoute: "Laluan ditemui. Jarak: {distance} kilometer. Anggaran masa: {duration}. Laluan ini mungkin tidak sesuai untuk pejalan kaki.",
-    currentSet: "Lokasi semasa ditetapkan sebagai lokasi mula.",
-    currentError: "Lokasi semasa tidak dapat diperoleh. Semak kebenaran lokasi.",
-    cleared: "Laluan dipadam.",
-    introSpeech: "Selamat datang ke BlindPath. Prototaip ini menyediakan perancangan laluan, ringkasan suara, peringatan jarak dan borang laporan masalah kebolehcapaian. Ini bukan sistem navigasi aksesibel yang diperakui."
+    tagline:"Navigasi yang lebih mudah diakses untuk semua",
+    homeButton:"Laman Utama",
+    welcome:"Bagaimana BlindPath boleh membantu anda?",
+    homeIntro:"Pilih satu fungsi untuk bermula.",
+    priorityTitle:"Keutamaan laluan sentuhan",
+    priorityText:"BlindPath bertujuan mengutamakan laluan dengan jubin sentuhan yang disahkan (盲道). Demo ini belum mempunyai data laluan lengkap yang disahkan.",
+    navCard:"Mula Navigasi", navDesc:"Rancang laluan berjalan kaki atau memandu",
+    reportCard:"Laporkan Masalah", reportDesc:"Laporkan laluan sentuhan terhalang atau rosak",
+    settingsCard:"Suara & Tetapan", settingsDesc:"Pilih bahasa dan suara",
+    communityCard:"Komuniti", communityDesc:"Lihat laporan aksesibiliti",
+    navTitle:"Navigasi", navIntro2:"Masukkan lokasi mula dan destinasi.",
+    startLabel:"Lokasi mula", destLabel:"Destinasi",
+    modeLabel:"Mod perjalanan", walkingOption:"Berjalan kaki",
+    drivingOption:"Memandu", findButton:"Cari Laluan",
+    locationButton:"Gunakan Lokasi Saya", stopButton:"Hentikan Suara",
+    safetyTitle:"Nota keselamatan",
+    safetyText:"Demo ini tidak mengesan halangan, mengesahkan lampu isyarat atau memastikan kewujudan jubin sentuhan. Jangan bergantung padanya sebagai sistem keselamatan.",
+    backNav:"Kembali ke Laman Utama",
+    reportTitle:"Laporkan Masalah Aksesibiliti",
+    reportIntro:"Bantu mengenal pasti masalah pada laluan sentuhan dan akses pejalan kaki.",
+    issueLabel:"Apakah masalahnya?", reportLocationLabel:"Lokasi",
+    detailsLabel:"Maklumat tambahan (pilihan)", gpsButton:"Tambah Lokasi Saya",
+    saveReportButton:"Simpan Laporan", privacyTitle:"Penting",
+    privacyText:"Laporan hanya disimpan dalam pelayar pada peranti ini. Laporan tidak dihantar kepada pihak berkuasa atau pengguna lain.",
+    settingsTitle:"Tetapan Suara & Aksesibiliti", languageLabel:"Bahasa",
+    voiceLabel:"Suara", voiceHelp:"Suara bergantung pada peranti dan pelayar. Aksen Malaysia tidak dijamin.",
+    testVoiceButton:"Uji Suara", stopVoiceButton:"Hentikan Suara",
+    accessibilityTitle:"Peringatan aksesibiliti",
+    accessibilityText:"Uji bersama pengguna cacat penglihatan sebelum penggunaan sebenar. Demo ini bukan alat navigasi atau keselamatan yang diperakui.",
+    communityTitle:"Laporan Komuniti",
+    communityIntro:"Lihat laporan yang disimpan dalam pelayar ini.",
+    futureMapTitle:"Peta laluan sentuhan masa hadapan",
+    futureMapText:"Data laluan yang disahkan boleh membantu mengutamakan laluan. Tiada laporan tidak bermakna laluan itu selamat atau kosong.",
+    refreshButton:"Muat Semula Laporan", deleteButton:"Padam Semua Laporan Tempatan",
+    backReport:"Kembali ke Laman Utama", backSettings:"Kembali ke Laman Utama",
+    backCommunity:"Kembali ke Laman Utama", footer:"Demo BlindPath • Menggunakan perkhidmatan peta awam • Maklumat mungkin tidak lengkap.",
+    noReports:"Belum ada laporan pada peranti ini.",
+    reportSaved:"Laporan anda telah disimpan pada peranti ini.",
+    routeFound:"Laluan ditemui", distance:"Jarak", duration:"Anggaran masa",
+    searching:"Sedang mencari melalui perkhidmatan peta awam…",
+    routeError:"Laluan tidak ditemui. Semak nama tempat dan cuba lagi.",
+    rideTitle:"Bantuan Perjalanan Pintar",
+    rideText:"Laluan ini melebihi 5 km. Pertimbangkan pengangkutan lain jika perlu.",
+    grabLink:"Buka Grab Malaysia",
+    locationError:"Lokasi tidak dapat diperoleh. Semak kebenaran lokasi.",
+    coordinatesAdded:"Koordinat semasa anda telah ditambah.",
+    deleteConfirm:"Padam semua laporan tempatan?",
+    deleteDone:"Semua laporan tempatan telah dipadam.",
+    noSpeech:"Pelayar ini tidak menyokong suara."
   },
   zh: {
-    tagline: "通过无障碍导航和社区报告，打造更包容的城镇。",
-    languageLabel: "语言",
-    welcomeTitle: "欢迎使用 BlindPath",
-    intro: "BlindPath 帮助用户规划路线、收听语音摘要并报告无障碍问题。",
-    speakIntro: "朗读介绍",
-    repeatSpeech: "重复上一条语音",
-    stopSpeech: "停止语音",
-    navigationTitle: "路线规划",
-    navigationHelp: "输入起点和目的地。",
-    modeLabel: "出行方式",
-    walking: "步行",
-    driving: "驾车",
-    startLabel: "起点",
-    destinationLabel: "目的地",
-    startPlaceholder: "例如：马来亚大学，吉隆坡",
-    destinationPlaceholder: "例如：KL Sentral，吉隆坡",
-    findRoute: "查找路线",
-    useLocation: "使用我的当前位置",
-    distanceLabel: "Smart Ride Assist 距离阈值（公里）",
-    distanceHelp: "如果路线超过此距离，BlindPath 会语音提醒并提供 Grab 链接。",
-    voiceOn: "语音播报：开启",
-    voiceOff: "语音播报：关闭",
-    clearRoute: "清除路线",
-    ready: "可以开始规划路线。",
-    mapTitle: "地图",
-    mapCredit: "地图数据 © OpenStreetMap 贡献者。",
-    googleMaps: "打开 Google 地图",
-    rideTitle: "Smart Ride Assist",
-    rideNote: "请在 Grab 中确认上车地点和目的地。系统不会自动预订车辆。",
-    safetyNotice: "安全提示：这是原型，并非经过认证的无障碍导航系统。它无法检测障碍物或验证交通灯信号。请留意周围环境。",
-    reportTitle: "无障碍问题报告系统",
-    reportIntro: "报告被阻挡的盲道、损坏的人行道、不便通行的行人过道或其他问题。",
-    typeLabel: "问题类型",
-    blocked: "盲道被阻挡",
-    damaged: "盲道或人行道损坏",
-    crossing: "行人过道不便通行",
-    other: "其他无障碍问题",
-    reportLocationLabel: "地点",
-    reportLocationPlaceholder: "例如：主入口附近",
-    reportUseLocation: "使用我的当前位置",
-    locationHelp: "你可以手动输入地点，或允许设备访问当前位置。",
-    descriptionLabel: "问题描述",
-    descriptionPlaceholder: "请描述问题及相关信息。",
-    submitReport: "提交报告",
-    reportReady: "报告会显示在下方。",
-    submittedTitle: "保存在此设备上的报告",
-    storageNote: "仅供演示：报告保存在此浏览器中，不会发送给有关部门或与其他用户共享。",
-    empty: "目前还没有报告。",
-    saved: "报告仅保存在此浏览器中，尚未发送给有关部门。",
-    required: "请填写地点和问题描述。",
-    locationError: "无法获取位置。请检查定位权限或手动输入地点。",
-    locationAdded: "已添加当前坐标，请在提交前确认。",
-    delete: "删除此报告",
-    deleted: "报告已删除。",
-    problem: "问题",
-    location: "地点",
-    description: "描述",
-    submitted: "提交时间",
-    coordinates: "坐标",
-    featuresTitle: "BlindPath 功能",
-    feature1Title: "语音优先体验",
-    feature1Text: "语音摘要，以及重复或停止语音的控制。",
-    feature2Title: "Smart Ride Assist",
-    feature2Text: "距离提醒和外部叫车链接。",
-    feature3Title: "社区报告",
-    feature3Text: "在原型中记录无障碍问题。",
-    footerText: "BlindPath 黑客松原型。请勿依赖它判断过街是否安全。",
-    searching: "正在搜索地点...",
-    routing: "正在查找路线...",
-    missing: "请输入起点和目的地。",
-    notFound: "无法找到地点，请尝试更具体的地址。",
-    routeError: "暂时无法找到路线，请稍后重试。",
-    routeFound: "已找到路线。",
-    distance: "距离",
-    duration: "预计时间",
-    minutes: "分钟",
-    hours: "小时",
-    longRoute: "此路线为 {distance} 公里，超过你设定的 {limit} 公里提醒阈值。请考虑其他出行方式。",
-    spokenRoute: "已找到路线。距离：{distance} 公里。预计时间：{duration}。此路线可能不适合行人。",
-    currentSet: "已将当前位置设为起点。",
-    currentError: "无法获取当前位置。请检查定位权限。",
-    cleared: "路线已清除。",
-    introSpeech: "欢迎使用 BlindPath。此原型提供路线规划、语音摘要、距离提醒以及无障碍问题报告表单。它不是经过认证的无障碍导航系统。"
+    tagline:"为所有人设计的无障碍导航",
+    homeButton:"主页",
+    welcome:"BlindPath 可以怎样帮助你？",
+    homeIntro:"选择一个功能开始。",
+    priorityTitle:"优先考虑盲道",
+    priorityText:"BlindPath 的目标是优先选择有经过核实盲道的路线。目前此示范版本还没有完整、经过核实的盲道地图。",
+    navCard:"开始导航", navDesc:"规划步行或驾车路线",
+    reportCard:"报告问题", reportDesc:"报告盲道被阻挡或损坏",
+    settingsCard:"语音与设置", settingsDesc:"选择语言和语音",
+    communityCard:"社区", communityDesc:"查看无障碍报告",
+    navTitle:"导航", navIntro2:"输入起点和目的地。",
+    startLabel:"起点", destLabel:"目的地",
+    modeLabel:"出行方式", walkingOption:"步行",
+    drivingOption:"驾车", findButton:"寻找路线",
+    locationButton:"使用我的位置", stopButton:"停止语音",
+    safetyTitle:"安全提示",
+    safetyText:"此示范版本不会侦测障碍物、确认交通灯或核实路线是否有盲道。请勿将它当作安全系统使用。",
+    backNav:"返回主页",
+    reportTitle:"报告无障碍问题",
+    reportIntro:"帮助找出盲道及行人通道的问题。",
+    issueLabel:"问题是什么？", reportLocationLabel:"地点",
+    detailsLabel:"补充说明（选填）", gpsButton:"加入我的位置",
+    saveReportButton:"保存报告", privacyTitle:"重要提示",
+    privacyText:"报告只保存在这台设备的浏览器中，不会发送给有关当局或其他用户。",
+    settingsTitle:"语音与无障碍设置", languageLabel:"语言",
+    voiceLabel:"语音", voiceHelp:"可用语音取决于设备和浏览器，无法保证使用马来西亚口音。",
+    testVoiceButton:"测试语音", stopVoiceButton:"停止语音",
+    accessibilityTitle:"无障碍提醒",
+    accessibilityText:"正式使用前应与视障人士一起测试。此示范版本不是经过认证的导航或安全工具。",
+    communityTitle:"社区报告",
+    communityIntro:"查看保存在此浏览器中的报告。",
+    futureMapTitle:"未来的盲道地图",
+    futureMapText:"经过核实的路线资料可帮助优先规划路线。没有报告不代表道路畅通或安全。",
+    refreshButton:"刷新报告", deleteButton:"删除所有本地报告",
+    backReport:"返回主页", backSettings:"返回主页",
+    backCommunity:"返回主页", footer:"BlindPath 示范版本 • 使用公开地图服务 • 信息可能不完整。",
+    noReports:"这台设备目前没有报告。",
+    reportSaved:"报告已保存在这台设备上。",
+    routeFound:"已找到路线", distance:"距离", duration:"预计时间",
+    searching:"正在查询公开地图服务…",
+    routeError:"找不到路线。请检查地点名称后重试。",
+    rideTitle:"智能出行提醒",
+    rideText:"这条路线超过 5 公里。如有需要，请考虑其他交通方式。",
+    grabLink:"打开 Grab Malaysia",
+    locationError:"无法取得位置，请检查定位权限。",
+    coordinatesAdded:"已加入你目前的位置坐标。",
+    deleteConfirm:"删除所有本地报告？",
+    deleteDone:"所有本地报告已删除。",
+    noSpeech:"此浏览器不支持语音。"
   }
 };
 
 let lang = "en";
-let voiceEnabled = true;
-let lastMessage = "";
-let routeLine = null;
-let startMarker = null;
-let endMarker = null;
-let reportCoordinates = null;
+let map, routeLayer, startMarker, endMarker;
+const $ = id => document.getElementById(id);
+const t = key => translations[lang][key] || translations.en[key] || key;
 
-function tr(key) {
-  return (translations[lang] && translations[lang][key]) ||
-         translations.en[key] || key;
+function goTo(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $("screen-" + name).classList.add("active");
+  stopSpeech();
+  if (name === "navigation" && map) setTimeout(() => map.invalidateSize(), 150);
+  if (name === "community") renderReports();
+  window.scrollTo({top: 0, behavior: "smooth"});
 }
-
-function fillTemplate(template, values) {
-  return template.replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "");
-}
-
-function speak(message) {
-  lastMessage = message;
-  if (!voiceEnabled || !("speechSynthesis" in window)) return;
-
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(message);
-  utterance.lang = lang === "ms" ? "ms-MY" :
-                   lang === "zh" ? "zh-CN" : "en-MY";
-  window.speechSynthesis.speak(utterance);
-}
-
-function setRouteStatus(message, speakIt = false) {
-  $("routeStatus").textContent = message;
-  if (speakIt) speak(message);
-}
-
-const map = L.map("map").setView([3.1201, 101.6538], 13);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
 
 function applyLanguage() {
   lang = $("language").value;
-
   const ids = [
-    "tagline", "languageLabel", "welcomeTitle", "intro",
-    "speakIntro", "repeatSpeech", "stopSpeech",
-    "navigationTitle", "navigationHelp", "modeLabel",
-    "startLabel", "destinationLabel", "findRoute",
-    "useLocation", "distanceLabel", "distanceHelp",
-    "clearRoute", "mapTitle", "mapCredit",
-    "reportTitle", "reportIntro", "typeLabel",
-    "typeBlocked", "typeDamaged", "typeCrossing", "typeOther",
-    "reportLocationLabel", "reportUseLocation", "locationHelp",
-    "descriptionLabel", "submitReport", "submittedTitle",
-    "storageNote", "featuresTitle", "feature1Title", "feature1Text",
-    "feature2Title", "feature2Text", "feature3Title", "feature3Text",
-    "footerText", "safetyNotice", "rideTitle", "rideNote"
+    "tagline","homeButton","welcome","homeIntro","priorityTitle","priorityText",
+    "navCard","navDesc","reportCard","reportDesc","settingsCard","settingsDesc",
+    "communityCard","communityDesc","navTitle","navIntro2","startLabel","destLabel",
+    "modeLabel","findButton","locationButton","stopButton","safetyTitle","safetyText",
+    "reportTitle","reportIntro","issueLabel","reportLocationLabel","detailsLabel",
+    "gpsButton","saveReportButton","privacyTitle","privacyText","settingsTitle",
+    "languageLabel","voiceLabel","voiceHelp","testVoiceButton","stopVoiceButton",
+    "accessibilityTitle","accessibilityText","communityTitle","communityIntro",
+    "futureMapTitle","futureMapText","refreshButton","deleteButton","footer"
   ];
-
-  ids.forEach(id => {
-    const element = $(id);
-    if (element) {
-      const keyMap = {
-        typeBlocked: "blocked",
-        typeDamaged: "damaged",
-        typeCrossing: "crossing",
-        typeOther: "other"
-      };
-      element.textContent = tr(keyMap[id] || id);
-    }
-  });
-
-  $("start").placeholder = tr("startPlaceholder");
-  $("destination").placeholder = tr("destinationPlaceholder");
-  $("reportLocation").placeholder = tr("reportLocationPlaceholder");
-  $("reportDescription").placeholder = tr("descriptionPlaceholder");
-  $("travelMode").options[0].textContent = tr("walking");
-  $("travelMode").options[1].textContent = tr("driving");
-  $("voiceToggle").textContent = voiceEnabled ? tr("voiceOn") : tr("voiceOff");
-  $("googleMapsLink").textContent = tr("googleMaps");
-
-  $("routeStatus").textContent = tr("ready");
-  $("reportStatus").textContent = tr("reportReady");
+  ids.forEach(id => { if ($(id)) $(id).textContent = t(id); });
+  ["backNav","backReport","backSettings","backCommunity"].forEach(id => $(id).textContent = t(id));
+  $("walkingOption").textContent = t("walkingOption");
+  $("drivingOption").textContent = t("drivingOption");
+  const opts = $("issueType").options;
+  opts[0].text = lang === "zh" ? "盲道被阻挡" : lang === "ms" ? "Laluan sentuhan terhalang" : "Tactile path blocked";
+  opts[1].text = lang === "zh" ? "盲道损坏" : lang === "ms" ? "Laluan sentuhan rosak" : "Tactile path damaged";
+  opts[2].text = lang === "zh" ? "缺少盲道" : lang === "ms" ? "Laluan sentuhan tiada" : "Tactile path missing";
+  opts[3].text = lang === "zh" ? "路口可能不方便通行" : lang === "ms" ? "Lintasan mungkin sukar diakses" : "Inaccessible crossing";
+  opts[4].text = lang === "zh" ? "其他无障碍问题" : lang === "ms" ? "Masalah aksesibiliti lain" : "Other accessibility issue";
+  $("start").placeholder = lang === "zh" ? "例如：KL Sentral" : "e.g. KL Sentral";
+  $("destination").placeholder = lang === "zh" ? "例如：KLCC" : "e.g. KLCC";
+  $("reportLocation").placeholder = lang === "zh" ? "例如：商场入口附近" : lang === "ms" ? "cth. Berhampiran pintu masuk pusat beli-belah" : "e.g. Near a mall entrance";
   renderReports();
 }
 
-async function geocode(query) {
-  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" +
-              encodeURIComponent(query);
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("Geocoding error");
-
-  const results = await response.json();
-  if (!results.length) throw new Error("Place not found");
-
-  return {
-    lat: Number(results[0].lat),
-    lon: Number(results[0].lon),
-    name: results[0].display_name
-  };
-}
-
-function clearRouteMap() {
-  if (routeLine) map.removeLayer(routeLine);
-  if (startMarker) map.removeLayer(startMarker);
-  if (endMarker) map.removeLayer(endMarker);
-
-  routeLine = null;
-  startMarker = null;
-  endMarker = null;
-
-  $("routeSummary").hidden = true;
-  $("rideAssist").hidden = true;
-  $("googleMapsLink").href = "https://www.google.com/maps";
-}
-
-function formatDuration(seconds) {
-  const mins = Math.max(1, Math.round(seconds / 60));
-
-  if (mins >= 60) {
-    const hours = Math.floor(mins / 60);
-    const remaining = mins % 60;
-    return remaining
-      ? `${hours} ${tr("hours")} ${remaining} ${tr("minutes")}`
-      : `${hours} ${tr("hours")}`;
-  }
-
-  return `${mins} ${tr("minutes")}`;
-}
-
-async function getRoute(start, end) {
-  const mode = $("travelMode").value;
-
-  // Public OSRM demo server supports driving.
-  // The public OpenStreetMap foot-routing server supports walking.
-  const endpoint = mode === "foot"
-    ? "https://routing.openstreetmap.de/routed-foot/route/v1/driving/"
-    : "https://router.project-osrm.org/route/v1/driving/";
-
-  const coordinates = `${start.lon},${start.lat};${end.lon},${end.lat}`;
-  const url = endpoint + coordinates + "?overview=full&geometries=geojson&steps=true";
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("Routing error");
-
-  const data = await response.json();
-
-  if (data.code !== "Ok" || !data.routes || !data.routes.length) {
-    throw new Error("No route");
-  }
-
-  return data.routes[0];
-}
-
-function displayRoute(route, start, end) {
-  clearRouteMap();
-
-  const points = route.geometry.coordinates.map(point => [point[1], point[0]]);
-
-  routeLine = L.polyline(points, {
-    color: "#176b5b",
-    weight: 6
-  }).addTo(map);
-
-  startMarker = L.marker([start.lat, start.lon])
-    .addTo(map).bindPopup(tr("startLabel"));
-
-  endMarker = L.marker([end.lat, end.lon])
-    .addTo(map).bindPopup(tr("destinationLabel"));
-
-  map.fitBounds(routeLine.getBounds(), { padding: [25, 25] });
-
-  const distanceKm = route.distance / 1000;
-  const duration = formatDuration(route.duration);
-
-  $("routeSummary").hidden = false;
-  $("routeSummary").textContent =
-    `${tr("routeFound")} ${tr("distance")}: ${distanceKm.toFixed(2)} km. ` +
-    `${tr("duration")}: ${duration}.`;
-
-  const mode = $("travelMode").value === "foot" ? "walking" : "driving";
-
-  $("googleMapsLink").href =
-    "https://www.google.com/maps/dir/?api=1&origin=" +
-    encodeURIComponent(`${start.lat},${start.lon}`) +
-    "&destination=" + encodeURIComponent(`${end.lat},${end.lon}`) +
-    "&travelmode=" + mode;
-
-  const limit = Number($("distanceLimit").value);
-
-  if (Number.isFinite(limit) && limit > 0 && distanceKm > limit) {
-    $("rideAssist").hidden = false;
-    $("rideText").textContent = fillTemplate(tr("longRoute"), {
-      distance: distanceKm.toFixed(1),
-      limit: limit
-    });
-    speak(fillTemplate(tr("spokenRoute"), {
-      distance: distanceKm.toFixed(1),
-      duration: duration
-    }) + " " + $("rideText").textContent);
-  } else {
-    $("rideAssist").hidden = true;
-    speak(fillTemplate(tr("spokenRoute"), {
-      distance: distanceKm.toFixed(1),
-      duration: duration
-    }));
-  }
-
-  setRouteStatus(tr("routeFound"));
-}
-
-$("findRoute").addEventListener("click", async () => {
-  const startText = $("start").value.trim();
-  const endText = $("destination").value.trim();
-
-  if (!startText || !endText) {
-    setRouteStatus(tr("missing"), true);
+function initMap() {
+  if (!window.L) {
+    $("routeStatus").textContent = "Map failed to load. Check your internet connection.";
     return;
   }
+  map = L.map("map").setView([3.139, 101.6869], 12);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  }).addTo(map);
+}
 
-  $("findRoute").disabled = true;
-  clearRouteMap();
-  setRouteStatus(tr("searching"));
+function stopSpeech() {
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+
+function speak(message) {
+  if (!("speechSynthesis" in window)) {
+    alert(t("noSpeech"));
+    return;
+  }
+  stopSpeech();
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en-MY";
+  const selected = $("voiceSelect").value;
+  const voices = speechSynthesis.getVoices();
+  if (selected !== "" && voices[Number(selected)]) utterance.voice = voices[Number(selected)];
+  speechSynthesis.speak(utterance);
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+  const fill = () => {
+    const select = $("voiceSelect");
+    const old = select.value;
+    select.innerHTML = "";
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Default device voice";
+    select.appendChild(defaultOption);
+    speechSynthesis.getVoices().forEach((voice, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = voice.name + " (" + voice.lang + ")";
+      select.appendChild(option);
+    });
+    select.value = old;
+  };
+  fill();
+  speechSynthesis.onvoiceschanged = fill;
+}
+
+function speakIntro() {
+  const message = lang === "zh"
+    ? "欢迎使用 BlindPath。你可以开始导航、报告盲道问题、调整语音设置，或查看社区报告。"
+    : lang === "ms"
+    ? "Selamat datang ke BlindPath. Anda boleh mula navigasi, melaporkan masalah laluan sentuhan, mengubah tetapan suara atau melihat laporan komuniti."
+    : "Welcome to BlindPath. You can start navigation, report tactile path problems, change voice settings, or view community reports.";
+  speak(message);
+}
+
+async function geocode(place) {
+  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(place);
+  const response = await fetch(url, {headers: {"Accept-Language": lang}});
+  if (!response.ok) throw new Error("Map search service unavailable.");
+  const results = await response.json();
+  if (!results.length) throw new Error("Place not found: " + place);
+  return {lat: Number(results[0].lat), lon: Number(results[0].lon)};
+}
+
+async function findRoute() {
+  const startText = $("start").value.trim();
+  const destinationText = $("destination").value.trim();
+  if (!startText || !destinationText) {
+    $("routeStatus").textContent = "Please enter both locations.";
+    return;
+  }
+  $("routeStatus").textContent = t("searching");
+  $("routeResult").classList.add("hidden");
+  $("rideAssist").classList.add("hidden");
 
   try {
     const start = await geocode(startText);
-
-    // Leave a short gap between public geocoding requests.
     await new Promise(resolve => setTimeout(resolve, 1100));
-
-    const end = await geocode(endText);
-    setRouteStatus(tr("routing"));
-
-    const route = await getRoute(start, end);
-    displayRoute(route, start, end);
-  } catch (error) {
-    console.error(error);
-    const message = error.message === "Place not found"
-      ? tr("notFound")
-      : tr("routeError");
-    setRouteStatus(message, true);
-  } finally {
-    $("findRoute").disabled = false;
-  }
-});
-
-function getCurrentLocation(success, failure) {
-  if (!navigator.geolocation) {
-    failure();
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    position => success({
-      lat: position.coords.latitude,
-      lon: position.coords.longitude
-    }),
-    failure,
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
-  );
-}
-
-$("useLocation").addEventListener("click", () => {
-  getCurrentLocation(position => {
-    $("start").value = `${position.lat}, ${position.lon}`;
-    map.setView([position.lat, position.lon], 16);
-    setRouteStatus(tr("currentSet"), true);
-  }, () => setRouteStatus(tr("currentError"), true));
-});
-
-$("clearRoute").addEventListener("click", () => {
-  clearRouteMap();
-  setRouteStatus(tr("cleared"), true);
-});
-
-$("voiceToggle").addEventListener("click", () => {
-  voiceEnabled = !voiceEnabled;
-  $("voiceToggle").textContent = voiceEnabled ? tr("voiceOn") : tr("voiceOff");
-
-  if (!voiceEnabled && "speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  } else {
-    speak(tr("voiceOn"));
-  }
-});
-
-$("speakIntro").addEventListener("click", () => speak(tr("introSpeech")));
-
-$("repeatSpeech").addEventListener("click", () => {
-  if (lastMessage) speak(lastMessage);
-});
-
-$("stopSpeech").addEventListener("click", () => {
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-});
-
-/* ACCESSIBILITY REPORTING SYSTEM */
-
-const REPORTS_KEY = "blindpath_reports_v1";
-
-function loadReports() {
-  try {
-    const data = JSON.parse(localStorage.getItem(REPORTS_KEY) || "[]");
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function saveReports(reports) {
-  try {
-    localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
-    return true;
-  } catch (error) {
-    $("reportStatus").textContent =
-      "Unable to save reports. Browser storage may be unavailable or full.";
-    return false;
-  }
-}
-
-function renderReports() {
-  const list = $("reportList");
-  list.replaceChildren();
-
-  const reports = loadReports();
-
-  if (reports.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = tr("empty");
-    list.appendChild(empty);
-    return;
-  }
-
-  reports.slice().reverse().forEach(report => {
-    const card = document.createElement("article");
-    card.className = "report-card";
-
-    const heading = document.createElement("h3");
-    heading.textContent = report.typeLabel;
-    card.appendChild(heading);
-
-    const location = document.createElement("p");
-    location.textContent = `${tr("location")}: ${report.location}`;
-    card.appendChild(location);
-
-    const description = document.createElement("p");
-    description.textContent = `${tr("description")}: ${report.description}`;
-    card.appendChild(description);
-
-    if (report.coordinates) {
-      const coordinates = document.createElement("p");
-      coordinates.textContent =
-        `${tr("coordinates")}: ${report.coordinates.lat.toFixed(5)}, ` +
-        `${report.coordinates.lon.toFixed(5)}`;
-      card.appendChild(coordinates);
+    const destination = await geocode(destinationText);
+    const walking = $("mode").value === "foot";
+    const endpoint = walking
+      ? "https://routing.openstreetmap.de/routed-foot/route/v1/driving/"
+      : "https://router.project-osrm.org/route/v1/driving/";
+    const url = endpoint + start.lon + "," + start.lat + ";" +
+      destination.lon + "," + destination.lat +
+      "?overview=full&geometries=geojson&steps=true";
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Routing service unavailable.");
+    const data = await response.json();
+    if (data.code !== "Ok" || !data.routes || !data.routes.length) {
+      throw new Error("No route returned.");
     }
 
-    const date = document.createElement("p");
-    date.className = "small";
-    date.textContent = `${tr("submitted")}: ${new Date(report.createdAt).toLocaleString()}`;
-    card.appendChild(date);
+    const route = data.routes[0];
+    const km = route.distance / 1000;
+    const minutes = Math.round(route.duration / 60);
 
-    const remove = document.createElement("button");
-    remove.className = "delete";
-    remove.type = "button";
-    remove.textContent = tr("delete");
+    if (routeLayer) map.removeLayer(routeLayer);
+    if (startMarker) map.removeLayer(startMarker);
+    if (endMarker) map.removeLayer(endMarker);
 
-    remove.addEventListener("click", () => {
-      const updated = loadReports().filter(item => item.id !== report.id);
+    routeLayer = L.geoJSON(route.geometry, {
+      style: {color: "#1769aa", weight: 6, opacity: .85}
+    }).addTo(map);
+    startMarker = L.marker([start.lat, start.lon]).addTo(map).bindPopup("Start");
+    endMarker = L.marker([destination.lat, destination.lon]).addTo(map).bindPopup("Destination");
+    map.fitBounds(routeLayer.getBounds(), {padding: [25, 25]});
 
-      if (saveReports(updated)) {
-        $("reportStatus").textContent = tr("deleted");
-        renderReports();
-        speak(tr("deleted"));
-      }
-    });
+    $("routeStatus").textContent = t("routeFound");
+    $("routeResult").classList.remove("hidden");
+    $("routeResult").textContent =
+      t("routeFound") + " — " + t("distance") + ": " + km.toFixed(2) +
+      " km. " + t("duration") + ": " + minutes + " min.";
 
-    card.appendChild(remove);
-    list.appendChild(card);
-  });
+    const gmMode = walking ? "walking" : "driving";
+    const googleUrl = "https://www.google.com/maps/dir/?api=1&origin=" +
+      encodeURIComponent(startText) + "&destination=" +
+      encodeURIComponent(destinationText) + "&travelmode=" + gmMode;
+    const link = document.createElement("a");
+    link.href = googleUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Open route in Google Maps";
+    $("routeResult").appendChild(document.createElement("br"));
+    $("routeResult").appendChild(link);
+
+    if (km > 5) {
+      $("rideAssist").classList.remove("hidden");
+      $("rideAssist").textContent = t("rideTitle") + ": " + t("rideText") + " ";
+      const grab = document.createElement("a");
+      grab.href = "https://www.grab.com/my/";
+      grab.target = "_blank";
+      grab.rel = "noopener noreferrer";
+      grab.textContent = t("grabLink");
+      $("rideAssist").appendChild(grab);
+      speak(t("rideTitle") + ". " + t("rideText"));
+    } else {
+      speak(t("routeFound") + ". " + t("distance") + " " + km.toFixed(1) + " kilometres.");
+    }
+  } catch (error) {
+    $("routeStatus").textContent = t("routeError") + " " + error.message;
+  }
 }
 
-$("reportUseLocation").addEventListener("click", () => {
-  getCurrentLocation(position => {
-    reportCoordinates = position;
-    $("reportLocation").value = `${position.lat.toFixed(6)}, ${position.lon.toFixed(6)}`;
-    $("reportStatus").textContent = tr("locationAdded");
-    speak(tr("locationAdded"));
+function useMyLocation() {
+  if (!navigator.geolocation) {
+    $("routeStatus").textContent = t("locationError");
+    return;
+  }
+  $("routeStatus").textContent = "Requesting location permission…";
+  navigator.geolocation.getCurrentPosition(position => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    $("start").value = lat.toFixed(6) + ", " + lon.toFixed(6);
+    $("routeStatus").textContent = t("coordinatesAdded");
+    if (map) {
+      map.setView([lat, lon], 16);
+      if (startMarker) map.removeLayer(startMarker);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Your location");
+    }
   }, () => {
-    $("reportStatus").textContent = tr("locationError");
-    speak(tr("locationError"));
-  });
-});
+    $("routeStatus").textContent = t("locationError");
+  }, {enableHighAccuracy: true, timeout: 10000});
+}
 
-$("reportLocation").addEventListener("input", () => {
-  // Avoid attaching outdated GPS coordinates to a manually edited location.
-  reportCoordinates = null;
-});
+function addReportLocation() {
+  if (!navigator.geolocation) {
+    $("reportStatus").textContent = t("locationError");
+    return;
+  }
+  $("reportStatus").textContent = "Requesting location permission…";
+  navigator.geolocation.getCurrentPosition(position => {
+    const coords = position.coords.latitude.toFixed(6) + ", " +
+      position.coords.longitude.toFixed(6);
+    $("reportLocation").value = $("reportLocation").value.trim()
+      ? $("reportLocation").value.trim() + " (" + coords + ")"
+      : coords;
+    $("reportStatus").textContent = t("coordinatesAdded");
+  }, () => {
+    $("reportStatus").textContent = t("locationError");
+  }, {enableHighAccuracy: true, timeout: 10000});
+}
+
+function getReports() {
+  try { return JSON.parse(localStorage.getItem("blindpathReports") || "[]"); }
+  catch (error) { return []; }
+}
+function saveReports(reports) {
+  localStorage.setItem("blindpathReports", JSON.stringify(reports));
+}
 
 $("reportForm").addEventListener("submit", event => {
   event.preventDefault();
-
-  const location = $("reportLocation").value.trim();
-  const description = $("reportDescription").value.trim();
-
-  if (!location || !description) {
-    $("reportStatus").textContent = tr("required");
-    speak(tr("required"));
+  const reports = getReports();
+  reports.unshift({
+    id: Date.now(),
+    type: $("issueType").value,
+    location: $("reportLocation").value.trim(),
+    details: $("reportDetails").value.trim(),
+    created: new Date().toLocaleString()
+  });
+  try {
+    saveReports(reports);
+  } catch (error) {
+    $("reportStatus").textContent = "Could not save this report in your browser.";
     return;
   }
-
-  const typeSelect = $("reportType");
-
-  const report = {
-    id: Date.now().toString() + "-" + Math.random().toString(36).slice(2, 8),
-    type: typeSelect.value,
-    typeLabel: typeSelect.options[typeSelect.selectedIndex].textContent,
-    location: location,
-    description: description,
-    coordinates: reportCoordinates,
-    createdAt: new Date().toISOString()
-  };
-
-  const reports = loadReports();
-  reports.push(report);
-
-  if (!saveReports(reports)) return;
-
-  $("reportStatus").textContent = tr("saved");
   $("reportForm").reset();
-  reportCoordinates = null;
+  $("reportStatus").textContent = t("reportSaved");
   renderReports();
-  speak(tr("saved"));
+  speak(t("reportSaved"));
 });
 
-$("language").addEventListener("change", applyLanguage);
+function renderReports() {
+  const list = $("reportList");
+  if (!list) return;
+  list.innerHTML = "";
+  const reports = getReports();
+  if (!reports.length) {
+    list.textContent = t("noReports");
+    return;
+  }
+  reports.forEach(report => {
+    const item = document.createElement("div");
+    item.className = "report-item";
+    const title = document.createElement("strong");
+    title.textContent = report.type;
+    const date = document.createElement("p");
+    date.className = "muted";
+    date.textContent = report.created;
+    const location = document.createElement("p");
+    location.textContent = "📍 " + report.location;
+    item.append(title, date, location);
+    if (report.details) {
+      const details = document.createElement("p");
+      details.textContent = report.details;
+      item.appendChild(details);
+    }
+    const del = document.createElement("button");
+    del.className = "danger";
+    del.textContent = lang === "zh" ? "删除" : lang === "ms" ? "Padam" : "Delete";
+    del.onclick = () => {
+      saveReports(getReports().filter(r => r.id !== report.id));
+      renderReports();
+    };
+    item.appendChild(del);
+    list.appendChild(item);
+  });
+}
 
-applyLanguage();
+function clearReports() {
+  if (!confirm(t("deleteConfirm"))) return;
+  saveReports([]);
+  renderReports();
+  alert(t("deleteDone"));
+}
+
+window.addEventListener("load", () => {
+  initMap();
+  loadVoices();
+  renderReports();
+});
 </script>
-
 </body>
 </html>
