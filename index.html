@@ -2,246 +2,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#174c3c">
-  <title>BlindPath | Accessible Navigation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#174c3c">
+<title>BlindPath | Accessible Navigation</title>
 
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  <style>
-    :root {
-      --green: #174c3c;
-      --light-green: #e9f4ee;
-      --ink: #17231f;
-      --muted: #5b6a63;
-      --line: #d8e2dc;
-      --bg: #f5f8f6;
-      --white: #ffffff;
-      --focus: #ffbf47;
-    }
+<style>
+:root {
+  --green: #174c3c;
+  --light-green: #e9f4ee;
+  --ink: #17231f;
+  --muted: #5b6a63;
+  --line: #d8e2dc;
+  --bg: #f5f8f6;
+  --white: #fff;
+  --focus: #ffbf47;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.55;
-    }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+}
 
-    button, input, select, textarea { font: inherit; }
+button, input, select, textarea { font: inherit; }
 
-    button, a { cursor: pointer; }
+button, a { cursor: pointer; }
 
-    button:focus-visible, input:focus-visible,
-    select:focus-visible, textarea:focus-visible,
-    a:focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 3px;
-    }
+button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
 
-    header {
-      background: var(--green);
-      color: white;
-      padding: 16px;
-    }
+header {
+  background: var(--green);
+  color: white;
+  padding: 16px;
+}
 
-    .header-inner {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+.header-inner {
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
-    .brand { font-size: 1.55rem; font-weight: 800; }
-    .tagline { font-size: .92rem; }
+.brand { font-size: 1.55rem; font-weight: 800; }
+.tagline { font-size: .92rem; }
 
-    main {
-      max-width: 1000px;
-      margin: 22px auto;
-      padding: 0 14px 35px;
-    }
+main {
+  max-width: 1000px;
+  margin: 22px auto;
+  padding: 0 14px 35px;
+}
 
-    .screen { display: none; }
-    .screen.active { display: block; }
+.screen { display: none; }
+.screen.active { display: block; }
 
-    h1 { font-size: 1.65rem; line-height: 1.25; margin-top: 0; }
-    h2 { font-size: 1.2rem; margin-top: 0; }
-    h3 { font-size: 1.05rem; }
+h1 { font-size: 1.65rem; line-height: 1.25; margin-top: 0; }
+h2 { font-size: 1.2rem; margin-top: 0; }
+p { margin: 7px 0 13px; }
+.muted { color: var(--muted); }
 
-    p { margin: 7px 0 13px; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px #173c2c0a;
+}
 
-    .muted { color: var(--muted); }
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
 
-    .card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 8px #173c2c0a;
-    }
+.home-action {
+  min-height: 125px;
+  text-align: left;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: white;
+  color: var(--ink);
+}
 
-    .home-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 20px;
-    }
+.home-action:hover {
+  border-color: var(--green);
+  background: var(--light-green);
+}
 
-    .home-action {
-      min-height: 125px;
-      text-align: left;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: white;
-      color: var(--ink);
-    }
+.home-action .symbol {
+  display: block;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
 
-    .home-action:hover {
-      border-color: var(--green);
-      background: var(--light-green);
-    }
+.home-action strong { display: block; font-size: 1.08rem; }
+.home-action small { display: block; color: var(--muted); margin-top: 4px; }
 
-    .home-action .symbol {
-      display: block;
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-    }
+.primary, .secondary, .danger, .nav-button {
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--green);
+  font-weight: 700;
+}
 
-    .home-action strong { display: block; font-size: 1.08rem; }
-    .home-action small { display: block; color: var(--muted); margin-top: 4px; }
+.primary { background: var(--green); color: white; }
+.secondary { background: white; color: var(--green); }
+.danger { background: white; color: #9c2525; border-color: #c77; }
+.nav-button { background: transparent; color: white; border-color: #ffffffa0; }
 
-    .primary, .secondary, .danger, .nav-button {
-      border-radius: 10px;
-      padding: 10px 14px;
-      border: 1px solid var(--green);
-      font-weight: 700;
-    }
+button:disabled { opacity: .55; cursor: not-allowed; }
 
-    .primary { background: var(--green); color: white; }
-    .secondary { background: white; color: var(--green); }
-    .danger { background: white; color: #9c2525; border-color: #c77; }
-    .nav-button { background: transparent; color: white; border-color: #ffffffa0; }
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
 
-    button:disabled { opacity: .55; cursor: not-allowed; }
+label { display: block; font-weight: 700; margin: 12px 0 5px; }
 
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 12px;
-    }
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #aebeb5;
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+}
 
-    label { display: block; font-weight: 700; margin: 12px 0 5px; }
+textarea { min-height: 90px; resize: vertical; }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid #aebeb5;
-      border-radius: 9px;
-      background: white;
-      color: var(--ink);
-    }
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-    textarea { min-height: 90px; resize: vertical; }
+.notice, .good-note {
+  border-radius: 12px;
+  padding: 13px;
+  margin: 13px 0;
+}
 
-    .field-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+.notice {
+  background: #fff7df;
+  border: 1px solid #e5cb78;
+}
 
-    .notice, .good-note {
-      border-radius: 12px;
-      padding: 13px;
-      margin: 13px 0;
-    }
+.good-note {
+  background: var(--light-green);
+  border: 1px solid #b6d6c4;
+}
 
-    .notice {
-      background: #fff7df;
-      border: 1px solid #e5cb78;
-    }
+.status {
+  padding: 10px 12px;
+  background: #f0f3f1;
+  border-radius: 9px;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
 
-    .good-note {
-      background: var(--light-green);
-      border: 1px solid #b6d6c4;
-    }
+.pill {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: var(--light-green);
+  color: var(--green);
+  font-weight: 700;
+  font-size: .85rem;
+}
 
-    .status {
-      padding: 10px 12px;
-      background: #f0f3f1;
-      border-radius: 9px;
-      margin-top: 12px;
-      overflow-wrap: anywhere;
-    }
+.pending { background: #fff2ce; color: #795500; }
+.verified { background: #dff4e5; color: #176536; }
+.rejected { background: #fde7e7; color: #9c2525; }
 
-    .pill {
-      display: inline-block;
-      padding: 4px 9px;
-      border-radius: 99px;
-      background: var(--light-green);
-      color: var(--green);
-      font-weight: 700;
-      font-size: .85rem;
-    }
+#map {
+  height: 320px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  margin-top: 12px;
+}
 
-    .pending { background: #fff2ce; color: #795500; }
-    .verified { background: #dff4e5; color: #176536; }
-    .rejected { background: #fde7e7; color: #9c2525; }
+.report-item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px;
+  margin: 10px 0;
+  background: white;
+  overflow-wrap: anywhere;
+}
 
-    #map {
-      height: 320px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      margin-top: 12px;
-    }
+.report-item p { margin: 5px 0; }
+.hidden { display: none !important; }
 
-    .report-item {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 13px;
-      margin: 10px 0;
-      background: white;
-      overflow-wrap: anywhere;
-    }
+footer {
+  max-width: 1000px;
+  margin: auto;
+  padding: 0 14px 24px;
+  color: var(--muted);
+  font-size: .86rem;
+}
 
-    .report-item p { margin: 5px 0; }
+a { color: #145ca8; }
 
-    .hidden { display: none !important; }
+@media (max-width: 620px) {
+  .home-grid, .field-grid { grid-template-columns: 1fr; }
+  .home-action { min-height: 100px; }
+  .header-inner { align-items: flex-start; }
+  #map { height: 280px; }
+}
 
-    footer {
-      max-width: 1000px;
-      margin: auto;
-      padding: 0 14px 24px;
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    a { color: #145ca8; }
-
-    @media (max-width: 620px) {
-      .home-grid, .field-grid { grid-template-columns: 1fr; }
-      .home-action { min-height: 100px; }
-      .header-inner { align-items: flex-start; }
-      #map { height: 280px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-  </style>
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
 </head>
 
 <body>
@@ -253,408 +248,414 @@
         Accessible journeys. More inclusive townships.
       </div>
     </div>
+
     <div class="button-row" style="margin-top:0">
       <button class="nav-button" onclick="goTo('home')">Home</button>
-      <button class="nav-button" id="accountButton" onclick="openAccount()">
-        Login / Register
-      </button>
+      <button class="nav-button" id="accountButton" onclick="openAccount()">Login</button>
     </div>
   </div>
 </header>
 
 <main>
 
-  <!-- HOME: THE ORIGINAL FOUR MAIN BUTTONS -->
-  <section id="screen-home" class="screen active">
-    <div class="card">
-      <h1 id="homeTitle">How can BlindPath help you?</h1>
-      <p class="muted" id="homeIntro">
-        Choose one action to get started. BlindPath is designed with accessibility in mind.
-      </p>
+<!-- HOME PAGE -->
+<section id="screen-home" class="screen active">
+  <div class="card">
+    <h1 id="homeTitle">How can BlindPath help you?</h1>
+    <p class="muted" id="homeIntro">
+      Choose one action to get started. BlindPath is designed with accessibility in mind.
+    </p>
 
-      <div class="good-note">
-        <strong>Tactile-path priority</strong><br>
-        BlindPath aims to support routes with verified tactile paving (盲道).
-        This prototype does not contain a complete, verified tactile-path map.
-      </div>
+    <div class="good-note">
+      <strong>Tactile-path priority</strong><br>
+      BlindPath aims to support routes with verified tactile paving (盲道).
+      This prototype does not contain a complete, verified tactile-path map.
+    </div>
 
-      <div class="home-grid">
-        <button class="home-action" onclick="goTo('navigation')">
-          <span class="symbol" aria-hidden="true">🧭</span>
-          <strong id="navCardTitle">Start Navigation</strong>
-          <small id="navCardText">Plan a walking or driving route</small>
-        </button>
+    <div class="home-grid">
+      <button class="home-action" onclick="goTo('navigation')">
+        <span class="symbol" aria-hidden="true">🧭</span>
+        <strong id="navCardTitle">Start Navigation</strong>
+        <small>Plan a walking or driving route</small>
+      </button>
 
-        <button class="home-action" onclick="goTo('report')">
-          <span class="symbol" aria-hidden="true">⚑</span>
-          <strong id="reportCardTitle">Report an Issue</strong>
-          <small id="reportCardText">Report blocked, damaged or missing tactile paving</small>
-        </button>
+      <button class="home-action" onclick="goTo('report')">
+        <span class="symbol" aria-hidden="true">⚑</span>
+        <strong id="reportCardTitle">Report an Issue</strong>
+        <small>Report blocked, damaged or missing tactile paving</small>
+      </button>
 
-        <button class="home-action" onclick="goTo('settings')">
-          <span class="symbol" aria-hidden="true">🔊</span>
-          <strong id="settingsCardTitle">Voice & Settings</strong>
-          <small id="settingsCardText">Language and spoken guidance</small>
-        </button>
+      <button class="home-action" onclick="goTo('settings')">
+        <span class="symbol" aria-hidden="true">🔊</span>
+        <strong id="settingsCardTitle">Voice & Settings</strong>
+        <small>Language and spoken guidance</small>
+      </button>
 
-        <button class="home-action" onclick="goTo('community')">
-          <span class="symbol" aria-hidden="true">🤝</span>
-          <strong id="communityCardTitle">Community</strong>
-          <small id="communityCardText">Review reports saved on this device</small>
-        </button>
-      </div>
+      <button class="home-action" onclick="goTo('community')">
+        <span class="symbol" aria-hidden="true">🤝</span>
+        <strong id="communityCardTitle">Community</strong>
+        <small>Review reports saved on this device</small>
+      </button>
+    </div>
+
+    <div class="button-row">
+      <button class="secondary" onclick="openAccount()">My Profile / OKU Verification</button>
+    </div>
+
+    <div class="notice">
+      <strong>Prototype notice:</strong>
+      Routes and reports may be incomplete. Do not rely on this demo
+      to determine whether a crossing is safe.
+    </div>
+  </div>
+</section>
+
+<!-- LOGIN PAGE: SEPARATE FROM REGISTER -->
+<section id="screen-auth" class="screen">
+  <div class="card">
+    <h1>Welcome Back</h1>
+    <p class="muted">Log in to continue using BlindPath.</p>
+
+    <form id="loginForm">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" required autocomplete="email"
+             placeholder="Enter your email">
+
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" required
+             autocomplete="current-password" placeholder="Enter your password">
 
       <div class="button-row">
-        <button class="secondary" onclick="openAccount()">My Profile / OKU Verification</button>
+        <button class="primary" type="submit">Log In</button>
+        <button class="secondary" type="button" onclick="goTo('home')">Back to Home</button>
       </div>
+    </form>
 
-      <div class="notice">
-        <strong>Prototype notice:</strong>
-        Routes and reports may be incomplete. Do not rely on this demo
-        to determine whether a crossing is safe.
-      </div>
+    <p id="authStatus" class="status" role="status" aria-live="polite"></p>
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+
+    <p>Don't have an account yet?</p>
+    <button class="secondary" onclick="goTo('register')">Create an Account</button>
+
+    <div class="notice">
+      This is a hackathon demo account system. Do not use a real password.
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- REGISTER / LOGIN -->
-  <section id="screen-auth" class="screen">
-    <div class="card">
-      <h1>BlindPath Account</h1>
-      <p class="muted">
-        Create a demo account or log in to view your profile and OKU verification status.
-      </p>
+<!-- REGISTER PAGE: SEPARATE FROM LOGIN -->
+<section id="screen-register" class="screen">
+  <div class="card">
+    <h1>Create Your Account</h1>
+    <p class="muted">
+      Join BlindPath for accessible navigation and community reporting.
+    </p>
 
-      <div class="notice">
-        This is a local prototype account system, not secure authentication.
-        Do not use a real password. No IC number or OKU card details are requested.
+    <form id="registerForm">
+      <label for="registerName">Display Name</label>
+      <input id="registerName" required maxlength="60"
+             autocomplete="name" placeholder="Enter your name">
+
+      <label for="registerEmail">Email</label>
+      <input id="registerEmail" type="email" required
+             autocomplete="email" placeholder="Enter your email">
+
+      <label for="registerPassword">Password</label>
+      <input id="registerPassword" type="password" required minlength="4"
+             autocomplete="new-password" placeholder="Create a demo password">
+
+      <div class="button-row">
+        <button class="primary" type="submit">Register</button>
+        <button class="secondary" type="button" onclick="goTo('home')">Back to Home</button>
       </div>
+    </form>
 
-      <h2>Register</h2>
-      <form id="registerForm">
-        <label for="registerName">Display name</label>
-        <input id="registerName" required maxlength="60" autocomplete="name">
+    <p id="registerStatus" class="status" role="status" aria-live="polite"></p>
 
-        <label for="registerEmail">Email</label>
-        <input id="registerEmail" type="email" required autocomplete="email">
+    <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
 
-        <label for="registerPassword">Demo password</label>
-        <input id="registerPassword" type="password" required minlength="4"
-               autocomplete="new-password">
+    <p>Already have an account?</p>
+    <button class="secondary" onclick="goTo('auth')">Go to Login</button>
 
-        <button class="primary" type="submit">Create Demo Account</button>
-      </form>
+    <div class="notice">
+      This prototype does not use secure, production-ready authentication.
+    </div>
+  </div>
+</section>
+
+<!-- PROFILE AND OKU VERIFICATION -->
+<section id="screen-profile" class="screen">
+  <div class="card">
+    <h1>My Profile</h1>
+    <div id="profileSummary" class="good-note">Please log in to view your profile.</div>
+
+    <div id="profileContent" class="hidden">
+      <h2>Profile Details</h2>
+
+      <label for="profileName">Display Name</label>
+      <input id="profileName" maxlength="60">
+
+      <label for="profileEmail">Email</label>
+      <input id="profileEmail" type="email" disabled>
+
+      <label for="accessibilityPreference">Accessibility Preference</label>
+      <select id="accessibilityPreference">
+        <option value="Blind or low vision">Blind or low vision</option>
+        <option value="Mobility assistance">Mobility assistance</option>
+        <option value="Hearing assistance">Hearing assistance</option>
+        <option value="Other accessibility needs">Other accessibility needs</option>
+        <option value="Prefer not to say">Prefer not to say</option>
+      </select>
+
+      <div class="button-row">
+        <button class="primary" onclick="saveProfile()">Save Profile</button>
+      </div>
 
       <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
 
-      <h2>Log in</h2>
-      <form id="loginForm">
-        <label for="loginEmail">Email</label>
-        <input id="loginEmail" type="email" required autocomplete="email">
+      <h2>OKU Status Verification</h2>
+      <p>
+        Request an OKU status review through this demonstration.
+        Accessibility settings remain available even without verified status.
+      </p>
 
-        <label for="loginPassword">Demo password</label>
-        <input id="loginPassword" type="password" required autocomplete="current-password">
+      <div class="good-note">
+        <strong>Current status:</strong>
+        <span id="verificationBadge" class="pill">Not requested</span>
+        <p id="verificationExplanation" class="muted">
+          No verification request has been submitted.
+        </p>
+      </div>
 
-        <button class="primary" type="submit">Log In</button>
-      </form>
-
-      <p id="authStatus" class="status" role="status" aria-live="polite"></p>
+      <div class="notice">
+        <strong>How the demo works</strong>
+        <ol>
+          <li>Submit an OKU verification request.</li>
+          <li>The status changes to Pending.</li>
+          <li>A demo reviewer can simulate approval or rejection.</li>
+        </ol>
+        This demo does not contact JKM, MyGOV or a government database.
+        Do not upload identity documents here.
+      </div>
 
       <div class="button-row">
-        <button class="secondary" onclick="goTo('home')">Back to Home</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROFILE AND OKU VERIFICATION -->
-  <section id="screen-profile" class="screen">
-    <div class="card">
-      <h1>My Profile</h1>
-      <div id="profileSummary" class="good-note" aria-live="polite">
-        Please log in to view your profile.
+        <button class="primary" id="requestVerificationButton" onclick="requestVerification()">
+          Request OKU Verification
+        </button>
+        <button class="secondary" onclick="cancelVerification()">Cancel Request</button>
       </div>
 
-      <div id="profileContent" class="hidden">
-        <h2>Profile details</h2>
-
-        <label for="profileName">Display name</label>
-        <input id="profileName" maxlength="60">
-
-        <label for="profileEmail">Email</label>
-        <input id="profileEmail" type="email" disabled>
-
-        <label for="accessibilityPreference">Accessibility preference</label>
-        <select id="accessibilityPreference">
-          <option value="Blind or low vision">Blind or low vision</option>
-          <option value="Mobility assistance">Mobility assistance</option>
-          <option value="Hearing assistance">Hearing assistance</option>
-          <option value="Other accessibility needs">Other accessibility needs</option>
-          <option value="Prefer not to say">Prefer not to say</option>
-        </select>
-
-        <div class="button-row">
-          <button class="primary" onclick="saveProfile()">Save Profile</button>
-        </div>
-
-        <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
-
-        <h2>OKU Status Verification</h2>
-
-        <p>
-          You can request a review of your OKU status in this prototype.
-          Accessibility settings remain available whether or not your status is verified.
+      <div class="card" style="margin-top:22px;background:#f7f9f8">
+        <h2>Demo Reviewer Panel</h2>
+        <p class="muted">
+          These controls simulate a review result for the hackathon presentation.
+          They do not verify a real person's OKU status.
         </p>
 
-        <div class="good-note">
-          <strong>Current status:</strong>
-          <span id="verificationBadge" class="pill">Not requested</span>
-          <p id="verificationExplanation" class="muted">
-            No verification request has been submitted.
-          </p>
-        </div>
-
-        <div class="notice">
-          <strong>How this demonstration works</strong>
-          <ol>
-            <li>Submit an OKU verification request.</li>
-            <li>The status changes to Pending.</li>
-            <li>A demo reviewer can simulate approval or rejection below.</li>
-          </ol>
-          In a real service, verification must use an authorised process.
-          This demo does not contact JKM, MyGOV or any government database.
-          Do not upload identity documents to this prototype.
-        </div>
-
         <div class="button-row">
-          <button class="primary" id="requestVerificationButton"
-                  onclick="requestVerification()">
-            Request OKU Verification
+          <button class="primary" onclick="setDemoVerification('verified_demo')">
+            Simulate Approval
           </button>
-          <button class="secondary" onclick="cancelVerification()">
-            Cancel Request
+          <button class="danger" onclick="setDemoVerification('unable')">
+            Simulate Unable to Verify
+          </button>
+          <button class="secondary" onclick="setDemoVerification('pending')">
+            Reset to Pending
           </button>
         </div>
 
-        <!-- DEMONSTRATION REVIEWER CONTROLS -->
-        <div class="card" style="margin-top:22px;background:#f7f9f8">
-          <h2>Demo Reviewer Panel</h2>
-          <p class="muted">
-            For judges and prototype demonstrations only.
-            These buttons simulate the result of a review; they do not verify
-            the user's actual OKU status.
-          </p>
-
-          <div class="button-row">
-            <button class="primary" onclick="setDemoVerification('verified')">
-              Simulate Approval
-            </button>
-            <button class="danger" onclick="setDemoVerification('unable')">
-              Simulate Unable to Verify
-            </button>
-            <button class="secondary" onclick="setDemoVerification('pending')">
-              Reset to Pending
-            </button>
-          </div>
-          <p id="demoReviewerStatus" class="status" role="status" aria-live="polite">
-            Demo reviewer actions are available for presentation purposes.
-          </p>
-        </div>
-
-        <div class="button-row">
-          <button class="secondary" onclick="logout()">Log Out</button>
-          <button class="secondary" onclick="goTo('home')">Back to Home</button>
-        </div>
+        <p id="demoReviewerStatus" class="status" role="status" aria-live="polite">
+          Demo reviewer controls are available.
+        </p>
       </div>
 
       <div class="button-row">
-        <button class="secondary" onclick="goTo('auth')">Login / Register</button>
+        <button class="secondary" onclick="logout()">Log Out</button>
         <button class="secondary" onclick="goTo('home')">Back to Home</button>
       </div>
     </div>
-  </section>
 
-  <!-- NAVIGATION -->
-  <section id="screen-navigation" class="screen">
-    <div class="card">
-      <h1>Navigation</h1>
-      <p class="muted">
-        Enter a starting point and destination. Routes use public map services.
-      </p>
+    <div class="button-row">
+      <button class="secondary" onclick="goTo('auth')">Go to Login</button>
+      <button class="secondary" onclick="goTo('register')">Create Account</button>
+      <button class="secondary" onclick="goTo('home')">Back to Home</button>
+    </div>
+  </div>
+</section>
 
-      <div class="field-grid">
-        <div>
-          <label for="start">Starting point</label>
-          <input id="start" placeholder="e.g. Universiti Malaya, Kuala Lumpur">
-        </div>
-        <div>
-          <label for="destination">Destination</label>
-          <input id="destination" placeholder="e.g. KL Sentral, Kuala Lumpur">
-        </div>
+<!-- NAVIGATION -->
+<section id="screen-navigation" class="screen">
+  <div class="card">
+    <h1>Navigation</h1>
+    <p class="muted">Enter a starting point and destination to plan a route.</p>
+
+    <div class="field-grid">
+      <div>
+        <label for="start">Starting Point</label>
+        <input id="start" placeholder="e.g. Universiti Malaya, Kuala Lumpur">
       </div>
+      <div>
+        <label for="destination">Destination</label>
+        <input id="destination" placeholder="e.g. KL Sentral, Kuala Lumpur">
+      </div>
+    </div>
 
-      <label for="mode">Travel mode</label>
-      <select id="mode">
-        <option value="foot">Walking</option>
-        <option value="driving">Driving</option>
+    <label for="mode">Travel Mode</label>
+    <select id="mode">
+      <option value="foot">Walking</option>
+      <option value="driving">Driving</option>
+    </select>
+
+    <label for="rideThreshold">Smart Ride Assist Threshold (km)</label>
+    <input id="rideThreshold" type="number" min="1" max="100" value="5" step="0.5">
+
+    <p class="muted">
+      For routes longer than this distance, BlindPath speaks a reminder and offers
+      a link to Grab. It does not automatically book a ride.
+    </p>
+
+    <div class="button-row">
+      <button class="primary" onclick="findRoute()">Find Route</button>
+      <button class="secondary" onclick="useMyLocation()">Use My Location</button>
+      <button class="secondary" onclick="stopSpeech()">Stop Voice</button>
+    </div>
+
+    <div id="routeStatus" class="status" role="status" aria-live="polite">
+      Enter a starting point and destination.
+    </div>
+
+    <div id="map" aria-label="Route map"></div>
+    <div id="routeResult" class="good-note hidden" aria-live="polite"></div>
+    <div id="rideAssist" class="notice hidden"></div>
+
+    <div class="notice">
+      <strong>Safety note:</strong>
+      This demo does not detect obstacles, verify tactile paths or confirm traffic
+      signals. A route on this map is not a guarantee of an accessible or safe journey.
+    </div>
+
+    <div class="button-row">
+      <button class="secondary" onclick="goTo('home')">Back to Home</button>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT AN ISSUE -->
+<section id="screen-report" class="screen">
+  <div class="card">
+    <h1>Report an Accessibility Issue</h1>
+    <p class="muted">Help identify problems with tactile paths and pedestrian access.</p>
+
+    <form id="reportForm">
+      <label for="issueType">What is the problem?</label>
+      <select id="issueType" required>
+        <option value="Blocked tactile path">Tactile path blocked</option>
+        <option value="Damaged tactile path">Tactile path damaged</option>
+        <option value="Missing tactile path">Tactile path missing</option>
+        <option value="Inaccessible crossing">Crossing may be inaccessible</option>
+        <option value="Other accessibility issue">Other accessibility issue</option>
       </select>
 
-      <label for="rideThreshold">
-        Smart Ride Assist threshold (km)
-      </label>
-      <input id="rideThreshold" type="number" min="1" max="100"
-             value="5" step="0.5">
+      <label for="reportLocation">Location</label>
+      <input id="reportLocation" required placeholder="e.g. Near a mall entrance">
 
-      <p class="muted">
-        If the route exceeds this distance, BlindPath will speak a reminder
-        and offer an external Grab link. It will not book a ride automatically.
-      </p>
+      <label for="reportDetails">Additional Details (optional)</label>
+      <textarea id="reportDetails"
+                placeholder="Describe the problem. Do not include private information."></textarea>
 
       <div class="button-row">
-        <button class="primary" onclick="findRoute()">Find Route</button>
-        <button class="secondary" onclick="useMyLocation()">Use My Location</button>
-        <button class="secondary" onclick="stopSpeech()">Stop Voice</button>
+        <button type="button" class="secondary" onclick="addCurrentCoordinates()">
+          Add My Current Location
+        </button>
+        <button type="submit" class="primary">Save Report</button>
       </div>
 
-      <div id="routeStatus" class="status" role="status" aria-live="polite">
-        Enter a starting point and destination.
-      </div>
+      <p id="gpsStatus" class="status" role="status" aria-live="polite"></p>
+    </form>
 
-      <div id="map" aria-label="Route map"></div>
-      <div id="routeResult" class="good-note hidden" aria-live="polite"></div>
-      <div id="rideAssist" class="notice hidden"></div>
-
-      <div class="notice">
-        <strong>Safety note</strong><br>
-        This demo does not detect obstacles, verify tactile paths or confirm
-        traffic signals. A route on this map is not a guarantee of an accessible
-        or safe journey.
-      </div>
-
-      <div class="button-row">
-        <button class="secondary" onclick="goTo('home')">Back to Home</button>
-      </div>
+    <div class="notice">
+      Reports are saved only in this browser on this device.
+      They are not shared with other users or sent to authorities in this demo.
     </div>
-  </section>
 
-  <!-- REPORT AN ISSUE -->
-  <section id="screen-report" class="screen">
-    <div class="card">
-      <h1>Report an Accessibility Issue</h1>
-      <p class="muted">
-        Help identify problems with tactile paths and pedestrian access.
-      </p>
-
-      <form id="reportForm">
-        <label for="issueType">What is the problem?</label>
-        <select id="issueType" required>
-          <option value="Blocked tactile path">Tactile path blocked</option>
-          <option value="Damaged tactile path">Tactile path damaged</option>
-          <option value="Missing tactile path">Tactile path missing</option>
-          <option value="Inaccessible crossing">Crossing may be inaccessible</option>
-          <option value="Other accessibility issue">Other accessibility issue</option>
-        </select>
-
-        <label for="reportLocation">Location</label>
-        <input id="reportLocation" required
-               placeholder="e.g. Near the main entrance of a mall">
-
-        <label for="reportDetails">Additional details (optional)</label>
-        <textarea id="reportDetails"
-                  placeholder="Describe what you noticed. Do not include private information."></textarea>
-
-        <div class="button-row">
-          <button type="button" class="secondary" onclick="addCurrentCoordinates()">
-            Add My Current Location
-          </button>
-          <button type="submit" class="primary">Save Report</button>
-        </div>
-
-        <p id="gpsStatus" class="status" role="status" aria-live="polite"></p>
-      </form>
-
-      <div class="notice">
-        Reports are saved only in this browser on this device.
-        They are not sent to authorities or shared with other users in this demo.
-      </div>
-
-      <div class="button-row">
-        <button class="secondary" onclick="goTo('home')">Back to Home</button>
-      </div>
+    <div class="button-row">
+      <button class="secondary" onclick="goTo('home')">Back to Home</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- VOICE AND SETTINGS -->
-  <section id="screen-settings" class="screen">
-    <div class="card">
-      <h1>Voice & Accessibility Settings</h1>
+<!-- VOICE SETTINGS -->
+<section id="screen-settings" class="screen">
+  <div class="card">
+    <h1>Voice & Accessibility Settings</h1>
 
-      <label for="language">Language / 语言 / Bahasa</label>
-      <select id="language" onchange="applyLanguage()">
-        <option value="en">English</option>
-        <option value="ms">Bahasa Melayu</option>
-        <option value="zh">中文</option>
-      </select>
+    <label for="language">Language / 语言 / Bahasa</label>
+    <select id="language" onchange="applyLanguage()">
+      <option value="en">English</option>
+      <option value="ms">Bahasa Melayu</option>
+      <option value="zh">中文</option>
+    </select>
 
-      <label for="voiceSelect">Available speech voice</label>
-      <select id="voiceSelect">
-        <option value="">Default device voice</option>
-      </select>
+    <label for="voiceSelect">Available Speech Voice</label>
+    <select id="voiceSelect">
+      <option value="">Default device voice</option>
+    </select>
 
-      <p class="muted">
-        Available voices depend on your device, browser and operating system.
-        A Malaysian accent is not guaranteed.
-      </p>
+    <p class="muted">
+      Available voices depend on your device, browser and operating system.
+      A Malaysian accent is not guaranteed.
+    </p>
 
-      <label for="speechSpeed">Speech speed: <span id="speedValue">1.0×</span></label>
-      <input id="speechSpeed" type="range" min="0.7" max="1.4"
-             step="0.1" value="1"
-             oninput="document.getElementById('speedValue').textContent=this.value+'×'">
+    <label for="speechSpeed">Speech Speed: <span id="speedValue">1.0×</span></label>
+    <input id="speechSpeed" type="range" min="0.7" max="1.4" step="0.1" value="1"
+           oninput="document.getElementById('speedValue').textContent=this.value+'×'">
 
-      <div class="button-row">
-        <button class="primary" onclick="speakIntro()">Test Voice</button>
-        <button class="secondary" onclick="repeatSpeech()">Repeat Last Message</button>
-        <button class="secondary" onclick="stopSpeech()">Stop Voice</button>
-      </div>
-
-      <div id="voiceStatus" class="status" role="status" aria-live="polite">
-        Select Test Voice to hear the introduction.
-      </div>
-
-      <div class="good-note">
-        <strong>Accessibility reminder</strong><br>
-        BlindPath should be tested with visually impaired users and assistive
-        technologies before real-world use.
-      </div>
-
-      <div class="button-row">
-        <button class="secondary" onclick="goTo('home')">Back to Home</button>
-      </div>
+    <div class="button-row">
+      <button class="primary" onclick="speakIntro()">Test Voice</button>
+      <button class="secondary" onclick="repeatSpeech()">Repeat Last Message</button>
+      <button class="secondary" onclick="stopSpeech()">Stop Voice</button>
     </div>
-  </section>
 
-  <!-- COMMUNITY -->
-  <section id="screen-community" class="screen">
-    <div class="card">
-      <h1>Community Reports</h1>
-      <p class="muted">
-        Review reports saved locally in this browser. In a future version,
-        reviewed reports could help identify where tactile paths need attention.
-      </p>
-
-      <div class="good-note">
-        <strong>Future tactile-path map</strong><br>
-        Only verified path data should be used to prioritise routes.
-        No report does not mean a path is clear or safe.
-      </div>
-
-      <div id="reportList"></div>
-
-      <div class="button-row">
-        <button class="secondary" onclick="renderReports()">Refresh Reports</button>
-        <button class="danger" onclick="clearReports()">Delete All Local Reports</button>
-        <button class="secondary" onclick="goTo('home')">Back to Home</button>
-      </div>
+    <div id="voiceStatus" class="status" role="status" aria-live="polite">
+      Select Test Voice to hear the introduction.
     </div>
-  </section>
+
+    <div class="good-note">
+      BlindPath should be tested with visually impaired users and assistive
+      technologies before real-world use.
+    </div>
+
+    <div class="button-row">
+      <button class="secondary" onclick="goTo('home')">Back to Home</button>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY REPORTS -->
+<section id="screen-community" class="screen">
+  <div class="card">
+    <h1>Community Reports</h1>
+    <p class="muted">
+      Review reports saved locally in this browser. In a future version,
+      reviewed reports could help identify where tactile paths need attention.
+    </p>
+
+    <div class="good-note">
+      <strong>Future tactile-path map</strong><br>
+      Only verified path data should be used to prioritise routes.
+      No report does not mean a path is clear or safe.
+    </div>
+
+    <div id="reportList"></div>
+
+    <div class="button-row">
+      <button class="secondary" onclick="renderReports()">Refresh Reports</button>
+      <button class="danger" onclick="clearReports()">Delete All Local Reports</button>
+      <button class="secondary" onclick="goTo('home')">Back to Home</button>
+    </div>
+  </div>
+</section>
 
 </main>
 
@@ -668,10 +669,7 @@
 <script>
 "use strict";
 
-/* -------------------------------------------------------
-   STORAGE KEYS
-   This prototype stores data only in the current browser.
-------------------------------------------------------- */
+/* STORAGE */
 const USERS_KEY = "blindpath_demo_users_v1";
 const CURRENT_USER_KEY = "blindpath_demo_current_user_v1";
 const REPORTS_KEY = "blindpath_accessibility_reports_v1";
@@ -686,9 +684,7 @@ let routeLayer = null;
 let startMarker = null;
 let endMarker = null;
 
-/* -------------------------------------------------------
-   BASIC LANGUAGE TEXT
-------------------------------------------------------- */
+/* LANGUAGE */
 const languageText = {
   en: {
     tagline: "Accessible journeys. More inclusive townships.",
@@ -721,8 +717,7 @@ const languageText = {
 
 function applyLanguage() {
   currentLang = $("language").value;
-  document.documentElement.lang =
-    currentLang === "zh" ? "zh-CN" : currentLang;
+  document.documentElement.lang = currentLang === "zh" ? "zh-CN" : currentLang;
 
   const t = languageText[currentLang];
   $("tagline").textContent = t.tagline;
@@ -733,10 +728,6 @@ function applyLanguage() {
   $("settingsCardTitle").textContent = t.settings;
   $("communityCardTitle").textContent = t.community;
 
-  const routeLanguage =
-    currentLang === "zh" ? "zh-CN" :
-    currentLang === "ms" ? "ms-MY" : "en-MY";
-
   $("voiceStatus").textContent =
     currentLang === "zh" ? "已选择中文。" :
     currentLang === "ms" ? "Bahasa Melayu dipilih." :
@@ -745,9 +736,7 @@ function applyLanguage() {
   renderReports();
 }
 
-/* -------------------------------------------------------
-   SCREEN NAVIGATION
-------------------------------------------------------- */
+/* PAGE NAVIGATION */
 function goTo(name) {
   document.querySelectorAll(".screen").forEach(screen => {
     screen.classList.remove("active");
@@ -778,15 +767,11 @@ function openAccount() {
   }
 }
 
-/* -------------------------------------------------------
-   DEMO ACCOUNT FUNCTIONS
-   WARNING: This is not secure authentication.
-   Do not use this pattern in a production application.
-------------------------------------------------------- */
+/* DEMO ACCOUNT SYSTEM */
 function getUsers() {
   try {
     return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -801,12 +786,10 @@ function getCurrentUser() {
 }
 
 function updateAccountButton() {
-  const user = getCurrentUser();
-  $("accountButton").textContent = user
-    ? "My Profile"
-    : "Login / Register";
+  $("accountButton").textContent = getCurrentUser() ? "My Profile" : "Login";
 }
 
+/* REGISTER: SEPARATE PAGE */
 $("registerForm").addEventListener("submit", event => {
   event.preventDefault();
 
@@ -815,15 +798,15 @@ $("registerForm").addEventListener("submit", event => {
   const password = $("registerPassword").value;
 
   if (!name || !email || password.length < 4) {
-    $("authStatus").textContent = "Please complete all registration fields.";
+    $("registerStatus").textContent = "Please complete all fields.";
     return;
   }
 
   const users = getUsers();
 
   if (users.some(user => user.email === email)) {
-    $("authStatus").textContent =
-      "An account with this email already exists in this browser.";
+    $("registerStatus").textContent =
+      "An account with this email already exists in this browser. Please log in.";
     return;
   }
 
@@ -837,34 +820,38 @@ $("registerForm").addEventListener("submit", event => {
   });
 
   saveUsers(users);
-  currentUserEmail = email;
-  localStorage.setItem(CURRENT_USER_KEY, email);
 
+  // After registration, send the user to the LOGIN page.
   $("registerForm").reset();
+  $("authStatus").textContent = "Registration successful. Please log in.";
+  $("loginEmail").value = email;
+  $("loginPassword").value = "";
+
   updateAccountButton();
-  renderProfile();
-  goTo("profile");
+  goTo("auth");
 });
 
+/* LOGIN: SEPARATE PAGE */
 $("loginForm").addEventListener("submit", event => {
   event.preventDefault();
 
   const email = $("loginEmail").value.trim().toLowerCase();
   const password = $("loginPassword").value;
+
   const user = getUsers().find(item =>
     item.email === email && item.demoPassword === password
   );
 
   if (!user) {
     $("authStatus").textContent =
-      "Login failed. Check the demo account details.";
+      "Login failed. Please check your email and password.";
     return;
   }
 
   currentUserEmail = email;
   localStorage.setItem(CURRENT_USER_KEY, email);
-  $("loginForm").reset();
 
+  $("loginForm").reset();
   updateAccountButton();
   renderProfile();
   goTo("profile");
@@ -872,6 +859,7 @@ $("loginForm").addEventListener("submit", event => {
 
 function saveProfile() {
   const user = getCurrentUser();
+
   if (!user) {
     goTo("auth");
     return;
@@ -896,18 +884,12 @@ function logout() {
   goTo("home");
 }
 
-/* -------------------------------------------------------
-   OKU VERIFICATION DEMONSTRATION
-   No government database is contacted.
-   A user cannot set their own status to Verified via the
-   request button. Reviewer buttons are simulation controls.
-------------------------------------------------------- */
+/* OKU VERIFICATION DEMO */
 function renderProfile() {
   const user = getCurrentUser();
 
   if (!user) {
-    $("profileSummary").textContent =
-      "Please log in or register to view your profile.";
+    $("profileSummary").textContent = "Please log in or register to view your profile.";
     $("profileContent").classList.add("hidden");
     return;
   }
@@ -929,18 +911,18 @@ function renderProfile() {
     badge.textContent = "Pending";
     badge.classList.add("pending");
     explanation.textContent =
-      "Your request is pending. In a real system, an authorised reviewer or approved service would need to review it.";
+      "Your request is pending. In a real system, an authorised service or reviewer would need to review it.";
   } else if (status === "verified_demo") {
     badge.textContent = "Verified (Demo)";
     badge.classList.add("verified");
     explanation.textContent =
-      "Demo approval only. Your actual OKU status has not been verified by JKM or another government service.";
+      "Simulated approval only. Your actual OKU status has not been verified by JKM or another government service.";
     $("requestVerificationButton").disabled = true;
   } else if (status === "unable") {
     badge.textContent = "Unable to Verify";
     badge.classList.add("rejected");
     explanation.textContent =
-      "The simulated review could not verify the request. In a real system, the user should receive a clear explanation and a way to seek review or correct information.";
+      "The simulated review could not verify the request. A real system should explain next steps and provide a way to request review.";
   } else {
     badge.textContent = "Not requested";
     explanation.textContent =
@@ -960,7 +942,7 @@ function requestVerification() {
 
   if (user.verificationStatus === "verified_demo") {
     $("demoReviewerStatus").textContent =
-      "This demo account is already marked Verified (Demo).";
+      "This account is already marked Verified (Demo).";
     return;
   }
 
@@ -975,6 +957,7 @@ function requestVerification() {
   renderProfile();
   $("demoReviewerStatus").textContent =
     "Demo request submitted. Status is now Pending.";
+
   speak(
     currentLang === "zh" ? "已提交示范验证申请。状态为待处理。" :
     currentLang === "ms" ? "Permohonan demo dihantar. Status kini menunggu." :
@@ -984,11 +967,7 @@ function requestVerification() {
 
 function cancelVerification() {
   const user = getCurrentUser();
-
-  if (!user) {
-    goTo("auth");
-    return;
-  }
+  if (!user) return;
 
   const users = getUsers();
   const index = users.findIndex(item => item.email === user.email);
@@ -999,8 +978,7 @@ function cancelVerification() {
   saveUsers(users);
 
   renderProfile();
-  $("demoReviewerStatus").textContent =
-    "The demo verification request has been cancelled.";
+  $("demoReviewerStatus").textContent = "The demo request has been cancelled.";
 }
 
 function setDemoVerification(status) {
@@ -1008,16 +986,16 @@ function setDemoVerification(status) {
 
   if (!user) {
     $("demoReviewerStatus").textContent =
-      "Please log in first to demonstrate the verification process.";
+      "Please log in first to demonstrate the verification workflow.";
     return;
   }
+
+  const allowedStatuses = ["pending", "verified_demo", "unable"];
+  if (!allowedStatuses.includes(status)) return;
 
   const users = getUsers();
   const index = users.findIndex(item => item.email === user.email);
   if (index < 0) return;
-
-  const allowedStatuses = ["pending", "verified_demo", "unable"];
-  if (!allowedStatuses.includes(status)) return;
 
   users[index].verificationStatus = status;
   saveUsers(users);
@@ -1033,9 +1011,7 @@ function setDemoVerification(status) {
   speak(messages[status]);
 }
 
-/* -------------------------------------------------------
-   MAP INITIALISATION
-------------------------------------------------------- */
+/* MAP */
 function initMap() {
   if (!window.L) {
     $("routeStatus").textContent =
@@ -1110,18 +1086,14 @@ async function findRoute() {
   try {
     const start = await geocode(startText);
 
-    // Avoid sending rapid consecutive requests to the public geocoder.
+    // Pause briefly before querying the public geocoder again.
     await new Promise(resolve => setTimeout(resolve, 1100));
 
     const end = await geocode(destinationText);
 
-    let endpoint;
-
-    if (mode === "foot") {
-      endpoint = "https://routing.openstreetmap.de/routed-foot/route/v1/driving/";
-    } else {
-      endpoint = "https://router.project-osrm.org/route/v1/driving/";
-    }
+    const endpoint = mode === "foot"
+      ? "https://routing.openstreetmap.de/routed-foot/route/v1/driving/"
+      : "https://router.project-osrm.org/route/v1/driving/";
 
     const url = endpoint +
       start.lon + "," + start.lat + ";" +
@@ -1150,12 +1122,10 @@ async function findRoute() {
     }).addTo(map);
 
     startMarker = L.marker([start.lat, start.lon])
-      .addTo(map)
-      .bindPopup("Start: " + escapeHtml(startText));
+      .addTo(map).bindPopup("Start: " + startText);
 
     endMarker = L.marker([end.lat, end.lon])
-      .addTo(map)
-      .bindPopup("Destination: " + escapeHtml(destinationText));
+      .addTo(map).bindPopup("Destination: " + destinationText);
 
     map.fitBounds(routeLayer.getBounds(), { padding: [24, 24] });
 
@@ -1180,6 +1150,7 @@ async function findRoute() {
     result.appendChild(document.createTextNode(
       mode === "foot" ? "Walking route estimate." : "Driving route estimate."
     ));
+    result.appendChild(document.createElement("br"));
 
     const googleMode = mode === "foot" ? "walking" : "driving";
     const googleUrl =
@@ -1188,7 +1159,6 @@ async function findRoute() {
       "&destination=" + encodeURIComponent(destinationText) +
       "&travelmode=" + googleMode;
 
-    result.appendChild(document.createElement("br"));
     const googleLink = document.createElement("a");
     googleLink.href = googleUrl;
     googleLink.target = "_blank";
@@ -1205,7 +1175,7 @@ async function findRoute() {
       $("rideAssist").appendChild(rideTitle);
       $("rideAssist").appendChild(document.createElement("br"));
       $("rideAssist").appendChild(document.createTextNode(
-        "This route is longer than your selected threshold. Consider another transport option if needed."
+        "This route exceeds your selected threshold. Consider another transport option if needed."
       ));
       $("rideAssist").appendChild(document.createElement("br"));
 
@@ -1229,15 +1199,13 @@ async function findRoute() {
       );
     }
   } catch (error) {
-    $("routeStatus").textContent =
-      "Could not find a route. " + error.message;
+    $("routeStatus").textContent = "Could not find a route. " + error.message;
   }
 }
 
 function useMyLocation() {
   if (!navigator.geolocation) {
-    $("routeStatus").textContent =
-      "Location is not supported by this browser.";
+    $("routeStatus").textContent = "Location is not supported by this browser.";
     return;
   }
 
@@ -1253,9 +1221,7 @@ function useMyLocation() {
       if (map) {
         map.setView([lat, lon], 16);
         if (startMarker) map.removeLayer(startMarker);
-        startMarker = L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup("Your location");
+        startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Your location");
       }
     },
     () => {
@@ -1266,13 +1232,11 @@ function useMyLocation() {
   );
 }
 
-/* -------------------------------------------------------
-   ACCESSIBILITY ISSUE REPORTS
-------------------------------------------------------- */
+/* REPORTS */
 function getReports() {
   try {
     return JSON.parse(localStorage.getItem(REPORTS_KEY) || "[]");
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -1325,9 +1289,8 @@ $("reportForm").addEventListener("submit", event => {
     const reports = getReports();
     reports.unshift(report);
     saveReports(reports);
-  } catch (error) {
-    $("gpsStatus").textContent =
-      "Could not save the report in this browser.";
+  } catch {
+    $("gpsStatus").textContent = "Could not save the report in this browser.";
     return;
   }
 
@@ -1392,19 +1355,7 @@ function clearReports() {
   renderReports();
 }
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, character => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[character]);
-}
-
-/* -------------------------------------------------------
-   SPEECH GUIDANCE
-------------------------------------------------------- */
+/* VOICE */
 function loadVoices() {
   if (!("speechSynthesis" in window)) return;
 
@@ -1438,8 +1389,7 @@ function speak(message) {
   lastSpokenMessage = message;
 
   if (!("speechSynthesis" in window)) {
-    $("voiceStatus").textContent =
-      "Speech is not supported by this browser.";
+    $("voiceStatus").textContent = "Speech is not supported by this browser.";
     return;
   }
 
@@ -1468,8 +1418,7 @@ function speak(message) {
   };
 
   utterance.onerror = () => {
-    $("voiceStatus").textContent =
-      "Speech could not be played. Try another voice.";
+    $("voiceStatus").textContent = "Speech could not be played. Try another voice.";
   };
 
   speechSynthesis.speak(utterance);
@@ -1487,32 +1436,26 @@ function speakIntro() {
 }
 
 function repeatSpeech() {
-  if (lastSpokenMessage) {
-    speak(lastSpokenMessage);
-  } else {
-    speakIntro();
-  }
+  speak(lastSpokenMessage || (
+    currentLang === "zh" ? "欢迎使用 BlindPath。" :
+    currentLang === "ms" ? "Selamat datang ke BlindPath." :
+    "Welcome to BlindPath."
+  ));
 }
 
 function stopSpeech() {
-  if ("speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
   $("voiceStatus").textContent = "Speech stopped.";
 }
 
-/* -------------------------------------------------------
-   STARTUP
-------------------------------------------------------- */
+/* STARTUP */
 window.addEventListener("load", () => {
   initMap();
   loadVoices();
   renderReports();
   updateAccountButton();
 
-  if (getCurrentUser()) {
-    renderProfile();
-  }
+  if (getCurrentUser()) renderProfile();
 });
 </script>
 </body>
