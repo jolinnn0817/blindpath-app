@@ -5,58 +5,233 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlindPath | Accessible Journeys</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
-:root{--green:#176b5b;--dark:#104b41;--mint:#eaf5f1;--ink:#193b36;--muted:#61736f;--border:#d9e7e2;--orange:#fff0dc}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#f7faf8}
-header{background:white;border-bottom:1px solid var(--border);padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:1000}
-.logo{color:var(--green);font-size:25px;font-weight:800;cursor:pointer}
-.header-actions,.form-actions{display:flex;flex-wrap:wrap;gap:8px}
-button,.link-button{border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:white;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-button:hover,.link-button:hover{background:var(--dark)}
-button.secondary{background:var(--mint);color:var(--dark)}
-button:focus,input:focus,select:focus,textarea:focus,a:focus{outline:3px solid #e8ae4b;outline-offset:2px}
-main{max-width:1100px;padding:28px 20px 60px;margin:auto}
-.screen{display:none}.screen.active{display:block}
-.page-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
-.page-toolbar h2{margin:0}
-.hero{padding:44px 30px;background:var(--mint);border-radius:22px;margin-bottom:22px}
-.hero h1{font-size:clamp(30px,5vw,46px);margin:12px 0}
-.hero p{max-width:650px;line-height:1.7;font-size:17px}
-h2{margin-top:0}.muted{color:var(--muted);line-height:1.6}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.card{background:white;border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
-.home-card{min-height:135px;text-align:left;color:var(--ink);background:white;border:1px solid var(--border);padding:22px}
-.home-card:hover{background:var(--mint)}
-.home-card strong{display:block;font-size:18px;margin-bottom:9px}
-.home-card span{font-weight:400;line-height:1.5}
-label{display:block;font-weight:700;margin:15px 0 7px}
-input,select,textarea{width:100%;padding:13px;border:1px solid #b9cec6;border-radius:9px;font:inherit;background:white;color:var(--ink)}
-input[type=range]{padding:8px 0}
-textarea{min-height:100px;resize:vertical}
-.form-actions{margin-top:18px}
-.notice{background:var(--mint);border-left:4px solid var(--green);padding:14px;border-radius:8px;line-height:1.6;margin:15px 0}
-.ride-card{background:var(--orange);border:2px solid #d69a49;padding:20px;border-radius:16px;margin-top:18px}
-.ride-card h3{margin-top:0}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
-.stat{padding:14px;background:var(--mint);border-radius:12px}
-.stat strong{display:block;font-size:24px;margin-bottom:5px}
-#planMap,#navMap,#accessMap{height:340px;width:100%;border-radius:14px;border:1px solid var(--border);margin:14px 0;z-index:1}
-.route-step{border:1px solid var(--border);background:white;padding:14px;border-radius:10px;margin:9px 0;line-height:1.6}
-.route-step.current{background:var(--mint);border:2px solid var(--green)}
-.route-step small{color:var(--muted)}
-.pill{display:inline-block;padding:5px 10px;border-radius:30px;background:var(--mint);font-size:13px;font-weight:700}
-.hidden{display:none!important}
-footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);line-height:1.6}
-@media(max-width:650px){header{padding:12px 4%}.logo{font-size:21px}.header-actions button{padding:10px;font-size:13px}main{padding:18px 14px 40px}.hero{padding:28px 20px}.cards,.stats{grid-template-columns:1fr}.page-toolbar{align-items:flex-start}}
+:root {
+  --green: #176b5b;
+  --green-dark: #104b41;
+  --mint: #eaf5f1;
+  --ink: #193b36;
+  --white: #ffffff;
+  --muted: #61736f;
+  --border: #d9e7e2;
+  --orange: #fff0dc;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: #f7faf8;
+}
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 15px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.logo {
+  color: var(--green);
+  font-size: 25px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.header-actions, .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+button, .link-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: var(--green);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+button:hover, .link-button:hover { background: var(--green-dark); }
+button.secondary {
+  background: var(--mint);
+  color: var(--green-dark);
+}
+button.secondary:hover { background: #d8ebe4; }
+button:focus, input:focus, select:focus, textarea:focus, a:focus {
+  outline: 3px solid #e8ae4b;
+  outline-offset: 2px;
+}
+main {
+  max-width: 1100px;
+  padding: 28px 20px 60px;
+  margin: auto;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+.page-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.page-toolbar h2 { margin: 0; }
+.hero {
+  padding: 44px 30px;
+  background: var(--mint);
+  border-radius: 22px;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(30px, 5vw, 46px);
+  margin: 12px 0;
+}
+.hero p {
+  max-width: 650px;
+  line-height: 1.7;
+  font-size: 17px;
+}
+h2 { margin-top: 0; }
+.muted { color: var(--muted); line-height: 1.6; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+.home-card {
+  min-height: 135px;
+  text-align: left;
+  color: var(--ink);
+  background: white;
+  border: 1px solid var(--border);
+  padding: 22px;
+}
+.home-card:hover { background: var(--mint); }
+.home-card strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 9px;
+}
+.home-card span { font-weight: 400; line-height: 1.5; }
+label {
+  display: block;
+  font-weight: 700;
+  margin: 15px 0 7px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #b9cec6;
+  border-radius: 9px;
+  font: inherit;
+  background: white;
+  color: var(--ink);
+}
+input[type="range"] { padding: 8px 0; }
+textarea { min-height: 100px; resize: vertical; }
+.form-actions { margin-top: 18px; }
+.notice {
+  background: var(--mint);
+  border-left: 4px solid var(--green);
+  padding: 14px;
+  border-radius: 8px;
+  line-height: 1.6;
+  margin: 15px 0;
+}
+.ride-card {
+  background: var(--orange);
+  border: 2px solid #d69a49;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 18px;
+}
+.ride-card h3 { margin-top: 0; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+.stat {
+  padding: 14px;
+  background: var(--mint);
+  border-radius: 12px;
+}
+.stat strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+#planMap, #navMap, #accessMap {
+  height: 340px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin: 14px 0;
+  z-index: 1;
+}
+.route-step {
+  border: 1px solid var(--border);
+  background: white;
+  padding: 14px;
+  border-radius: 10px;
+  margin: 9px 0;
+  line-height: 1.6;
+}
+.route-step.current {
+  background: var(--mint);
+  border: 2px solid var(--green);
+}
+.route-step small { color: var(--muted); }
+.pill {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 30px;
+  background: var(--mint);
+  font-size: 13px;
+  font-weight: 700;
+}
+.hidden { display: none !important; }
+footer {
+  text-align: center;
+  padding: 22px;
+  background: var(--mint);
+  color: var(--green-dark);
+  line-height: 1.6;
+}
+@media (max-width: 650px) {
+  header { padding: 12px 4%; }
+  .logo { font-size: 21px; }
+  .header-actions button { padding: 10px; font-size: 13px; }
+  main { padding: 18px 14px 40px; }
+  .hero { padding: 28px 20px; }
+  .cards, .stats { grid-template-columns: 1fr; }
+  .page-toolbar { align-items: flex-start; }
+}
 </style>
 </head>
+
 <body>
 <header>
-  <div class="logo" onclick="goHome()">BlindPath</div>
+  <div class="logo" data-action="goHome">BlindPath</div>
   <div class="header-actions">
-    <button class="secondary" onclick="goHome()">Home</button>
-    <button onclick="showScreen('profile')">Profile</button>
+    <button class="secondary" data-action="goHome">Home</button>
+    <button data-action="showProfile">Profile</button>
   </div>
 </header>
 
@@ -66,68 +241,100 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);l
     <span class="pill">Accessible mobility</span>
     <h1>Move with more confidence.</h1>
     <p>BlindPath helps users plan journeys, receive spoken directions, explore mapped tactile-paving information and report accessibility issues.</p>
-    <button onclick="showScreen('plan')">Plan a journey</button>
+    <button data-action="showPlan">Plan a journey</button>
   </div>
+
   <div class="cards">
-    <button class="home-card" onclick="showScreen('plan')"><strong>Plan a Journey</strong><span>Enter a starting point and destination to find a suggested route.</span></button>
-    <button class="home-card" onclick="showScreen('access')"><strong>Tactile Path Accessibility Map</strong><span>Explore community-submitted reports about tactile paths.</span></button>
-    <button class="home-card" onclick="showScreen('report')"><strong>Report an Issue</strong><span>Report blocked, damaged or missing tactile paths.</span></button>
-    <button class="home-card" onclick="showScreen('settings')"><strong>Settings & Voice</strong><span>Choose a voice, language, speaking speed and ride threshold.</span></button>
+    <button class="home-card" data-action="showPlan">
+      <strong>Plan a Journey</strong>
+      <span>Enter a starting point and destination to find a suggested route.</span>
+    </button>
+    <button class="home-card" data-action="showAccess">
+      <strong>Tactile Path Accessibility Map</strong>
+      <span>Explore community-submitted reports about tactile paths.</span>
+    </button>
+    <button class="home-card" data-action="showReport">
+      <strong>Report an Issue</strong>
+      <span>Report blocked, damaged or missing tactile paths.</span>
+    </button>
+    <button class="home-card" data-action="showSettings">
+      <strong>Settings & Voice</strong>
+      <span>Choose a voice, language, speaking speed and ride threshold.</span>
+    </button>
   </div>
-  <div class="notice"><strong>Important:</strong> This is a prototype. It does not detect obstacles, verify continuous tactile paths or confirm safe crossings.</div>
+
+  <div class="notice">
+    <strong>Important:</strong> This is a prototype. It does not detect obstacles,
+    verify continuous tactile paths or confirm safe crossings.
+  </div>
 </section>
 
 <section id="plan" class="screen">
-  <div class="page-toolbar"><h2>Plan your journey</h2><button class="secondary" onclick="goBack()">← Back</button></div>
-  <p class="muted">Enter your starting point and destination to calculate an estimated walking route.</p>
+  <div class="page-toolbar">
+    <h2>Plan your journey</h2>
+    <button class="secondary" data-action="goBack">← Back</button>
+  </div>
+  <p class="muted">Enter a starting point and destination to calculate an estimated walking route.</p>
+
   <div class="card">
     <label for="origin">Starting point</label>
     <input id="origin" placeholder="e.g. Universiti Malaya">
+
     <label for="destination">Destination</label>
     <input id="destination" placeholder="e.g. KL Sentral">
+
     <div class="form-actions">
-      <button onclick="useCurrentLocationForOrigin()">Use my current location</button>
-      <button onclick="calculateRoute()">Find walking route</button>
+      <button data-action="useCurrentLocationForOrigin">Use my current location</button>
+      <button data-action="calculateRoute">Find walking route</button>
     </div>
     <p id="planStatus" class="muted" role="status" aria-live="polite"></p>
   </div>
+
   <div id="planResults" class="hidden">
     <div class="stats">
       <div class="stat"><strong id="routeDistance">—</strong>Estimated distance</div>
       <div class="stat"><strong id="routeDuration">—</strong>Estimated walking time</div>
       <div class="stat"><strong id="rideStatus">—</strong>Smart Ride Assist</div>
     </div>
-    <div id="rideAssist" class="ride-card hidden" role="status" aria-live="polite">
+
+    <div id="rideAssist" class="ride-card hidden">
       <h3>Smart Ride Assist</h3>
       <p id="rideMessage"></p>
       <p class="muted">BlindPath suggests a ride but does not book one automatically.</p>
       <div class="form-actions">
         <a class="link-button" href="https://www.grab.com/my/transport/" target="_blank" rel="noopener noreferrer">Open Grab</a>
-        <button class="secondary" onclick="repeatRideSuggestion()">Repeat announcement</button>
+        <button class="secondary" data-action="repeatRideSuggestion">Repeat announcement</button>
       </div>
     </div>
+
     <h3>Suggested walking route</h3>
     <div id="planMap" aria-label="Map of suggested route"></div>
     <div class="form-actions">
-      <button onclick="startNavigation()">Start voice navigation</button>
-      <button class="secondary" onclick="showScreen('access')">Accessibility map</button>
+      <button data-action="startNavigation">Start voice navigation</button>
+      <button class="secondary" data-action="showAccess">Accessibility map</button>
     </div>
     <p class="muted">The route may not account for tactile paths, steps, construction or obstacles.</p>
   </div>
 </section>
 
 <section id="navigation" class="screen">
-  <div class="page-toolbar"><h2>Live voice navigation</h2><button class="secondary" onclick="goBack()">← Back</button></div>
+  <div class="page-toolbar">
+    <h2>Live voice navigation</h2>
+    <button class="secondary" data-action="goBack">← Back</button>
+  </div>
+
   <div class="notice">GPS and map data can be inaccurate. Do not rely on this prototype alone to navigate roads or crossings.</div>
+
   <div class="card">
     <div id="navMap" aria-label="Live navigation map"></div>
     <p id="navStatus" role="status" aria-live="polite">Route ready.</p>
     <p id="gpsStatus" class="muted"></p>
     <p id="currentInstruction" aria-live="polite"></p>
+
     <div class="form-actions">
-      <button onclick="beginLiveNavigation()">Start live guidance</button>
-      <button class="secondary" onclick="repeatInstruction()">Repeat instruction</button>
-      <button class="secondary" onclick="stopNavigation()">Stop guidance</button>
+      <button data-action="beginLiveNavigation">Start live guidance</button>
+      <button class="secondary" data-action="repeatInstruction">Repeat instruction</button>
+      <button class="secondary" data-action="stopNavigation">Stop guidance</button>
     </div>
   </div>
   <h3>Route directions</h3>
@@ -135,11 +342,15 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);l
 </section>
 
 <section id="access" class="screen">
-  <div class="page-toolbar"><h2>Tactile Path Accessibility Map</h2><button class="secondary" onclick="goBack()">← Back</button></div>
+  <div class="page-toolbar">
+    <h2>Tactile Path Accessibility Map</h2>
+    <button class="secondary" data-action="goBack">← Back</button>
+  </div>
   <p class="muted">Community reports and OpenStreetMap features are not official verification of real-world accessibility.</p>
+
   <div class="card">
     <label for="reportFilter">Filter community reports</label>
-    <select id="reportFilter" onchange="renderAccessibilityMap()">
+    <select id="reportFilter">
       <option value="all">All report types</option>
       <option value="blocked">Blocked tactile path</option>
       <option value="damaged">Damaged tactile path</option>
@@ -148,12 +359,13 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);l
       <option value="other">Other accessibility issue</option>
     </select>
     <div class="form-actions">
-      <button onclick="locateOnAccessMap()">Show my location</button>
-      <button class="secondary" onclick="showScreen('report')">Submit a report</button>
+      <button data-action="locateOnAccessMap">Show my location</button>
+      <button class="secondary" data-action="showReport">Submit a report</button>
     </div>
     <div id="accessMap" aria-label="Community accessibility map"></div>
     <p id="mapStatus" class="muted" role="status" aria-live="polite"></p>
   </div>
+
   <div class="stats">
     <div class="stat"><strong id="countAll">0</strong>Total reports</div>
     <div class="stat"><strong id="countBlocked">0</strong>Blocked paths</div>
@@ -165,261 +377,8 @@ footer{text-align:center;padding:22px;background:var(--mint);color:var(--dark);l
 </section>
 
 <section id="report" class="screen">
-  <div class="page-toolbar"><h2>Report an issue</h2><button class="secondary" onclick="goBack()">← Back</button></div>
-  <p class="muted">Describe an accessibility issue near a walking route.</p>
-  <div class="card">
-    <label for="issueType">Issue type</label>
-    <select id="issueType">
-      <option value="blocked">Blocked tactile path</option>
-      <option value="damaged">Damaged tactile path</option>
-      <option value="missing">Missing tactile path</option>
-      <option value="gap">Accessibility gap / no tactile path</option>
-      <option value="other">Other accessibility issue</option>
-    </select>
-    <label for="issueDescription">Description</label>
-    <textarea id="issueDescription" placeholder="Describe the issue and nearby landmarks."></textarea>
-    <label for="issueLocation">Location or nearby landmark</label>
-    <input id="issueLocation" placeholder="e.g. near the main entrance">
-    <div class="form-actions"><button class="secondary" onclick="captureReportLocation()">Use my current location</button></div>
-    <p id="capturedLocation" class="muted" aria-live="polite">No coordinates attached.</p>
-    <div class="form-actions">
-      <button onclick="submitReport()">Save report on this device</button>
-      <button class="secondary" onclick="goBack()">Cancel</button>
-    </div>
-    <p id="reportStatus" role="status" aria-live="polite"></p>
+  <div class="page-toolbar">
+    <h2>Report an issue</h2>
+    <button class="secondary" data-action="goBack">← Back</button>
   </div>
-</section>
-
-<section id="profile" class="screen">
-  <div class="page-toolbar"><h2>My profile</h2><button class="secondary" onclick="goBack()">← Back</button></div>
-  <div class="card">
-    <p class="muted">This is a demo profile saved locally on your device. It does not verify disability or official OKU status.</p>
-    <label for="profileName">Display name (optional)</label>
-    <input id="profileName" placeholder="Enter a display name">
-    <label for="accessNeeds">Navigation preferences</label>
-    <select id="accessNeeds">
-      <option value="voice">Prefer spoken guidance</option>
-      <option value="large">Prefer larger text</option>
-      <option value="both">Spoken guidance and larger text</option>
-    </select>
-    <div class="form-actions"><button onclick="saveProfile()">Save profile</button></div>
-    <p id="profileStatus" role="status" aria-live="polite"></p>
-  </div>
-</section>
-
-<section id="settings" class="screen">
-  <div class="page-toolbar"><h2>Settings & Voice</h2><button class="secondary" onclick="goBack()">← Back</button></div>
-  <div class="card">
-    <label for="voiceLanguage">Spoken-guidance language</label>
-    <select id="voiceLanguage" onchange="languageChanged()">
-      <option value="en-US">English</option>
-      <option value="ms-MY">Bahasa Melayu</option>
-      <option value="zh-CN">中文 (Mandarin)</option>
-    </select>
-    <label for="voiceChoice">Voice</label>
-    <select id="voiceChoice" onchange="saveSettings()"><option value="">Automatic voice</option></select>
-    <p class="muted">Available voices depend on your browser and operating system.</p>
-    <label for="voiceRate">Speaking speed</label>
-    <input id="voiceRate" type="range" min="0.7" max="1.3" step="0.1" value="0.9" oninput="saveSettings()">
-    <label for="voicePitch">Voice pitch</label>
-    <input id="voicePitch" type="range" min="0.7" max="1.5" step="0.1" value="1" oninput="saveSettings()">
-    <label for="rideThreshold">Smart Ride Assist threshold</label>
-    <select id="rideThreshold" onchange="saveSettings()">
-      <option value="3">3 km</option>
-      <option value="5" selected>5 km</option>
-      <option value="8">8 km</option>
-      <option value="10">10 km</option>
-    </select>
-    <p class="muted">A ride suggestion is announced when the estimated walking route exceeds this distance.</p>
-    <div class="form-actions"><button onclick="testVoice()">Test voice</button></div>
-    <p id="settingsStatus" class="muted" role="status" aria-live="polite"></p>
-  </div>
-</section>
-</main>
-
-<footer><strong>BlindPath</strong><br>An accessibility-focused navigation prototype.<br>Always verify real-world conditions independently.</footer>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-const STORAGE_REPORTS="blindpath_reports_v1";
-const STORAGE_PROFILE="blindpath_profile_v1";
-const STORAGE_SETTINGS="blindpath_settings_v1";
-let routeData=null,planMap=null,navMap=null,accessMap=null;
-let routeLayer=null,navRouteLayer=null,userMarker=null,accessMarkers=[],tactileLayerGroup=null;
-let tactileFeatures=[],announcedTactileIds=new Set(),currentCoords=null,reportCoords=null;
-let watchId=null,navigationActive=false,currentStepIndex=0,previousScreens=[],currentScreen="home";
-let lastAnnouncementKey="",lastAnnouncementTime=0;
-
-function getReports(){try{return JSON.parse(localStorage.getItem(STORAGE_REPORTS)||"[]")}catch(e){return[]}}
-function saveReports(reports){localStorage.setItem(STORAGE_REPORTS,JSON.stringify(reports))}
-function getSettings(){
-  try{return JSON.parse(localStorage.getItem(STORAGE_SETTINGS)||'{"language":"en-US","threshold":5,"voiceURI":"","rate":0.9,"pitch":1}')}
-  catch(e){return{language:"en-US",threshold:5,voiceURI:"",rate:0.9,pitch:1}}
-}
-function getThreshold(){return Number(document.getElementById("rideThreshold").value||5)}
-
-function showScreen(id){
-  if(id===currentScreen)return;
-  if(currentScreen&&document.getElementById(currentScreen))previousScreens.push(currentScreen);
-  displayScreen(id);
-}
-function displayScreen(id){
-  stopNavigation();
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  currentScreen=id;
-  if(id==="plan"&&planMap)setTimeout(()=>planMap.invalidateSize(),100);
-  if(id==="navigation"){setupNavMap();setTimeout(()=>navMap.invalidateSize(),100)}
-  if(id==="access"){setupAccessMap();renderAccessibilityMap();setTimeout(()=>accessMap.invalidateSize(),100)}
-}
-function goBack(){
-  stopNavigation();
-  const previous=previousScreens.pop();
-  displayScreen(previous&&document.getElementById(previous)?previous:"home");
-}
-function goHome(){stopNavigation();previousScreens=[];displayScreen("home")}
-
-function createBaseMap(id,lat=3.139,lon=101.6869,zoom=12){
-  const map=L.map(id).setView([lat,lon],zoom);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
-  return map;
-}
-function setupPlanMap(){if(!planMap)planMap=createBaseMap("planMap");return planMap}
-function setupNavMap(){if(!navMap)navMap=createBaseMap("navMap");return navMap}
-function setupAccessMap(){if(!accessMap)accessMap=createBaseMap("accessMap");return accessMap}
-
-/* Voice handling */
-function speak(text,onEnd){
-  if(!("speechSynthesis"in window)||!("SpeechSynthesisUtterance"in window)){
-    const status=document.getElementById("navStatus");
-    if(status)status.textContent="Voice playback is not supported by this browser.";
-    return;
-  }
-  speechSynthesis.cancel();
-  const settings=getSettings();
-  const utterance=new SpeechSynthesisUtterance(String(text||""));
-  utterance.lang=settings.language||"en-US";
-  utterance.rate=Number(settings.rate)||0.9;
-  utterance.pitch=Number(settings.pitch)||1;
-  const voices=speechSynthesis.getVoices();
-  const prefix=utterance.lang.split("-")[0].toLowerCase();
-  const selected=voices.find(v=>v.voiceURI===settings.voiceURI&&(v.lang||"").toLowerCase().startsWith(prefix));
-  const matching=voices.find(v=>(v.lang||"").toLowerCase().startsWith(prefix));
-  if(selected)utterance.voice=selected;
-  else if(matching)utterance.voice=matching;
-  utterance.onend=()=>{if(typeof onEnd==="function")onEnd()};
-  utterance.onerror=e=>{
-    const status=document.getElementById("navStatus");
-    if(status&&e.error!=="canceled"&&e.error!=="interrupted")status.textContent="Speech failed. Check your available system voices and test voice settings.";
-  };
-  setTimeout(()=>speechSynthesis.speak(utterance),80);
-}
-function loadVoiceOptions(){
-  if(!("speechSynthesis"in window))return;
-  const select=document.getElementById("voiceChoice");
-  if(!select)return;
-  const settings=getSettings(),prefix=document.getElementById("voiceLanguage").value.split("-")[0].toLowerCase();
-  const voices=speechSynthesis.getVoices().filter(v=>(v.lang||"").toLowerCase().startsWith(prefix));
-  select.innerHTML="";
-  const automatic=document.createElement("option");
-  automatic.value="";
-  automatic.textContent=voices.length?"Automatic matching voice":"System default (no matching voice found)";
-  select.appendChild(automatic);
-  voices.forEach(v=>{
-    const option=document.createElement("option");
-    option.value=v.voiceURI;
-    option.textContent=v.name+" ("+v.lang+")";
-    select.appendChild(option);
-  });
-  if([...select.options].some(o=>o.value===settings.voiceURI))select.value=settings.voiceURI;
-  const status=document.getElementById("settingsStatus");
-  if(status&&!voices.length)status.textContent="No voice matching this language was found on your device. Install or enable a suitable system voice if available.";
-}
-function languageChanged(){loadVoiceOptions();saveSettings()}
-function saveSettings(){
-  const old=getSettings();
-  const settings={
-    language:document.getElementById("voiceLanguage").value,
-    threshold:Number(document.getElementById("rideThreshold").value),
-    voiceURI:document.getElementById("voiceChoice")?.value||"",
-    rate:Number(document.getElementById("voiceRate").value)||0.9,
-    pitch:Number(document.getElementById("voicePitch").value)||1
-  };
-  localStorage.setItem(STORAGE_SETTINGS,JSON.stringify(settings));
-  const status=document.getElementById("settingsStatus");
-  if(status)status.textContent="Settings saved. Voices depend on your device.";
-}
-function testVoice(){
-  saveSettings();
-  const language=getSettings().language;
-  const messages={
-    "en-US":"Welcome to BlindPath. This is a voice guidance test. If you can hear this message clearly, your voice is working.",
-    "ms-MY":"Selamat datang ke BlindPath. Ini ialah ujian panduan suara. Jika anda dapat mendengar mesej ini dengan jelas, suara anda berfungsi.",
-    "zh-CN":"欢迎使用 BlindPath。这是语音导航测试。如果您能清楚听到这段语音，说明语音功能正常。"
-  };
-  speak(messages[language]||messages["en-US"]);
-}
-
-/* Speech text for route information */
-function formatDurationForSpeech(seconds,language=getSettings().language||"en-US"){
-  const total=Math.max(1,Math.round(Number(seconds||0)/60));
-  const hours=Math.floor(total/60),minutes=total%60;
-  if(language==="ms-MY")return(hours?hours+" jam ":"")+(minutes?minutes+" minit":"")||"kurang daripada satu minit";
-  if(language==="zh-CN")return(hours?hours+" 小时":"")+(minutes?minutes+" 分钟":"")||"不到一分钟";
-  return(hours?hours+(hours===1?" hour ":" hours "):"")+(minutes?minutes+(minutes===1?" minute":" minutes"):"")||"less than one minute";
-}
-function routeSummaryText(km,seconds){
-  const lang=getSettings().language,duration=formatDurationForSpeech(seconds,lang);
-  if(lang==="ms-MY")return"Laluan telah dikira. Jarak perjalanan dianggarkan "+km.toFixed(1)+" kilometer. Anggaran masa berjalan kaki ialah "+duration+". Masa sebenar mungkin berbeza mengikut kelajuan dan keadaan laluan.";
-  if(lang==="zh-CN")return"路线已计算完成。预计距离为 "+km.toFixed(1)+" 公里，预计步行时间为 "+duration+"。实际时间可能因步行速度和路况而有所不同。";
-  return"Your route is ready. The estimated distance is "+km.toFixed(1)+" kilometres and the estimated walking time is "+duration+". Actual time may vary with walking speed and route conditions.";
-}
-function rideSuggestionText(km,threshold){
-  const lang=getSettings().language;
-  if(lang==="ms-MY")return"Cadangan Smart Ride Assist. Jarak berjalan kaki anda kira-kira "+km.toFixed(1)+" kilometer, melebihi "+threshold+" kilometer. Anda mungkin mahu menggunakan Grab. Jika mahu meneruskan, pilih butang Buka Grab pada skrin. BlindPath tidak membuat tempahan secara automatik.";
-  if(lang==="zh-CN")return"智能出行提示。预计步行距离约为 "+km.toFixed(1)+" 公里，超过了 "+threshold+" 公里。您可以考虑使用 Grab 叫车。如要继续，请选择屏幕上的打开 Grab 按钮。BlindPath 不会自动为您预订。";
-  return"Smart Ride Assist. Your estimated walking route is "+km.toFixed(1)+" kilometres, exceeding your "+threshold+" kilometre threshold. You may want to use Grab. Select the Open Grab button on the screen if you want to continue. BlindPath will not book a ride automatically.";
-}
-function repeatRideSuggestion(){if(routeData)speak(rideSuggestionText(routeData.route.distance/1000,getThreshold()))}
-
-function formatDistance(metres){
-  return metres>=1000?(metres/1000).toFixed(1)+" kilometres":Math.round(metres)+" metres";
-}
-function formatDuration(seconds){
-  const mins=Math.max(1,Math.round(seconds/60));
-  return mins<60?mins+" min":Math.floor(mins/60)+" hr "+mins%60+" min";
-}
-function distanceMetres(lat1,lon1,lat2,lon2){
-  const R=6371000,rad=n=>n*Math.PI/180;
-  const dLat=rad(lat2-lat1),dLon=rad(lon2-lon1);
-  const a=Math.sin(dLat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-/* Location search and route calculation */
-async function geocodePlace(place){
-  const match=place.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/);
-  if(match)return{lat:Number(match[1]),lon:Number(match[2]),name:"Entered coordinates"};
-  const response=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(place),{headers:{Accept:"application/json"}});
-  if(!response.ok)throw new Error("Could not search for this place.");
-  const results=await response.json();
-  if(!results.length)throw new Error("Place not found: "+place);
-  return{lat:Number(results[0].lat),lon:Number(results[0].lon),name:results[0].display_name};
-}
-async function fetchWalkingRoute(start,end){
-  const url="https://routing.openstreetmap.de/routed-foot/route/v1/driving/"+start.lon+","+start.lat+";"+end.lon+","+end.lat+"?overview=full&geometries=geojson&steps=true";
-  const response=await fetch(url);
-  if(!response.ok)throw new Error("The walking route service is unavailable.");
-  const data=await response.json();
-  if(data.code!=="Ok"||!data.routes?.length)throw new Error("No route was found for these locations.");
-  return data.routes[0];
-}
-async function calculateRoute(){
-  const startText=document.getElementById("origin").value.trim();
-  const endText=document.getElementById("destination").value.trim();
-  const status=document.getElementById("planStatus");
-  if(!startText||!endText){status.textContent="Please enter both a starting point and destination.";return}
-  status.textContent="Finding locations and calculating your route...";
-  document.getElementById("planResults").classList.add("hidden");
-  document.getElementById("rideAssist").classList.add("hidden");
-  try{
-    const start=await geocodePlace(startText),end=await geocodePlace(endText);
+  <p
