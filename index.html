@@ -1,24 +1,215 @@
-function speak(text) {
-  if (!("speechSynthesis" in window)) {
-    showMessage(
-      "navigationMessage",
-      "Voice guidance is not supported by this browser."
-    );
-    return;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlindPath | Accessible Mobility</title>
 
-  window.speechSynthesis.cancel();
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  var utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = byId("languageSelect").value;
-  utterance.rate = Number(byId("speechRate").value) || 1;
-
-  utterance.onerror = function () {
-    showMessage(
-      "navigationMessage",
-      "Voice guidance could not play. Please press Read guidance to try again."
-    );
-  };
-
-  window.speechSynthesis.speak(utterance);
+<style>
+:root {
+  --green: #176b5b;
+  --green-dark: #104b41;
+  --mint: #eaf5f1;
+  --ink: #193b36;
+  --white: #ffffff;
+  --border: #d5e5df;
 }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--ink);
+  background: #f7faf8;
+  line-height: 1.5;
+}
+
+header {
+  background: var(--green);
+  color: white;
+  padding: 16px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand { font-size: 24px; font-weight: 800; }
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+header button {
+  background: white;
+  color: var(--green-dark);
+}
+
+main {
+  max-width: 1000px;
+  padding: 24px 16px 50px;
+  margin: auto;
+}
+
+h1, h2, h3 { line-height: 1.25; }
+h1 { font-size: clamp(28px, 5vw, 42px); }
+p { line-height: 1.65; }
+
+button, input, select, textarea { font: inherit; }
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: var(--green);
+  color: white;
+  font-weight: 700;
+}
+
+button:hover { filter: brightness(.94); }
+
+button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #e0a82e;
+  outline-offset: 3px;
+}
+
+button.secondary {
+  background: var(--mint);
+  color: var(--green-dark);
+  border: 1px solid var(--border);
+}
+
+button.full { width: 100%; margin-top: 8px; }
+
+.hero {
+  background: var(--mint);
+  border-radius: 22px;
+  padding: 28px;
+  margin-bottom: 22px;
+}
+
+.hero p { max-width: 650px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tile {
+  text-align: left;
+  min-height: 145px;
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: 0 3px 12px #193b360a;
+}
+
+.tile .emoji {
+  display: block;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.tile strong {
+  display: block;
+  font-size: 18px;
+}
+
+.tile span:last-child {
+  display: block;
+  font-weight: 400;
+  margin-top: 5px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+label {
+  display: block;
+  font-weight: 700;
+  margin: 15px 0 6px;
+}
+
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #b8cec5;
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--ink);
+}
+
+textarea { min-height: 100px; resize: vertical; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.actions button { flex: 1 1 140px; }
+
+.notice {
+  background: var(--mint);
+  border-left: 4px solid var(--green);
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin: 14px 0;
+}
+
+.muted { color: #526d65; font-size: 14px; }
+
+#map {
+  height: 360px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  z-index: 1;
+}
+
+.report-item {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+
+footer {
+  text-align: center;
+  color: #526d65;
+  font-size: 13px;
+  padding: 20px;
+}
+
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero { padding: 22px; }
+  #map { height: 300px; }
+
+  header {
+    padding: 14px 
