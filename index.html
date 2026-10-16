@@ -2,1087 +2,1938 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlindPath | Accessible Journeys</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlindPath | Accessible Navigation</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <!-- Map library -->
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<style>
-:root {
-  --green: #176b5b;
-  --green-dark: #104b41;
-  --mint: #eaf5f1;
-  --ink: #193b36;
-  --white: #fff;
-  --muted: #61736f;
-  --border: #d9e7e2;
-  --orange: #fff0dc;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--ink);
-  background: #f7faf8;
-}
-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 15px 5%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-.logo {
-  color: var(--green);
-  font-size: 25px;
-  font-weight: 800;
-  cursor: pointer;
-}
-.header-actions, .form-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-button, .link-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 12px 16px;
-  background: var(--green);
-  color: white;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-button:hover, .link-button:hover { background: var(--green-dark); }
-button.secondary {
-  background: var(--mint);
-  color: var(--green-dark);
-}
-button.secondary:hover { background: #d8ebe4; }
-button:focus, input:focus, select:focus, textarea:focus, a:focus {
-  outline: 3px solid #e8ae4b;
-  outline-offset: 2px;
-}
-main { max-width: 1100px; padding: 28px 20px 60px; margin: auto; }
-.screen { display: none; }
-.screen.active { display: block; }
-.page-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.page-toolbar h2 { margin: 0; }
-.hero {
-  padding: 44px 30px;
-  background: var(--mint);
-  border-radius: 22px;
-  margin-bottom: 22px;
-}
-.hero h1 { font-size: clamp(30px, 5vw, 46px); margin: 0 0 14px; }
-.hero p { max-width: 650px; line-height: 1.7; font-size: 17px; }
-h2 { margin-top: 0; }
-.muted { color: var(--muted); line-height: 1.6; }
-.cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-.card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 16px;
-}
-.home-card {
-  min-height: 135px;
-  text-align: left;
-  color: var(--ink);
-  background: white;
-  border: 1px solid var(--border);
-  padding: 22px;
-}
-.home-card:hover { background: var(--mint); }
-.home-card strong { display: block; font-size: 18px; margin-bottom: 9px; }
-.home-card span { font-weight: 400; line-height: 1.5; }
-label { display: block; font-weight: 700; margin: 15px 0 7px; }
-input, select, textarea {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #b9cec6;
-  border-radius: 9px;
-  font: inherit;
-  background: white;
-  color: var(--ink);
-}
-textarea { min-height: 100px; resize: vertical; }
-.form-actions { margin-top: 18px; }
-.notice {
-  background: var(--mint);
-  border-left: 4px solid var(--green);
-  padding: 14px;
-  border-radius: 8px;
-  line-height: 1.6;
-  margin: 15px 0;
-}
-.ride-card {
-  background: var(--orange);
-  border: 2px solid #d69a49;
-  padding: 20px;
-  border-radius: 16px;
-  margin-top: 18px;
-}
-.ride-card h3 { margin-top: 0; }
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 15px 0;
-}
-.stat { padding: 14px; background: var(--mint); border-radius: 12px; }
-.stat strong { display: block; font-size: 24px; margin-bottom: 5px; }
-#planMap, #navMap, #accessMap {
-  height: 340px;
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  margin: 14px 0;
-  z-index: 1;
-}
-#navMap { height: 360px; }
-.route-step {
-  border: 1px solid var(--border);
-  background: white;
-  padding: 14px;
-  border-radius: 10px;
-  margin: 9px 0;
-  line-height: 1.6;
-}
-.route-step.current { background: var(--mint); border: 2px solid var(--green); }
-.route-step small { color: var(--muted); }
-.hidden { display: none !important; }
-.pill {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 30px;
-  background: var(--mint);
-  font-size: 13px;
-  font-weight: 700;
-}
-footer {
-  text-align: center;
-  padding: 22px;
-  background: var(--mint);
-  color: var(--green-dark);
-  line-height: 1.6;
-}
-@media (max-width: 650px) {
-  header { padding: 12px 4%; }
-  .logo { font-size: 21px; }
-  .header-actions button { padding: 10px; font-size: 13px; }
-  main { padding: 18px 14px 40px; }
-  .hero { padding: 28px 20px; }
-  .cards, .stats { grid-template-columns: 1fr; }
-  .page-toolbar { align-items: flex-start; }
-}
-</style>
+  <style>
+    :root {
+      --green: #176b5b;
+      --green-dark: #104b41;
+      --mint: #eaf5f1;
+      --ink: #193b36;
+      --white: #ffffff;
+      --grey: #657873;
+      --border: #dce8e3;
+      --danger: #b93838;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6faf8;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    header {
+      min-height: 70px;
+      padding: 12px 5%;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .brand {
+      color: var(--green);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 17px;
+      font-weight: 700;
+      background: var(--green);
+      color: white;
+      transition: 0.15s;
+    }
+
+    .btn:hover {
+      background: var(--green-dark);
+    }
+
+    .btn.secondary {
+      color: var(--green);
+      background: var(--mint);
+    }
+
+    .btn.secondary:hover {
+      background: #dcefe8;
+    }
+
+    .btn.outline {
+      color: var(--green);
+      background: white;
+      border: 1px solid var(--green);
+    }
+
+    .btn.danger {
+      background: var(--danger);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    main {
+      width: min(1100px, 92%);
+      margin: 28px auto 60px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .hero {
+      background: var(--mint);
+      padding: 44px 26px;
+      border-radius: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      color: var(--green-dark);
+      font-size: clamp(30px, 5vw, 46px);
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 17px;
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .home-button {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 25px 18px;
+      min-height: 145px;
+      text-align: left;
+      color: var(--ink);
+    }
+
+    .home-button:hover {
+      border-color: var(--green);
+      box-shadow: 0 4px 15px #176b5b12;
+    }
+
+    .home-button .symbol {
+      font-size: 29px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .home-button strong {
+      display: block;
+      color: var(--green);
+      font-size: 19px;
+      margin-bottom: 5px;
+    }
+
+    .home-button span:last-child {
+      color: var(--grey);
+      font-size: 14px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 {
+      color: var(--green-dark);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .muted {
+      color: var(--grey);
+    }
+
+    .form-group {
+      margin: 16px 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #cbdcd5;
+      border-radius: 11px;
+      padding: 13px;
+      color: var(--ink);
+      background: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #9bcbbd;
+      border-color: var(--green);
+    }
+
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 16px 0;
+    }
+
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .check-row label {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .status {
+      background: var(--mint);
+      border-radius: 12px;
+      padding: 13px 15px;
+      margin: 14px 0;
+      color: var(--green-dark);
+      overflow-wrap: anywhere;
+    }
+
+    .warning {
+      background: #fff5e4;
+      border: 1px solid #f1d7a7;
+      color: #694b14;
+      padding: 14px;
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+
+    .error {
+      background: #fff0f0;
+      border: 1px solid #f1caca;
+      color: #8a2424;
+      padding: 13px;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .route-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .route-field label {
+      font-size: 17px;
+    }
+
+    .route-field input {
+      font-size: 18px;
+      padding: 16px;
+    }
+
+    #map {
+      width: 100%;
+      height: 52vh;
+      min-height: 330px;
+      border-radius: 16px;
+      background: #e4eee9;
+      z-index: 1;
+    }
+
+    .navigation-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(270px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .navigation-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .big-instruction {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1.3;
+      margin: 8px 0 12px;
+    }
+
+    .big-distance {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .step-list {
+      padding-left: 24px;
+    }
+
+    .step-list li {
+      margin-bottom: 13px;
+    }
+
+    .step-list li.current {
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .report-item {
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .report-item strong {
+      color: var(--green);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--grey);
+      padding: 20px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        padding: 12px 4%;
+      }
+
+      .brand {
+        font-size: 21px;
+      }
+
+      .header-actions .btn {
+        padding: 9px 11px;
+        font-size: 14px;
+      }
+
+      main {
+        width: 92%;
+        margin-top: 18px;
+      }
+
+      .hero {
+        padding: 32px 18px;
+      }
+
+      .home-grid,
+      .route-grid,
+      .navigation-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .home-button {
+        min-height: 120px;
+      }
+
+      .panel {
+        padding: 18px;
+      }
+
+      #map {
+        height: 42vh;
+        min-height: 280px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<header>
-  <div class="logo" onclick="goHome()" aria-label="BlindPath home">BlindPath</div>
-  <div class="header-actions">
-    <button class="secondary" onclick="goHome()">Home</button>
-    <button onclick="showScreen('profile')">Profile</button>
-  </div>
-</header>
-
-<main>
-  <!-- HOME -->
-  <section id="home" class="screen active">
-    <div class="hero">
-      <span class="pill">Accessible mobility</span>
-      <h1>Move with more confidence.</h1>
-      <p>
-        BlindPath helps users plan journeys, explore reported tactile-path
-        issues, and access spoken route guidance.
-      </p>
-      <button onclick="showScreen('plan')">Plan a journey</button>
+  <header>
+    <div class="brand" onclick="showScreen('home')">BlindPath</div>
+    <div class="header-actions">
+      <button class="btn secondary" onclick="showScreen('home')">Home</button>
+      <button class="btn" onclick="openProfile()">Profile</button>
     </div>
+  </header>
 
-    <div class="cards">
-      <button class="home-card" onclick="showScreen('plan')">
-        <strong>Plan a Journey</strong>
-        <span>Enter a starting point and destination to view a suggested route.</span>
-      </button>
-      <button class="home-card" onclick="showScreen('access')">
-        <strong>Tactile Path Accessibility Map</strong>
-        <span>Explore community-submitted accessibility reports.</span>
-      </button>
-      <button class="home-card" onclick="showScreen('report')">
-        <strong>Report an Issue</strong>
-        <span>Report blocked, damaged or missing tactile paths.</span>
-      </button>
-      <button class="home-card" onclick="showScreen('settings')">
-        <strong>Settings & Voice</strong>
-        <span>Choose a spoken-guidance language and ride threshold.</span>
-      </button>
-    </div>
-
-    <div class="notice">
-      <strong>Important:</strong> This prototype does not verify route accessibility,
-      detect obstacles or confirm safe crossings.
-    </div>
-  </section>
-
-  <!-- JOURNEY PLANNER -->
-  <section id="plan" class="screen">
-    <div class="page-toolbar">
-      <h2>Plan your journey</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-
-    <p class="muted">
-      Enter your starting point and destination to calculate an estimated
-      walking route.
-    </p>
-
-    <div class="card">
-      <label for="origin">Starting point</label>
-      <input id="origin" placeholder="e.g. Universiti Malaya">
-
-      <label for="destination">Destination</label>
-      <input id="destination" placeholder="e.g. KL Sentral">
-
-      <div class="form-actions">
-        <button onclick="useCurrentLocationForOrigin()">Use my current location</button>
-        <button onclick="calculateRoute()">Find walking route</button>
-      </div>
-      <p id="planStatus" class="muted" role="status" aria-live="polite"></p>
-    </div>
-
-    <div id="planResults" class="hidden">
-      <div class="stats">
-        <div class="stat"><strong id="routeDistance">—</strong>Estimated distance</div>
-        <div class="stat"><strong id="routeDuration">—</strong>Estimated walking time</div>
-        <div class="stat"><strong id="rideStatus">—</strong>Smart Ride Assist</div>
-      </div>
-
-      <div id="rideAssist" class="ride-card hidden" role="status" aria-live="polite">
-        <h3>Smart Ride Assist</h3>
-        <p id="rideMessage"></p>
-        <p id="rideVoiceNotice" class="muted">
-          BlindPath can suggest a ride, but cannot book one automatically.
+  <main>
+    <!-- HOME -->
+    <section id="home" class="screen active">
+      <div class="hero">
+        <h1>Navigate with greater confidence.</h1>
+        <p>
+          BlindPath is an accessibility-focused navigation prototype
+          designed to make journey information easier to access through
+          voice guidance and community reports.
         </p>
-        <div class="form-actions">
-          <a class="link-button" href="https://www.grab.com/my/transport/"
-             target="_blank" rel="noopener noreferrer">Open Grab</a>
-          <button class="secondary" onclick="repeatRideSuggestion()">Repeat announcement</button>
+      </div>
+
+      <div class="home-grid">
+        <button class="home-button" onclick="showScreen('plan')">
+          <span class="symbol">🧭</span>
+          <strong>Plan My Journey</strong>
+          <span>Choose a destination and start voice navigation.</span>
+        </button>
+
+        <button class="home-button" onclick="showScreen('report')">
+          <span class="symbol">📍</span>
+          <strong>Report an Issue</strong>
+          <span>Record blocked, damaged or missing tactile paths.</span>
+        </button>
+
+        <button class="home-button" onclick="showScreen('community')">
+          <span class="symbol">🤝</span>
+          <strong>Community Reports</strong>
+          <span>View reports saved in this browser.</span>
+        </button>
+
+        <button class="home-button" onclick="showScreen('settings')">
+          <span class="symbol">🔊</span>
+          <strong>Accessibility Settings</strong>
+          <span>Set your spoken language and voice preferences.</span>
+        </button>
+      </div>
+
+      <div class="warning">
+        <strong>Safety notice:</strong>
+        This prototype cannot detect obstacles, verify tactile paths,
+        or confirm whether a crossing signal is safe. Always use your
+        established mobility aids and trusted crossing procedures.
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="auth" class="screen">
+      <div class="panel">
+        <h1>Welcome to BlindPath</h1>
+        <p class="muted">
+          This is a demo account stored on this device only.
+        </p>
+
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="email"
+            placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password"
+            autocomplete="current-password" placeholder="Enter password">
+        </div>
+
+        <div class="button-row">
+          <button class="btn" onclick="loginDemo()">Log In</button>
+          <button class="btn secondary" onclick="showScreen('register')">
+            Create Account
+          </button>
+          <button class="btn outline" onclick="showScreen('home')">
+            Back
+          </button>
+        </div>
+        <div id="authMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="register" class="screen">
+      <div class="panel">
+        <h1>Create a Demo Account</h1>
+        <p class="muted">
+          Demo credentials are stored locally in this browser.
+          Do not use a real password.
+        </p>
+
+        <div class="form-group">
+          <label for="registerName">Display name</label>
+          <input id="registerName" placeholder="Enter a display name">
+        </div>
+
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input id="registerEmail" type="email" placeholder="Demo email">
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">Demo password</label>
+          <input id="registerPassword" type="password"
+            placeholder="Create a demo password">
+        </div>
+
+        <div class="button-row">
+          <button class="btn" onclick="registerDemo()">Register</button>
+          <button class="btn outline" onclick="showScreen('auth')">
+            Back to Login
+          </button>
+        </div>
+        <div id="registerMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="screen">
+      <div class="panel">
+        <h1>My Profile</h1>
+        <p class="muted">
+          This profile is a local demonstration, not an official identity
+          or disability verification system.
+        </p>
+
+        <div class="form-group">
+          <label for="profileName">Display name</label>
+          <input id="profileName" placeholder="Your display name">
+        </div>
+
+        <div class="form-group">
+          <label for="profileEmail">Email</label>
+          <input id="profileEmail" type="email" placeholder="Your email">
+        </div>
+
+        <div class="form-group">
+          <label for="profileAccess">Accessibility preference</label>
+          <select id="profileAccess">
+            <option value="Voice guidance">Voice guidance</option>
+            <option value="Large text">Large text</option>
+            <option value="Voice and large text">Voice and large text</option>
+            <option value="General access">General access</option>
+          </select>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" onclick="saveProfile()">Save Profile</button>
+          <button class="btn secondary" onclick="showScreen('verification')">
+            Demo Accessibility Status
+          </button>
+          <button class="btn outline" onclick="showScreen('home')">Back</button>
+          <button class="btn danger" onclick="logoutDemo()">Log Out</button>
+        </div>
+        <div id="profileMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- DEMO ACCESSIBILITY STATUS -->
+    <section id="verification" class="screen">
+      <div class="panel">
+        <h1>Accessibility Status</h1>
+        <p>
+          BlindPath does not connect to an official OKU database and does
+          not verify disability cards or identity documents.
+        </p>
+
+        <div class="status">
+          Demo status: <strong>Self-declared preference only</strong>
+        </div>
+
+        <div class="form-group">
+          <label for="selfDeclared">Select your preferred option</label>
+          <select id="selfDeclared">
+            <option>Prefer not to say</option>
+            <option>Blind or low vision</option>
+            <option>Mobility assistance</option>
+            <option>Other accessibility needs</option>
+            <option>Supporter or caregiver</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="saveSelfDeclared()">Save Preference</button>
+        <button class="btn outline" onclick="showScreen('profile')">Back</button>
+        <div id="verificationMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- JOURNEY PLANNING -->
+    <section id="plan" class="screen">
+      <div class="panel">
+        <h1>Plan My Journey</h1>
+        <p class="muted">
+          Enter your destination. For live navigation, we recommend using
+          your device's current location as the starting point.
+        </p>
+
+        <div class="route-grid">
+          <div class="route-field">
+            <label for="startPoint">Starting point</label>
+            <input id="startPoint" placeholder="Current location or place">
+          </div>
+
+          <div class="route-field">
+            <label for="destination">Destination</label>
+            <input id="destination" placeholder="Enter destination">
+          </div>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="useCurrentLocation" checked>
+          <label for="useCurrentLocation">
+            Use my live location as the starting point. My location will be
+            requested only when I start navigation.
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="travelMode">Travel mode</label>
+          <select id="travelMode">
+            <option value="foot">Walking</option>
+          </select>
+          <p class="small muted">
+            Walking routes depend on available map data. They may not
+            include verified accessible paths.
+          </p>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" onclick="previewRoute()">Find Route</button>
+          <button class="btn secondary" onclick="useMyLocation()">
+            Use Current Location
+          </button>
+          <button class="btn outline" onclick="showScreen('home')">Back</button>
+        </div>
+
+        <div id="planMessage" aria-live="polite"></div>
+        <div id="routeSummary" class="status" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- LIVE NAVIGATION -->
+    <section id="navigation" class="screen">
+      <h1>Live Voice Navigation</h1>
+
+      <div class="warning">
+        GPS can be inaccurate, especially near buildings or indoors.
+        Directions are estimates only. Do not rely on this prototype alone
+        to cross roads or identify safe paths.
+      </div>
+
+      <div class="navigation-layout">
+        <div>
+          <div id="map" role="application" aria-label="Journey map"></div>
+
+          <div class="navigation-card">
+            <h2>Live location</h2>
+            <div id="gpsStatus" class="status" aria-live="polite">
+              Waiting for location permission.
+            </div>
+            <div id="locationAccuracy" class="muted small"></div>
+
+            <div class="button-row">
+              <button class="btn" id="startNavigationButton"
+                onclick="startLiveNavigation()">
+                Start Voice Navigation
+              </button>
+              <button class="btn secondary" onclick="repeatInstruction()">
+                Repeat Instruction
+              </button>
+              <button class="btn danger" onclick="stopLiveNavigation()">
+                Stop Navigation
+              </button>
+            </div>
+
+            <p class="small muted">
+              Keep this page open while navigating. Your browser must allow
+              location access. Voice playback may depend on your device
+              and browser.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div class="navigation-card">
+            <h2>Next instruction</h2>
+            <div id="currentInstruction" class="big-instruction">
+              Plan a route to begin.
+            </div>
+            <div id="instructionDistance" class="big-distance"></div>
+            <div id="navigationStatus" class="status" aria-live="polite">
+              Navigation has not started.
+            </div>
+            <div id="routeProgress" class="muted small"></div>
+          </div>
+
+          <div class="navigation-card">
+            <h2>Route details</h2>
+            <div><strong>Destination</strong></div>
+            <div id="navDestination" class="muted">Not set</div>
+            <div style="margin-top:12px"><strong>Estimated distance</strong></div>
+            <div id="navDistance" class="muted">Not available</div>
+            <div style="margin-top:12px"><strong>Estimated time</strong></div>
+            <div id="navDuration" class="muted">Not available</div>
+          </div>
+
+          <div class="navigation-card">
+            <h2>Route steps</h2>
+            <p class="small muted">
+              This list is for reference. Voice guidance announces
+              instructions as your live location approaches each turn.
+            </p>
+            <ol id="stepList" class="step-list"></ol>
+          </div>
+
+          <button class="btn outline" onclick="showScreen('plan')">
+            Back to Journey Planning
+          </button>
         </div>
       </div>
+    </section>
 
-      <h3>Suggested walking route</h3>
-      <div id="planMap" aria-label="Map of suggested route"></div>
-      <div class="form-actions">
-        <button onclick="startNavigation()">Start voice navigation</button>
-        <button class="secondary" onclick="showScreen('access')">View accessibility map</button>
+    <!-- REPORT -->
+    <section id="report" class="screen">
+      <div class="panel">
+        <h1>Report an Accessibility Issue</h1>
+        <p class="muted">
+          Reports are saved in this browser only. They are not automatically
+          sent to a local authority or property management team.
+        </p>
+
+        <div class="form-group">
+          <label for="issueType">Issue type</label>
+          <select id="issueType">
+            <option>Blocked tactile path</option>
+            <option>Damaged tactile path</option>
+            <option>Missing tactile path</option>
+            <option>Obstacle on walkway</option>
+            <option>Accessibility concern</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="issueLocation">Location description</label>
+          <input id="issueLocation" placeholder="E.g. near the main entrance">
+        </div>
+
+        <div class="form-group">
+          <label for="issueDescription">Additional details</label>
+          <textarea id="issueDescription"
+            placeholder="Describe the issue. Avoid sharing private information."></textarea>
+        </div>
+
+        <div class="button-row">
+          <button class="btn secondary" onclick="fillReportLocation()">
+            Use Current Location
+          </button>
+          <button class="btn" onclick="submitReport()">Save Report</button>
+          <button class="btn outline" onclick="showScreen('home')">Back</button>
+        </div>
+
+        <div id="reportMessage" aria-live="polite"></div>
       </div>
-      <p class="muted">
-        Route distance and duration are estimates. Route data may not account
-        for tactile paths, steps, construction or obstacles.
-      </p>
-    </div>
-  </section>
+    </section>
 
-  <!-- LIVE NAVIGATION -->
-  <section id="navigation" class="screen">
-    <div class="page-toolbar">
-      <h2>Voice navigation</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-    <p class="muted">
-      GPS accuracy varies. Spoken guidance does not detect obstacles or confirm safe crossings.
-    </p>
-    <div class="card">
-      <div id="navMap" aria-label="Navigation map"></div>
-      <p id="navStatus" role="status" aria-live="polite">Ready to begin.</p>
-      <div class="form-actions">
-        <button onclick="beginLiveNavigation()">Start live guidance</button>
-        <button class="secondary" onclick="repeatInstruction()">Repeat instruction</button>
-        <button class="secondary" onclick="stopNavigation()">Stop guidance</button>
+    <!-- COMMUNITY -->
+    <section id="community" class="screen">
+      <div class="panel">
+        <h1>Community Reports</h1>
+        <p class="muted">
+          Prototype reports stored on this device. These are not verified
+          reports and may not reflect current conditions.
+        </p>
+        <div id="communityReports"></div>
+        <div class="button-row">
+          <button class="btn secondary" onclick="renderCommunityReports()">
+            Refresh Reports
+          </button>
+          <button class="btn outline" onclick="showScreen('home')">Back</button>
+        </div>
       </div>
-      <p id="currentInstruction" aria-live="polite"></p>
-      <p class="muted" id="gpsStatus"></p>
-    </div>
-    <h3>Route directions</h3>
-    <div id="directionList"></div>
-  </section>
+    </section>
 
-  <!-- ACCESSIBILITY MAP -->
-  <section id="access" class="screen">
-    <div class="page-toolbar">
-      <h2>Tactile Path Accessibility Map</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-    <p class="muted">
-      Markers show community-submitted reports, not officially verified conditions.
-    </p>
+    <!-- SETTINGS -->
+    <section id="settings" class="screen">
+      <div class="panel">
+        <h1>Accessibility Settings</h1>
 
-    <div class="card">
-      <label for="reportFilter">Filter reports</label>
-      <select id="reportFilter" onchange="renderAccessibilityMap()">
-        <option value="all">All report types</option>
-        <option value="blocked">Blocked tactile path</option>
-        <option value="damaged">Damaged tactile path</option>
-        <option value="missing">Missing tactile path</option>
-        <option value="gap">Accessibility gap / no tactile path</option>
-        <option value="other">Other accessibility issue</option>
-      </select>
-      <div class="form-actions">
-        <button onclick="locateOnAccessMap()">Show my location</button>
-        <button class="secondary" onclick="showScreen('report')">Submit a report</button>
+        <div class="form-group">
+          <label for="voiceLanguage">Voice language</label>
+          <select id="voiceLanguage">
+            <option value="en-US">English</option>
+            <option value="ms-MY">Bahasa Melayu</option>
+            <option value="zh-CN">中文（普通话）</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="voiceRate">Speech speed</label>
+          <select id="voiceRate">
+            <option value="0.8">Slow</option>
+            <option value="0.95" selected>Normal</option>
+            <option value="1.1">A little faster</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="textSize">Text size</label>
+          <select id="textSize">
+            <option value="16">Standard</option>
+            <option value="18">Large</option>
+            <option value="21">Extra large</option>
+          </select>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" onclick="saveSettings()">Save Settings</button>
+          <button class="btn secondary" onclick="testVoice()">Test Voice</button>
+          <button class="btn outline" onclick="showScreen('home')">Back</button>
+        </div>
+
+        <div id="settingsMessage" aria-live="polite"></div>
       </div>
-      <div id="accessMap" aria-label="Map of community accessibility reports"></div>
-      <p id="mapStatus" class="muted" role="status" aria-live="polite"></p>
-    </div>
+    </section>
+  </main>
 
-    <div class="stats">
-      <div class="stat"><strong id="countAll">0</strong>Total reports</div>
-      <div class="stat"><strong id="countBlocked">0</strong>Blocked paths</div>
-      <div class="stat"><strong id="countDamaged">0</strong>Damaged paths</div>
-    </div>
-    <h3>Community reports</h3>
-    <div id="reportList"></div>
-    <div class="notice">
-      Reports are saved only in this browser for the demo. They are not sent to
-      authorities or shared with other users.
-    </div>
-  </section>
+  <footer>
+    BlindPath prototype · Designed with accessibility in mind
+  </footer>
 
-  <!-- REPORT FORM -->
-  <section id="report" class="screen">
-    <div class="page-toolbar">
-      <h2>Report an issue</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-    <p class="muted">Describe an accessibility issue near a walking route.</p>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <div class="card">
-      <label for="issueType">Issue type</label>
-      <select id="issueType">
-        <option value="blocked">Blocked tactile path</option>
-        <option value="damaged">Damaged tactile path</option>
-        <option value="missing">Missing tactile path</option>
-        <option value="gap">Accessibility gap / no tactile path</option>
-        <option value="other">Other accessibility issue</option>
-      </select>
+  <script>
+    /* -------------------------------------------
+       STORAGE AND GENERAL PAGE NAVIGATION
+    ------------------------------------------- */
 
-      <label for="issueDescription">Description</label>
-      <textarea id="issueDescription" placeholder="Describe the issue and nearby landmarks."></textarea>
-
-      <label for="issueLocation">Location or nearby landmark</label>
-      <input id="issueLocation" placeholder="e.g. near the main entrance">
-
-      <div class="form-actions">
-        <button class="secondary" onclick="captureReportLocation()">Use my current location</button>
-      </div>
-      <p id="capturedLocation" class="muted" aria-live="polite">No coordinates attached.</p>
-
-      <div class="form-actions">
-        <button onclick="submitReport()">Save report on this device</button>
-        <button class="secondary" onclick="goBack()">Cancel</button>
-      </div>
-      <p id="reportStatus" role="status" aria-live="polite"></p>
-    </div>
-  </section>
-
-  <!-- PROFILE -->
-  <section id="profile" class="screen">
-    <div class="page-toolbar">
-      <h2>My profile</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-    <div class="card">
-      <p class="muted">
-        This demo profile is stored locally. It does not verify disability or official OKU status.
-      </p>
-      <label for="profileName">Display name (optional)</label>
-      <input id="profileName" placeholder="Enter a display name">
-
-      <label for="accessNeeds">Navigation preferences</label>
-      <select id="accessNeeds">
-        <option value="voice">Prefer spoken guidance</option>
-        <option value="large">Prefer larger text</option>
-        <option value="both">Spoken guidance and larger text</option>
-      </select>
-
-      <div class="form-actions">
-        <button onclick="saveProfile()">Save profile</button>
-      </div>
-      <p id="profileStatus" role="status" aria-live="polite"></p>
-    </div>
-  </section>
-
-  <!-- SETTINGS -->
-  <section id="settings" class="screen">
-    <div class="page-toolbar">
-      <h2>Settings & Voice</h2>
-      <button class="secondary" onclick="goBack()">← Back</button>
-    </div>
-    <div class="card">
-      <label for="voiceLanguage">Spoken-guidance language</label>
-      <select id="voiceLanguage" onchange="saveSettings()">
-        <option value="en-US">English</option>
-        <option value="ms-MY">Bahasa Melayu</option>
-        <option value="zh-CN">中文 (Mandarin)</option>
-      </select>
-
-      <label for="rideThreshold">Smart Ride Assist threshold</label>
-      <select id="rideThreshold" onchange="saveSettings()">
-        <option value="3">3 km</option>
-        <option value="5" selected>5 km</option>
-        <option value="8">8 km</option>
-        <option value="10">10 km</option>
-      </select>
-      <p class="muted">
-        BlindPath announces a ride suggestion when the estimated walking route
-        is longer than the selected threshold.
-      </p>
-      <div class="form-actions">
-        <button onclick="testVoice()">Test voice</button>
-      </div>
-      <p id="settingsStatus" class="muted" role="status" aria-live="polite"></p>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <strong>BlindPath</strong><br>
-  An accessibility-focused navigation prototype.<br>
-  Always verify real-world conditions independently.
-</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-/* STORAGE AND APP STATE */
-const STORAGE_REPORTS = "blindpath_reports_v1";
-const STORAGE_PROFILE = "blindpath_profile_v1";
-const STORAGE_SETTINGS = "blindpath_settings_v1";
-
-let routeData = null;
-let planMap = null;
-let navMap = null;
-let accessMap = null;
-let routeLayer = null;
-let navRouteLayer = null;
-let accessMarkers = [];
-let userMarker = null;
-let currentCoords = null;
-let reportCoords = null;
-let watchId = null;
-let navigationActive = false;
-let currentStepIndex = 0;
-let previousScreens = [];
-let currentScreen = "home";
-
-function getReports() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_REPORTS) || "[]"); }
-  catch (e) { return []; }
-}
-function saveReports(reports) {
-  localStorage.setItem(STORAGE_REPORTS, JSON.stringify(reports));
-}
-function getSettings() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_SETTINGS) ||
-      '{"language":"en-US","threshold":5}');
-  } catch (e) {
-    return { language: "en-US", threshold: 5 };
-  }
-}
-function getThreshold() {
-  return Number(document.getElementById("rideThreshold").value || 5);
-}
-
-/* PAGE NAVIGATION
-   Back returns to the previous screen.
-   Home always returns directly to the homepage.
-*/
-function showScreen(id) {
-  if (id === currentScreen) return;
-
-  if (currentScreen && document.getElementById(currentScreen)) {
-    previousScreens.push(currentScreen);
-  }
-  displayScreen(id);
-}
-function displayScreen(id) {
-  stopNavigation();
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  currentScreen = id;
-
-  if (id === "plan" && planMap) setTimeout(() => planMap.invalidateSize(), 100);
-  if (id === "navigation") {
-    setupNavMap();
-    setTimeout(() => navMap.invalidateSize(), 100);
-  }
-  if (id === "access") {
-    setupAccessMap();
-    renderAccessibilityMap();
-    setTimeout(() => accessMap.invalidateSize(), 100);
-  }
-}
-function goBack() {
-  stopNavigation();
-  const previous = previousScreens.pop();
-  if (previous && document.getElementById(previous)) {
-    displayScreen(previous);
-  } else {
-    displayScreen("home");
-  }
-}
-function goHome() {
-  stopNavigation();
-  previousScreens = [];
-  displayScreen("home");
-}
-
-/* MAP INITIALIZATION */
-function createBaseMap(elementId, lat = 3.139, lon = 101.6869, zoom = 12) {
-  const map = L.map(elementId).setView([lat, lon], zoom);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-  return map;
-}
-function setupPlanMap() {
-  if (!planMap) planMap = createBaseMap("planMap");
-  return planMap;
-}
-function setupNavMap() {
-  if (!navMap) navMap = createBaseMap("navMap");
-  return navMap;
-}
-function setupAccessMap() {
-  if (!accessMap) accessMap = createBaseMap("accessMap");
-  return accessMap;
-}
-
-/* VOICE ANNOUNCEMENTS */
-function speak(text, onEnd) {
-  if (!("speechSynthesis" in window)) {
-    const status = document.getElementById("planStatus");
-    if (status) status.textContent += " Voice announcements are not supported in this browser.";
-    return;
-  }
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = getSettings().language || "en-US";
-  utterance.rate = 0.9;
-  utterance.onend = () => { if (onEnd) onEnd(); };
-  speechSynthesis.speak(utterance);
-}
-function rideSuggestionText(km, threshold) {
-  const language = getSettings().language || "en-US";
-
-  if (language === "ms-MY") {
-    return "Perhatian. Jarak berjalan kaki anda dianggarkan " +
-      km.toFixed(1) + " kilometer, melebihi had " + threshold +
-      " kilometer. Anda mungkin ingin menempah perjalanan menggunakan Grab. " +
-      "Sila semak pilihan perjalanan dan keperluan aksesibiliti sebelum membuat tempahan.";
-  }
-
-  if (language === "zh-CN") {
-    return "请注意，您的预计步行距离为 " + km.toFixed(1) +
-      " 公里，超过了 " + threshold +
-      " 公里的设定距离。建议您考虑使用 Grab 叫车。请在预订前确认行程和无障碍需求。";
-  }
-
-  return "Attention. Your estimated walking route is " + km.toFixed(1) +
-    " kilometres, which is longer than your " + threshold +
-    " kilometre limit. You may want to book a ride using Grab. " +
-    "Please check the ride options and your accessibility needs before booking.";
-}
-function repeatRideSuggestion() {
-  if (!routeData) return;
-  const km = routeData.route.distance / 1000;
-  speak(rideSuggestionText(km, getThreshold()));
-}
-function testVoice() {
-  saveSettings();
-  const lang = getSettings().language;
-  const samples = {
-    "en-US": "Welcome to BlindPath. This is a voice guidance test.",
-    "ms-MY": "Selamat datang ke BlindPath. Ini ialah ujian panduan suara.",
-    "zh-CN": "欢迎使用 BlindPath。这是语音导航测试。"
-  };
-  speak(samples[lang] || samples["en-US"]);
-}
-
-/* PLACE SEARCH AND ROUTING */
-async function geocodePlace(place) {
-  // Accept coordinates entered from the current-location button.
-  const coordinateMatch = place.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/);
-  if (coordinateMatch) {
-    return {
-      lat: Number(coordinateMatch[1]),
-      lon: Number(coordinateMatch[2]),
-      name: "Entered coordinates"
+    const STORAGE_KEYS = {
+      profile: "blindpath_profile_demo",
+      settings: "blindpath_settings_demo",
+      reports: "blindpath_reports_demo",
+      selfDeclared: "blindpath_access_preference_demo"
     };
-  }
 
-  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
-    encodeURIComponent(place);
-  const response = await fetch(url, { headers: { "Accept": "application/json" } });
-  if (!response.ok) throw new Error("Could not search for this place.");
-  const results = await response.json();
-  if (!results.length) throw new Error("Place not found: " + place);
-
-  return {
-    lat: Number(results[0].lat),
-    lon: Number(results[0].lon),
-    name: results[0].display_name
-  };
-}
-async function fetchWalkingRoute(start, end) {
-  const url =
-    "https://routing.openstreetmap.de/routed-foot/route/v1/driving/" +
-    start.lon + "," + start.lat + ";" + end.lon + "," + end.lat +
-    "?overview=full&geometries=geojson&steps=true";
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("The walking route service is unavailable.");
-  const data = await response.json();
-
-  if (data.code !== "Ok" || !data.routes || !data.routes.length) {
-    throw new Error("No route was found for these locations.");
-  }
-  return data.routes[0];
-}
-function formatDistance(metres) {
-  if (metres >= 1000) return (metres / 1000).toFixed(1) + " kilometres";
-  return Math.round(metres) + " metres";
-}
-function formatDuration(seconds) {
-  const mins = Math.round(seconds / 60);
-  if (mins < 60) return mins + " min";
-  return Math.floor(mins / 60) + " hr " + (mins % 60) + " min";
-}
-function routeStepText(step) {
-  const maneuver = step.maneuver || {};
-  const type = maneuver.type || "continue";
-  const modifier = maneuver.modifier ? " " + maneuver.modifier : "";
-  const road = step.name ? " onto " + step.name : "";
-  const distance = step.distance ? " for " + formatDistance(step.distance) : "";
-
-  if (type === "depart") return "Start walking" + road + distance + ".";
-  if (type === "arrive") return "You have reached your destination.";
-  if (type === "turn") return "Turn" + modifier + road + distance + ".";
-  if (type === "end of road") return "At the end of the road, turn" + modifier + road + ".";
-  if (type === "roundabout" || type === "rotary") return "At the roundabout, follow the route" + road + ".";
-  if (type === "continue") return "Continue straight" + road + distance + ".";
-  return "Continue along the route" + road + distance + ".";
-}
-
-/* SMART RIDE ASSIST */
-async function calculateRoute() {
-  const startText = document.getElementById("origin").value.trim();
-  const endText = document.getElementById("destination").value.trim();
-  const status = document.getElementById("planStatus");
-
-  if (!startText || !endText) {
-    status.textContent = "Please enter both a starting point and destination.";
-    return;
-  }
-
-  status.textContent = "Finding locations and calculating your route...";
-  document.getElementById("planResults").classList.add("hidden");
-  document.getElementById("rideAssist").classList.add("hidden");
-
-  try {
-    const start = await geocodePlace(startText);
-    const end = await geocodePlace(endText);
-    const route = await fetchWalkingRoute(start, end);
-
-    routeData = { start, end, route };
-
-    const km = route.distance / 1000;
-    const threshold = getThreshold();
-    document.getElementById("routeDistance").textContent = km.toFixed(1) + " km";
-    document.getElementById("routeDuration").textContent = formatDuration(route.duration);
-
-    const rideAssist = document.getElementById("rideAssist");
-
-    if (km > threshold) {
-      document.getElementById("rideStatus").textContent = "Suggested";
-      document.getElementById("rideMessage").textContent =
-        "Your estimated walking route is " + km.toFixed(1) +
-        " km, longer than your " + threshold +
-        " km threshold. Consider booking a ride if that better suits your needs.";
-      rideAssist.classList.remove("hidden");
-
-      // Automatically announce the long route and ride suggestion.
-      // The announcement uses the language selected in Settings.
-      speak(rideSuggestionText(km, threshold));
-    } else {
-      document.getElementById("rideStatus").textContent = "Not triggered";
-      rideAssist.classList.add("hidden");
+    function readStorage(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+      } catch (error) {
+        return fallback;
+      }
     }
 
-    drawPlanRoute();
-    document.getElementById("planResults").classList.remove("hidden");
-
-    status.textContent = km > threshold
-      ? "Route calculated. A spoken Smart Ride Assist suggestion has been announced."
-      : "Route calculated. Please check real-world conditions before travelling.";
-  } catch (error) {
-    status.textContent = error.message ||
-      "Could not calculate the route. Check your connection and try again.";
-  }
-}
-function drawPlanRoute() {
-  if (!routeData) return;
-  const map = setupPlanMap();
-  if (routeLayer) map.removeLayer(routeLayer);
-
-  const coords = routeData.route.geometry.coordinates.map(c => [c[1], c[0]]);
-  routeLayer = L.polyline(coords, { color: "#176b5b", weight: 6 }).addTo(map);
-  L.marker([routeData.start.lat, routeData.start.lon]).addTo(map).bindPopup("Starting point");
-  L.marker([routeData.end.lat, routeData.end.lon]).addTo(map).bindPopup("Destination");
-  map.fitBounds(routeLayer.getBounds(), { padding: [25, 25] });
-}
-function useCurrentLocationForOrigin() {
-  const status = document.getElementById("planStatus");
-  if (!navigator.geolocation) {
-    status.textContent = "This browser does not support location access.";
-    return;
-  }
-  status.textContent = "Requesting your location...";
-  navigator.geolocation.getCurrentPosition(pos => {
-    currentCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-    document.getElementById("origin").value =
-      currentCoords.lat.toFixed(6) + ", " + currentCoords.lon.toFixed(6);
-    status.textContent = "Starting point set to your current coordinates.";
-  }, () => {
-    status.textContent = "Location permission was denied or your location is unavailable.";
-  }, { enableHighAccuracy: true, timeout: 15000 });
-}
-
-/* LIVE VOICE NAVIGATION */
-function startNavigation() {
-  if (!routeData) return;
-  currentStepIndex = 0;
-  showScreen("navigation");
-  drawNavRoute();
-  renderDirections();
-  document.getElementById("navStatus").textContent =
-    "Route ready. Press Start live guidance when you are ready.";
-  document.getElementById("currentInstruction").textContent =
-    routeStepText(routeData.route.legs[0].steps[0] || {});
-}
-function drawNavRoute() {
-  if (!routeData) return;
-  const map = setupNavMap();
-  if (navRouteLayer) map.removeLayer(navRouteLayer);
-  const coords = routeData.route.geometry.coordinates.map(c => [c[1], c[0]]);
-  navRouteLayer = L.polyline(coords, { color: "#176b5b", weight: 6 }).addTo(map);
-  map.fitBounds(navRouteLayer.getBounds(), { padding: [25, 25] });
-}
-function renderDirections() {
-  if (!routeData) return;
-  const steps = routeData.route.legs[0].steps || [];
-  const list = document.getElementById("directionList");
-  list.innerHTML = "";
-
-  steps.forEach((step, i) => {
-    const div = document.createElement("div");
-    div.className = "route-step" + (i === currentStepIndex ? " current" : "");
-    const title = document.createElement("strong");
-    title.textContent = "Step " + (i + 1);
-    const p = document.createElement("p");
-    p.textContent = routeStepText(step);
-    const small = document.createElement("small");
-    small.textContent = "Approx. " + formatDistance(step.distance || 0);
-    div.append(title, p, small);
-    list.appendChild(div);
-  });
-}
-function beginLiveNavigation() {
-  if (!routeData) {
-    document.getElementById("navStatus").textContent = "Please plan a journey first.";
-    return;
-  }
-  if (!navigator.geolocation) {
-    document.getElementById("navStatus").textContent = "Location access is not supported.";
-    return;
-  }
-
-  stopNavigation();
-  navigationActive = true;
-  document.getElementById("navStatus").textContent =
-    "Live guidance started. GPS accuracy may vary.";
-  announceCurrentStep();
-
-  watchId = navigator.geolocation.watchPosition(position => {
-    if (!navigationActive) return;
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    currentCoords = { lat, lon };
-
-    if (!userMarker) {
-      userMarker = L.marker([lat, lon]).addTo(setupNavMap())
-        .bindPopup("Approximate current location");
-    } else {
-      userMarker.setLatLng([lat, lon]);
+    function writeStorage(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (error) {
+        return false;
+      }
     }
-    setupNavMap().panTo([lat, lon], { animate: true });
 
-    document.getElementById("gpsStatus").textContent =
-      "GPS accuracy estimate: " + Math.round(position.coords.accuracy) + " metres.";
+    let profile = readStorage(STORAGE_KEYS.profile, null);
 
-    advanceStepIfNear(lat, lon);
-  }, () => {
-    document.getElementById("gpsStatus").textContent =
-      "Unable to get a reliable location. Check browser location permission and GPS settings.";
-  }, { enableHighAccuracy: true, maximumAge: 3000, timeout: 15000 });
-}
-function announceCurrentStep() {
-  if (!routeData || !navigationActive) return;
-  const steps = routeData.route.legs[0].steps || [];
-
-  if (currentStepIndex >= steps.length) {
-    const msg = "You have reached the end of the listed route. Check your surroundings.";
-    document.getElementById("currentInstruction").textContent = msg;
-    speak(msg);
-    return;
-  }
-
-  const instruction = routeStepText(steps[currentStepIndex]);
-  document.getElementById("currentInstruction").textContent = instruction;
-  renderDirections();
-  speak(instruction);
-}
-function repeatInstruction() {
-  if (!routeData) return;
-  const steps = routeData.route.legs[0].steps || [];
-  speak(routeStepText(steps[currentStepIndex] || steps[0] || {}));
-}
-function advanceStepIfNear(lat, lon) {
-  const steps = routeData.route.legs[0].steps || [];
-  if (currentStepIndex >= steps.length - 1) return;
-
-  const step = steps[currentStepIndex];
-  const loc = step.maneuver && step.maneuver.location;
-  if (!loc) return;
-
-  if (distanceMetres(lat, lon, loc[1], loc[0]) < 35) {
-    currentStepIndex++;
-    announceCurrentStep();
-  }
-}
-function stopNavigation() {
-  navigationActive = false;
-  if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-}
-function distanceMetres(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const rad = n => n * Math.PI / 180;
-  const dLat = rad(lat2 - lat1);
-  const dLon = rad(lon2 - lon1);
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-/* ACCESSIBILITY MAP */
-function issueLabel(type) {
-  return ({
-    blocked: "Blocked tactile path",
-    damaged: "Damaged tactile path",
-    missing: "Missing tactile path",
-    gap: "Accessibility gap / no tactile path",
-    other: "Other accessibility issue"
-  })[type] || "Accessibility report";
-}
-function renderAccessibilityMap() {
-  const map = setupAccessMap();
-  const filter = document.getElementById("reportFilter").value;
-  accessMarkers.forEach(marker => map.removeLayer(marker));
-  accessMarkers = [];
-
-  const reports = getReports();
-  const shown = reports.filter(r => filter === "all" || r.type === filter);
-
-  shown.forEach(report => {
-    if (typeof report.lat !== "number" || typeof report.lon !== "number") return;
-    const marker = L.marker([report.lat, report.lon]).addTo(map);
-    const popup = document.createElement("div");
-    const title = document.createElement("strong");
-    title.textContent = issueLabel(report.type);
-    const desc = document.createElement("p");
-    desc.textContent = report.description || "No description provided.";
-    const loc = document.createElement("p");
-    loc.textContent = report.location || "Location not specified.";
-    const note = document.createElement("small");
-    note.textContent = "Community-submitted; not independently verified.";
-    popup.append(title, desc, loc, note);
-    marker.bindPopup(popup);
-    accessMarkers.push(marker);
-  });
-
-  document.getElementById("countAll").textContent = reports.length;
-  document.getElementById("countBlocked").textContent =
-    reports.filter(r => r.type === "blocked").length;
-  document.getElementById("countDamaged").textContent =
-    reports.filter(r => r.type === "damaged").length;
-
-  const list = document.getElementById("reportList");
-  list.innerHTML = "";
-
-  if (!shown.length) {
-    list.textContent = "No reports match this filter yet.";
-  } else {
-    shown.slice().reverse().forEach(report => {
-      const card = document.createElement("div");
-      card.className = "route-step";
-      const heading = document.createElement("strong");
-      heading.textContent = issueLabel(report.type);
-      const desc = document.createElement("p");
-      desc.textContent = report.description || "No description provided.";
-      const loc = document.createElement("small");
-      loc.textContent = (report.location || "Location not specified") +
-        (typeof report.lat === "number" ? " • Coordinates attached" : " • No map coordinates");
-      card.append(heading, desc, loc);
-      list.appendChild(card);
+    let settings = readStorage(STORAGE_KEYS.settings, {
+      language: "en-US",
+      rate: 0.95,
+      textSize: 16
     });
-  }
 
-  document.getElementById("mapStatus").textContent =
-    shown.length + " report(s) shown. Reports are not official verification of conditions.";
-}
-function locateOnAccessMap() {
-  if (!navigator.geolocation) {
-    document.getElementById("mapStatus").textContent = "Location access is not supported.";
-    return;
-  }
-  document.getElementById("mapStatus").textContent = "Requesting your location...";
-  navigator.geolocation.getCurrentPosition(position => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    const map = setupAccessMap();
-    map.setView([lat, lon], 16);
-    L.circleMarker([lat, lon], {
-      radius: 8, color: "#104b41", fillColor: "#176b5b", fillOpacity: 0.8
-    }).addTo(map).bindPopup("Your approximate location").openPopup();
-    document.getElementById("mapStatus").textContent =
-      "Showing your approximate location. This does not confirm nearby tactile paths.";
-  }, () => {
-    document.getElementById("mapStatus").textContent =
-      "Could not get your location. Check browser location permission.";
-  }, { enableHighAccuracy: true, timeout: 15000 });
-}
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(function(screen) {
+        screen.classList.remove("active");
+      });
 
-/* REPORT FORM */
-function captureReportLocation() {
-  if (!navigator.geolocation) {
-    document.getElementById("capturedLocation").textContent =
-      "Location access is not supported.";
-    return;
-  }
-  document.getElementById("capturedLocation").textContent = "Requesting location...";
-  navigator.geolocation.getCurrentPosition(position => {
-    reportCoords = {
-      lat: position.coords.latitude,
-      lon: position.coords.longitude
-    };
-    document.getElementById("capturedLocation").textContent =
-      "Coordinates attached: " + reportCoords.lat.toFixed(5) + ", " +
-      reportCoords.lon.toFixed(5);
-  }, () => {
-    document.getElementById("capturedLocation").textContent =
-      "Could not get location. You can still save a text-only report.";
-  }, { enableHighAccuracy: true, timeout: 15000 });
-}
-function submitReport() {
-  const type = document.getElementById("issueType").value;
-  const description = document.getElementById("issueDescription").value.trim();
-  const location = document.getElementById("issueLocation").value.trim();
+      const screen = document.getElementById(screenId);
+      if (screen) screen.classList.add("active");
 
-  if (!description) {
-    document.getElementById("reportStatus").textContent =
-      "Please describe the issue before saving.";
-    return;
-  }
+      if (screenId === "navigation") {
+        setTimeout(function() {
+          if (map) map.invalidateSize();
+        }, 150);
+      }
 
-  const reports = getReports();
-  reports.push({
-    id: Date.now(),
-    type,
-    description,
-    location,
-    lat: reportCoords ? reportCoords.lat : null,
-    lon: reportCoords ? reportCoords.lon : null,
-    createdAt: new Date().toISOString()
-  });
-  saveReports(reports);
+      if (screenId === "community") renderCommunityReports();
+      if (screenId === "profile") loadProfile();
 
-  document.getElementById("issueDescription").value = "";
-  document.getElementById("issueLocation").value = "";
-  document.getElementById("capturedLocation").textContent = "No coordinates attached.";
-  reportCoords = null;
-  document.getElementById("reportStatus").textContent =
-    "Report saved locally on this device. It has not been sent to anyone.";
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
 
-  renderAccessibilityMap();
-}
+    function openProfile() {
+      if (profile) {
+        showScreen("profile");
+      } else {
+        showScreen("auth");
+      }
+    }
 
-/* PROFILE AND SETTINGS */
-function saveProfile() {
-  localStorage.setItem(STORAGE_PROFILE, JSON.stringify({
-    name: document.getElementById("profileName").value.trim(),
-    preference: document.getElementById("accessNeeds").value
-  }));
-  document.getElementById("profileStatus").textContent =
-    "Profile saved locally on this device.";
-}
-function saveSettings() {
-  localStorage.setItem(STORAGE_SETTINGS, JSON.stringify({
-    language: document.getElementById("voiceLanguage").value,
-    threshold: Number(document.getElementById("rideThreshold").value)
-  }));
-  document.getElementById("settingsStatus").textContent =
-    "Settings saved. Available spoken voices depend on your browser and operating system.";
-}
-function loadSavedSettings() {
-  const settings = getSettings();
-  document.getElementById("voiceLanguage").value = settings.language || "en-US";
-  document.getElementById("rideThreshold").value = String(settings.threshold || 5);
+    /* -------------------------------------------
+       DEMO LOGIN / REGISTRATION / PROFILE
+    ------------------------------------------- */
 
-  try {
-    const profile = JSON.parse(localStorage.getItem(STORAGE_PROFILE) || "{}");
-    document.getElementById("profileName").value = profile.name || "";
-    document.getElementById("accessNeeds").value = profile.preference || "voice";
-  } catch (e) {}
-}
+    function registerDemo() {
+      const name = document.getElementById("registerName").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
 
-/* STARTUP */
-loadSavedSettings();
-</script>
+      const message = document.getElementById("registerMessage");
+
+      if (!name || !email || !password) {
+        message.innerHTML = '<div class="error">Please fill in all fields.</div>';
+        return;
+      }
+
+      profile = {
+        name: name,
+        email: email,
+        password: password,
+        access: "Voice guidance"
+      };
+
+      writeStorage(STORAGE_KEYS.profile, profile);
+      message.innerHTML =
+        '<div class="status">Demo account created on this device.</div>';
+
+      setTimeout(function() {
+        showScreen("profile");
+      }, 400);
+    }
+
+    function loginDemo() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const message = document.getElementById("authMessage");
+
+      const saved = readStorage(STORAGE_KEYS.profile, null);
+
+      if (!saved || saved.email !== email || saved.password !== password) {
+        message.innerHTML =
+          '<div class="error">Demo login details do not match this browser.</div>';
+        return;
+      }
+
+      profile = saved;
+      showScreen("profile");
+    }
+
+    function loadProfile() {
+      profile = readStorage(STORAGE_KEYS.profile, null);
+
+      if (!profile) return;
+
+      document.getElementById("profileName").value = profile.name || "";
+      document.getElementById("profileEmail").value = profile.email || "";
+      document.getElementById("profileAccess").value =
+        profile.access || "Voice guidance";
+    }
+
+    function saveProfile() {
+      if (!profile) {
+        document.getElementById("profileMessage").innerHTML =
+          '<div class="error">Create a demo account first.</div>';
+        return;
+      }
+
+      profile.name = document.getElementById("profileName").value.trim();
+      profile.email = document.getElementById("profileEmail").value.trim();
+      profile.access = document.getElementById("profileAccess").value;
+
+      writeStorage(STORAGE_KEYS.profile, profile);
+
+      document.getElementById("profileMessage").innerHTML =
+        '<div class="status">Profile saved on this device.</div>';
+    }
+
+    function logoutDemo() {
+      profile = null;
+      showScreen("auth");
+    }
+
+    function saveSelfDeclared() {
+      const choice = document.getElementById("selfDeclared").value;
+      writeStorage(STORAGE_KEYS.selfDeclared, choice);
+
+      document.getElementById("verificationMessage").innerHTML =
+        '<div class="status">Preference saved. This is not official verification.</div>';
+    }
+
+    /* -------------------------------------------
+       ACCESSIBILITY SETTINGS AND SPEECH
+    ------------------------------------------- */
+
+    function loadSettings() {
+      document.getElementById("voiceLanguage").value = settings.language;
+      document.getElementById("voiceRate").value = String(settings.rate);
+      document.getElementById("textSize").value = String(settings.textSize);
+      document.documentElement.style.fontSize = settings.textSize + "px";
+    }
+
+    function saveSettings() {
+      settings = {
+        language: document.getElementById("voiceLanguage").value,
+        rate: Number(document.getElementById("voiceRate").value),
+        textSize: Number(document.getElementById("textSize").value)
+      };
+
+      writeStorage(STORAGE_KEYS.settings, settings);
+      document.documentElement.style.fontSize = settings.textSize + "px";
+
+      document.getElementById("settingsMessage").innerHTML =
+        '<div class="status">Settings saved.</div>';
+    }
+
+    function speakText(text, onEnd) {
+      if (!("speechSynthesis" in window)) {
+        setNavigationStatus("Speech is not supported by this browser.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = settings.language || "en-US";
+      utterance.rate = Number(settings.rate) || 0.95;
+
+      const voices = window.speechSynthesis.getVoices();
+      const prefix = utterance.lang.toLowerCase().split("-")[0];
+
+      const matchingVoice = voices.find(function(voice) {
+        return voice.lang.toLowerCase().startsWith(prefix);
+      });
+
+      if (matchingVoice) utterance.voice = matchingVoice;
+
+      if (typeof onEnd === "function") {
+        utterance.onend = onEnd;
+      }
+
+      utterance.onerror = function() {
+        setNavigationStatus(
+          "Voice playback had a problem. You can still read the instruction."
+        );
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function testVoice() {
+      saveSettings();
+      speakText("Welcome to BlindPath. Voice guidance is ready.");
+    }
+
+    /* -------------------------------------------
+       MAP AND ROUTE STATE
+    ------------------------------------------- */
+
+    let map = null;
+    let userMarker = null;
+    let destinationMarker = null;
+    let routeLine = null;
+
+    let destination = null;
+    let destinationName = "";
+    let routeSteps = [];
+    let routeCoordinates = [];
+    let currentStepIndex = 0;
+
+    let watchId = null;
+    let navigationActive = false;
+    let lastSpokenKey = "";
+    let offRouteCount = 0;
+    let lastRerouteTime = 0;
+    let lastPosition = null;
+    let lastGPSUpdate = 0;
+    let lastInstruction = "";
+    let arrivalAnnounced = false;
+    let routeRequestInProgress = false;
+    let instructionDistanceValue = null;
+
+    const FOOT_ROUTER =
+      "https://routing.openstreetmap.de/routed-foot/route/v1/driving/";
+
+    function initializeMap() {
+      if (map) return;
+
+      map = L.map("map").setView([3.139, 101.6869], 14);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+    }
+
+    function setNavigationStatus(message) {
+      document.getElementById("navigationStatus").textContent = message;
+    }
+
+    function setGPSStatus(message) {
+      document.getElementById("gpsStatus").textContent = message;
+    }
+
+    function useMyLocation() {
+      document.getElementById("useCurrentLocation").checked = true;
+      document.getElementById("startPoint").value = "My current location";
+      document.getElementById("planMessage").innerHTML =
+        '<div class="status">Your current location will be requested when you start navigation.</div>';
+    }
+
+    /* -------------------------------------------
+       LOCATION PERMISSION AND GEOCODING
+    ------------------------------------------- */
+
+    function getCurrentPositionOnce() {
+      return new Promise(function(resolve, reject) {
+        if (!navigator.geolocation) {
+          reject(new Error("This browser does not support location access."));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            resolve({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            });
+          },
+          function(error) {
+            reject(new Error(locationErrorMessage(error)));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+          }
+        );
+      });
+    }
+
+    function locationErrorMessage(error) {
+      if (error.code === 1) {
+        return "Location permission was denied. Allow location access in your browser settings.";
+      }
+
+      if (error.code === 2) {
+        return "Your location is currently unavailable. Try again outdoors.";
+      }
+
+      if (error.code === 3) {
+        return "Getting your location timed out. Please try again.";
+      }
+
+      return "Unable to access your location.";
+    }
+
+    async function geocodePlace(query) {
+      const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+        encodeURIComponent(query);
+
+      const response = await fetch(url, {
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("The place search service is unavailable.");
+      }
+
+      const results = await response.json();
+
+      if (!results.length) {
+        throw new Error('Could not find "' + query + '". Try a more specific place name.');
+      }
+
+      return {
+        lat: Number(results[0].lat),
+        lon: Number(results[0].lon),
+        name: results[0].display_name
+      };
+    }
+
+    /* -------------------------------------------
+       ROUTE REQUEST AND DIRECTIONS
+    ------------------------------------------- */
+
+    function haversineMeters(a, b) {
+      const R = 6371000;
+      const toRad = function(value) { return value * Math.PI / 180; };
+
+      const dLat = toRad(b.lat - a.lat);
+      const dLon = toRad(b.lon - a.lon);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+
+      const x = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+
+      return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    }
+
+    function formatDistance(meters) {
+      if (!Number.isFinite(meters)) return "Unknown";
+      if (meters < 1000) return Math.round(meters) + " metres";
+      return (meters / 1000).toFixed(1) + " kilometres";
+    }
+
+    function formatDuration(seconds) {
+      const minutes = Math.max(1, Math.round(seconds / 60));
+
+      if (minutes < 60) return minutes + " minutes";
+
+      const hours = Math.floor(minutes / 60);
+      const remaining = minutes % 60;
+
+      return remaining
+        ? hours + " hour(s) " + remaining + " minute(s)"
+        : hours + " hour(s)";
+    }
+
+    function maneuverInstruction(step) {
+      const maneuver = step.maneuver || {};
+      const type = maneuver.type || "";
+      const modifier = maneuver.modifier || "";
+      const road = step.name ? " onto " + step.name : "";
+
+      if (type === "depart") {
+        return "Start walking" + road + ".";
+      }
+
+      if (type === "arrive") {
+        return "You are approaching your destination.";
+      }
+
+      if (type === "turn") {
+        if (modifier.includes("left")) return "Turn left" + road + ".";
+        if (modifier.includes("right")) return "Turn right" + road + ".";
+        if (modifier === "uturn") return "Make a U-turn" + road + ".";
+        return "Turn" + road + ".";
+      }
+
+      if (type === "continue" || type === "new name") {
+        return "Continue straight" + road + ".";
+      }
+
+      if (type === "roundabout" || type === "rotary") {
+        return "Enter the roundabout" + road + ". Follow the route carefully.";
+      }
+
+      if (type === "fork") {
+        if (modifier.includes("left")) return "Keep left at the fork" + road + ".";
+        if (modifier.includes("right")) return "Keep right at the fork" + road + ".";
+        return "Follow the route at the fork" + road + ".";
+      }
+
+      if (type === "merge") return "Merge" + road + ".";
+      if (type === "end of road") {
+        if (modifier.includes("left")) return "At the end of the road, turn left" + road + ".";
+        if (modifier.includes("right")) return "At the end of the road, turn right" + road + ".";
+      }
+
+      return "Continue along the route" + road + ".";
+    }
+
+    function flattenRouteSteps(route) {
+      const allSteps = [];
+
+      (route.legs || []).forEach(function(leg) {
+        (leg.steps || []).forEach(function(step) {
+          const location = step.maneuver && step.maneuver.location;
+
+          allSteps.push({
+            distance: Number(step.distance || 0),
+            duration: Number(step.duration || 0),
+            name: step.name || "",
+            maneuver: step.maneuver || {},
+            location: location
+              ? { lat: location[1], lon: location[0] }
+              : null,
+            instruction: maneuverInstruction(step)
+          });
+        });
+      });
+
+      return allSteps;
+    }
+
+    async function requestRoute(start, end) {
+      const coords = start.lon + "," + start.lat + ";" +
+        end.lon + "," + end.lat;
+
+      const url = FOOT_ROUTER + coords +
+        "?overview=full&geometries=geojson&steps=true";
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("The walking route service could not be reached.");
+      }
+
+      const data = await response.json();
+
+      if (data.code !== "Ok" || !data.routes || !data.routes.length) {
+        throw new Error(
+          "No walking route was returned. Try a different destination or check the internet connection."
+        );
+      }
+
+      return data.routes[0];
+    }
+
+    async function previewRoute() {
+      const message = document.getElementById("planMessage");
+      const destinationText = document.getElementById("destination").value.trim();
+      const useGPS = document.getElementById("useCurrentLocation").checked;
+      const startText = document.getElementById("startPoint").value.trim();
+
+      if (!destinationText) {
+        message.innerHTML =
+          '<div class="error">Please enter a destination.</div>';
+        return;
+      }
+
+      message.innerHTML =
+        '<div class="status">Finding the destination and walking route...</div>';
+
+      try {
+        let start;
+
+        if (useGPS) {
+          start = await getCurrentPositionOnce();
+        } else {
+          if (!startText) {
+            throw new Error("Enter a starting point or select current location.");
+          }
+
+          start = await geocodePlace(startText);
+        }
+
+        const end = await geocodePlace(destinationText);
+        const route = await requestRoute(start, end);
+
+        destination = { lat: end.lat, lon: end.lon };
+        destinationName = destinationText;
+        routeSteps = flattenRouteSteps(route);
+        routeCoordinates = route.geometry.coordinates.map(function(coord) {
+          return { lat: coord[1], lon: coord[0] };
+        });
+
+        if (!routeSteps.length) {
+          throw new Error("The route has no usable turn-by-turn steps.");
+        }
+
+        document.getElementById("routeSummary").style.display = "block";
+        document.getElementById("routeSummary").textContent =
+          "Estimated walking distance: " + formatDistance(route.distance) +
+          ". Estimated time: " + formatDuration(route.duration) +
+          ". These estimates do not confirm accessibility.";
+
+        message.innerHTML =
+          '<div class="status">Route found. Open live navigation when you are ready.</div>';
+
+        document.getElementById("navDestination").textContent = destinationText;
+        document.getElementById("navDistance").textContent =
+          formatDistance(route.distance);
+        document.getElementById("navDuration").textContent =
+          formatDuration(route.duration);
+
+        renderStepList();
+        showScreen("navigation");
+        initializeMap();
+        drawRoute(start);
+      } catch (error) {
+        message.innerHTML =
+          '<div class="error">' + escapeHTML(error.message) + '</div>';
+      }
+    }
+
+    function drawRoute(start) {
+      initializeMap();
+
+      if (routeLine) map.removeLayer(routeLine);
+      if (userMarker) map.removeLayer(userMarker);
+      if (destinationMarker) map.removeLayer(destinationMarker);
+
+      const points = routeCoordinates.map(function(point) {
+        return [point.lat, point.lon];
+      });
+
+      routeLine = L.polyline(points, {
+        color: "#176b5b",
+        weight: 6,
+        opacity: 0.85
+      }).addTo(map);
+
+      userMarker = L.marker([start.lat, start.lon])
+        .addTo(map)
+        .bindPopup("Starting location");
+
+      destinationMarker = L.marker([destination.lat, destination.lon])
+        .addTo(map)
+        .bindPopup("Destination");
+
+      map.fitBounds(routeLine.getBounds(), { padding: [25, 25] });
+    }
+
+    function renderStepList() {
+      const list = document.getElementById("stepList");
+      list.innerHTML = "";
+
+      routeSteps.forEach(function(step, index) {
+        const li = document.createElement("li");
+        li.textContent = step.instruction;
+        li.id = "route-step-" + index;
+        list.appendChild(li);
+      });
+    }
+
+    function updateStepHighlight() {
+      routeSteps.forEach(function(step, index) {
+        const li = document.getElementById("route-step-" + index);
+        if (li) {
+          li.classList.toggle("current", index === currentStepIndex);
+        }
+      });
+
+      document.getElementById("routeProgress").textContent =
+        "Step " + Math.min(currentStepIndex + 1, routeSteps.length) +
+        " of " + routeSteps.length;
+    }
+
+    /* -------------------------------------------
+       LIVE NAVIGATION
+    ------------------------------------------- */
+
+    function startLiveNavigation() {
+      if (!destination || !routeSteps.length) {
+        setNavigationStatus("Please find a route first.");
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        setNavigationStatus("This browser does not support location tracking.");
+        return;
+      }
+
+      if (navigationActive) {
+        setNavigationStatus("Live navigation is already running.");
+        return;
+      }
+
+      if (!window.isSecureContext) {
+        setNavigationStatus(
+          "Live location requires a secure HTTPS page, such as GitHub Pages."
+        );
+        return;
+      }
+
+      initializeMap();
+
+      navigationActive = true;
+      currentStepIndex = 0;
+      lastSpokenKey = "";
+      offRouteCount = 0;
+      arrivalAnnounced = false;
+      lastPosition = null;
+      lastGPSUpdate = 0;
+
+      setGPSStatus("Requesting live location...");
+      setNavigationStatus("Waiting for your device's GPS location.");
+
+      document.getElementById("currentInstruction").textContent =
+        "Getting your location...";
+      document.getElementById("instructionDistance").textContent = "";
+
+      speakText("BlindPath voice navigation is starting. Getting your location.");
+
+      watchId = navigator.geolocation.watchPosition(
+        handleLocationUpdate,
+        handleLocationError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1500,
+          timeout: 15000
+        }
+      );
+    }
+
+    function handleLocationUpdate(position) {
+      if (!navigationActive) return;
+
+      const coords = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      };
+
+      lastPosition = coords;
+      lastGPSUpdate = Date.now();
+
+      setGPSStatus("Live location is updating.");
+      document.getElementById("locationAccuracy").textContent =
+        "Reported GPS accuracy: approximately " +
+        Math.round(coords.accuracy) + " metres. Actual accuracy may vary.";
+
+      if (!userMarker) {
+        userMarker = L.marker([coords.lat, coords.lon])
+          .addTo(map)
+          .bindPopup("Your live location");
+      } else {
+        userMarker.setLatLng([coords.lat, coords.lon]);
+      }
+
+      map.panTo([coords.lat, coords.lon], { animate: true });
+
+      if (arrivalAnnounced) return;
+
+      const distanceToDestination = haversineMeters(coords, destination);
+
+      if (distanceToDestination <= Math.max(18, coords.accuracy * 0.5)) {
+        arrivalAnnounced = true;
+        navigationActive = false;
+
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+          watchId = null;
+        }
+
+        document.getElementById("currentInstruction").textContent =
+          "You may have arrived at your destination.";
+        document.getElementById("instructionDistance").textContent =
+          "Please confirm your surroundings.";
+        setNavigationStatus(
+          "Near the destination coordinates. Confirm the actual destination entrance and surroundings."
+        );
+
+        speakText(
+          "You appear to be near your destination. Please confirm your surroundings and the correct entrance."
+        );
+
+        return;
+      }
+
+      updateInstructionFromLocation(coords);
+      checkOffRoute(coords);
+    }
+
+    function handleLocationError(error) {
+      setGPSStatus(locationErrorMessage(error));
+      setNavigationStatus("Live location is unavailable. Check your location permission.");
+
+      if (!lastPosition) {
+        document.getElementById("currentInstruction").textContent =
+          "Waiting for a usable GPS location.";
+      }
+    }
+
+    function findNearestRouteDistance(position) {
+      let minimum = Infinity;
+
+      for (let i = 0; i < routeCoordinates.length; i++) {
+        const distance = haversineMeters(position, routeCoordinates[i]);
+        if (distance < minimum) minimum = distance;
+      }
+
+      return minimum;
+    }
+
+    function updateInstructionFromLocation(position) {
+      if (!routeSteps.length) return;
+
+      /*
+        Move to the next maneuver when the live position approaches
+        that maneuver's mapped coordinates.
+      */
+      while (currentStepIndex < routeSteps.length - 1) {
+        const nextStep = routeSteps[currentStepIndex + 1];
+
+        if (!nextStep.location) break;
+
+        const distanceToNext = haversineMeters(position, nextStep.location);
+        const approachRadius = Math.max(18, Math.min(32, position.accuracy * 0.5));
+
+        if (distanceToNext <= approachRadius) {
+          currentStepIndex++;
+          lastSpokenKey = "";
+          updateStepHighlight();
+        } else {
+          break;
+        }
+      }
+
+      const currentStep = routeSteps[currentStepIndex];
+      const nextStep = routeSteps[currentStepIndex + 1];
+
+      if (!currentStep) return;
+
+      let distanceToManeuver = null;
+
+      if (nextStep && nextStep.location) {
+        distanceToManeuver = haversineMeters(position, nextStep.location);
+      }
+
+      let displayInstruction = currentStep.instruction;
+      let distanceText = "";
+
+      if (nextStep && distanceToManeuver !== null) {
+        distanceText = "Next turn in " + formatDistance(distanceToManeuver);
+
+        if (distanceToManeuver > 60) {
+          displayInstruction = "Continue along the route.";
+        } else if (distanceToManeuver > 20) {
+          displayInstruction = "Get ready. " + nextStep.instruction;
+        } else {
+          displayInstruction = nextStep.instruction;
+        }
+
+        /*
+          Speak only at selected distance thresholds. This prevents the
+          app from repeating a sentence on every GPS update.
+        */
+        let distanceBucket;
+
+        if (distanceToManeuver <= 15) {
+          distanceBucket = "NOW";
+        } else if (distanceToManeuver <= 30) {
+          distanceBucket = "30";
+        } else if (distanceToManeuver <= 60) {
+          distanceBucket = "60";
+        } else {
+          distanceBucket = "FAR";
+        }
+
+        const key = currentStepIndex + "-" + distanceBucket;
+
+        if (distanceBucket !== "FAR" && key !== lastSpokenKey) {
+          let spoken;
+
+          if (distanceBucket === "60") {
+            spoken = "In about 60 metres, " + nextStep.instruction;
+          } else if (distanceBucket === "30") {
+            spoken = "In about 30 metres, " + nextStep.instruction;
+          } else {
+            spoken = nextStep.instruction;
+          }
+
+          lastSpokenKey = key;
+          lastInstruction = spoken;
+          setNavigationStatus("Giving guidance for the next turn.");
+          speakText(spoken);
+        }
+
+        if (distanceBucket === "FAR") {
+          lastSpokenKey = "";
+        }
+      } else {
+        distanceText = "Approaching the end of the route";
+
+        if (currentStepIndex === routeSteps.length - 1 &&
+            lastSpokenKey !== "LAST_STEP") {
+          lastSpokenKey = "LAST_STEP";
+          lastInstruction = currentStep.instruction;
+          speakText(currentStep.instruction);
+        }
+      }
+
+      document.getElementById("currentInstruction").textContent =
+        displayInstruction;
+      document.getElementById("instructionDistance").textContent = distanceText;
+
+      setNavigationStatus("Using live location to update guidance.");
+      updateStepHighlight();
+    }
+
+    function checkOffRoute(position) {
+      if (!navigationActive || routeCoordinates.length < 2) return;
+
+      /*
+        This is a simple prototype check against route coordinates.
+        It is not full map matching and may be affected by GPS drift.
+      */
+      const distance = findNearestRouteDistance(position);
+
+      if (distance > 65) {
+        offRouteCount++;
+      } else {
+        offRouteCount = 0;
+      }
+
+      if (offRouteCount >= 3 && Date.now() - lastRerouteTime > 15000) {
+        offRouteCount = 0;
+        lastRerouteTime = Date.now();
+        recalculateFromCurrentLocation(position);
+      }
+    }
+
+    async function recalculateFromCurrentLocation(position) {
+      if (!navigationActive || !destination || routeRequestInProgress) return;
+
+      routeRequestInProgress = true;
+      setNavigationStatus("You may be off route. Trying to find a new route.");
+      speakText("You may be off route. Recalculating the route.");
+
+      try {
+        const route = await requestRoute(position, destination);
+
+        if (!navigationActive) return;
+
+        routeSteps = flattenRouteSteps(route);
+        routeCoordinates = route.geometry.coordinates.map(function(coord) {
+          return { lat: coord[1], lon: coord[0] };
+        });
+
+        currentStepIndex = 0;
+        lastSpokenKey = "";
+        renderStepList();
+        updateStepHighlight();
+
+        if (routeLine) map.removeLayer(routeLine);
+
+        routeLine = L.polyline(
+          routeCoordinates.map(function(point) {
+            return [point.lat, point.lon];
+          }),
+          { color: "#176b5b", weight: 6, opacity: 0.85 }
+        ).addTo(map);
+
+        document.getElementById("navDistance").textContent =
+          formatDistance(route.distance);
+        document.getElementById("navDuration").textContent =
+          formatDuration(route.duration);
+
+        setNavigationStatus("A new route was returned. Check your surroundings.");
+        speakText("A new route is ready. Please check your surroundings.");
+      } catch (error) {
+        setNavigationStatus(
+          "Unable to recalculate. Stop somewhere safe and check your route."
+        );
+        speakText(
+          "Unable to recalculate the route. Stop somewhere safe and check your route."
+        );
+      } finally {
+        routeRequestInProgress = false;
+      }
+    }
+
+    function repeatInstruction() {
+      if (!navigationActive) {
+        if (lastInstruction) {
+          speakText(lastInstruction);
+        } else {
+          speakText("Start navigation to receive live instructions.");
+        }
+        return;
+      }
+
+      const instruction = document.getElementById("currentInstruction").textContent;
+      const distance = document.getElementById("instructionDistance").textContent;
+
+      speakText(distance ? instruction + ". " + distance : instruction);
+    }
+
+    function stopLiveNavigation() {
+      navigationActive = false;
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      setGPSStatus("Live location tracking stopped.");
+      setNavigationStatus("Navigation stopped.");
+
+      document.getElementById("currentInstruction").textContent =
+        "Navigation stopped.";
+      document.getElementById("instructionDistance").textContent = "";
+    }
+
+    /* -------------------------------------------
+       REPORTS - LOCAL BROWSER STORAGE ONLY
+    ------------------------------------------- */
+
+    async function fillReportLocation() {
+      const message = document.getElementById("reportMessage");
+      message.innerHTML =
+        '<div class="status">Getting your location...</div>';
+
+      try {
+        const location = await getCurrentPositionOnce();
+        document.getElementById("issueLocation").value =
+          location.lat.toFixed(6) + ", " + location.lon.toFixed(6);
+
+        message.innerHTML =
+          '<div class="status">Coordinates added to the report form.</div>';
+      } catch (error) {
+        message.innerHTML =
+          '<div class="error">' + escapeHTML(error.message) + '</div>';
+      }
+    }
+
+    function submitReport() {
+      const type = document.getElementById("issueType").value;
+      const location = document.getElementById("issueLocation").value.trim();
+      const description = document.getElementById("issueDescription").value.trim();
+
+      const message = document.getElementById("reportMessage");
+
+      if (!location) {
+        message.innerHTML =
+          '<div class="error">Please enter a location description.</div>';
+        return;
+      }
+
+      const reports = readStorage(STORAGE_KEYS.reports, []);
+
+      reports.unshift({
+        type: type,
+        location: location,
+        description: description,
+        createdAt: new Date().toLocaleString()
+      });
+
+      writeStorage(STORAGE_KEYS.reports, reports);
+
+      message.innerHTML =
+        '<div class="status">Report saved locally on this device. It has not been sent to anyone.</div>';
+
+      document.getElementById("issueLocation").value = "";
+      document.getElementById("issueDescription").value = "";
+    }
+
+    function renderCommunityReports() {
+      const container = document.getElementById("communityReports");
+      const reports = readStorage(STORAGE_KEYS.reports, []);
+
+      container.innerHTML = "";
+
+      if (!reports.length) {
+        container.innerHTML =
+          '<p class="muted">No local reports yet. Reports submitted on this device will appear here.</p>';
+        return;
+      }
+
+      reports.forEach(function(report) {
+        const item = document.createElement("div");
+        item.className = "report-item";
+
+        const title = document.createElement("strong");
+        title.textContent = report.type;
+
+        const location = document.createElement("p");
+        location.textContent = "Location: " + report.location;
+
+        const details = document.createElement("p");
+        details.textContent = report.description || "No extra details.";
+
+        const date = document.createElement("p");
+        date.className = "small muted";
+        date.textContent = "Saved: " + report.createdAt;
+
+        item.appendChild(title);
+        item.appendChild(location);
+        item.appendChild(details);
+        item.appendChild(date);
+        container.appendChild(item);
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, function(character) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[character];
+      });
+    }
+
+    /* -------------------------------------------
+       STARTUP
+    ------------------------------------------- */
+
+    loadSettings();
+
+    document.getElementById("useCurrentLocation").addEventListener(
+      "change",
+      function(event) {
+        document.getElementById("startPoint").disabled = event.target.checked;
+      }
+    );
+
+    document.getElementById("startPoint").disabled = true;
+
+    document.getElementById("destination").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") previewRoute();
+    });
+
+    window.addEventListener("beforeunload", function() {
+      if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
+  </script>
 </body>
 </html>
